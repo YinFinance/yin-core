@@ -1,0 +1,61 @@
+{
+  "name": "@yinfinance/yin-core",
+  "version": "1.0.0",
+  "description": "YIN Liquidity Manager",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "lint": "eslint . --ext .ts",
+    "prettier": "prettier --write 'contracts/**/*.sol'",
+    "clear-cache": "rm -rf artifacts/ cache/ typechain/"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "3.4.1-solc-0.7-2",
+    "@openzeppelin/contracts-upgradeable": "3.4.1-solc-0.7-2",
+    "@openzeppelin/hardhat-upgrades": "^1.9.0",
+    "@uniswap/lib": "^4.0.1-alpha",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v3-core": "^1.0.0",
+    "@uniswap/v3-periphery": "^1.1.0",
+    "base64-sol": "^1.0.1",
+    "dotenv": "^10.0.0",
+    "lodash": "4.17.21",
+    "node-fetch": "^2.6.1",
+    "normalize-url": "^4.5.1",
+    "underscore": "^1.12.1",
+    "ws": "^7.4.6",
+    "yargs-parser": "^5.0.0-security.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@types/chai": "^4.2.19",
+    "@typechain/ethers-v5": "^7.0.1",
+    "@typechain/hardhat": "^2.0.1",
+    "@types/mocha": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^4.27.0",
+    "@typescript-eslint/parser": "^4.27.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethereumjs-util": "^7.0.4",
+    "ethers": "^5.3.1",
+    "hardhat": "^2.4.0",
+    "mocha": "^9.0.1",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
+    "solhint": "^3.3.6",
+    "ts-node": "^10.0.0",
+    "typechain": "^5.0.0",
+    "typescript": "^4.3.4"
+  }
+}
