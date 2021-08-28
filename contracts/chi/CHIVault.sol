@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -9,6 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol";
+import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import "@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
@@ -16,7 +18,12 @@ import "@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIDepositCallBack.sol";
 
-contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
+contract CHIVault is
+    ICHIVault,
+    IUniswapV3MintCallback,
+    IUniswapV3SwapCallback,
+    ReentrancyGuard
+{
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -37,18 +44,21 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
 
     event CollectFee(uint256 feesFromPool0, uint256 feesFromPool1);
 
+    event Swap(address from, address to, uint256 amountIn, uint256 amountOut);
+
     IUniswapV3Pool public pool;
     ICHIManager public CHIManager;
 
-    IERC20 public override immutable token0;
-    IERC20 public override immutable token1;
+    IERC20 public immutable token0;
+    IERC20 public immutable token1;
+    uint24 public immutable fee;
     int24 public immutable tickSpacing;
 
     uint256 private _accruedProtocolFees0;
     uint256 private _accruedProtocolFees1;
     uint256 private _protocolFee;
-    uint256 public FEE_BASE = 1e6;
-    uint256 public scaleRate = 1e18;
+    uint256 private FEE_BASE = 1e6;
+    uint256 private scaleRate = 1e18;
 
     // total shares
     uint256 private _totalSupply;
@@ -68,6 +78,7 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         pool = IUniswapV3Pool(_pool);
         token0 = IERC20(pool.token0());
         token1 = IERC20(pool.token1());
+        fee = pool.fee();
         tickSpacing = pool.tickSpacing();
 
         CHIManager = ICHIManager(_manager);
@@ -110,16 +121,35 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         return _accruedCollectFees1;
     }
 
-    function protocolFee() external view virtual override returns (uint256) {
-        return _protocolFee;
-    }
-
     function totalSupply() external view virtual override returns (uint256) {
         return _totalSupply;
     }
 
     function getRangeCount() external view virtual override returns (uint256) {
         return _rangeSet.length();
+    }
+
+    function feeTier() public view override returns (uint24) {
+        return fee;
+    }
+
+    function positionAmounts(int24 tickLower, int24 tickUpper)
+        public
+        view
+        returns (uint256 amount0, uint256 amount1)
+    {
+        bytes32 positionKey = keccak256(
+            abi.encodePacked(address(this), tickLower, tickUpper)
+        );
+        (uint128 liquidity, , , uint128 tokensOwed0, uint128 tokensOwed1) = pool
+            .positions(positionKey);
+        (amount0, amount1) = _amountsForLiquidity(
+            tickLower,
+            tickUpper,
+            liquidity
+        );
+        amount0 = amount0.add(uint256(tokensOwed0));
+        amount1 = amount1.add(uint256(tokensOwed1));
     }
 
     function _encode(int24 _a, int24 _b) internal pure returns (bytes32 x) {
@@ -153,13 +183,13 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         override
         onlyManager
     {
-        (uint256 amount0, uint256 amount1) = _positionAmounts(
+        _checkTicks(tickLower, tickUpper);
+        (uint256 amount0, uint256 amount1) = positionAmounts(
             tickLower,
             tickUpper
         );
         require(amount0 == 0, "a0");
         require(amount1 == 0, "a0");
-        _checkTicks(tickLower, tickUpper);
         _rangeSet.add(_encode(tickLower, tickUpper));
     }
 
@@ -168,7 +198,8 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         override
         onlyManager
     {
-        (uint256 amount0, uint256 amount1) = _positionAmounts(
+        _checkTicks(tickLower, tickUpper);
+        (uint256 amount0, uint256 amount1) = positionAmounts(
             tickLower,
             tickUpper
         );
@@ -185,7 +216,7 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
     {
         for (uint256 i = 0; i < _rangeSet.length(); i++) {
             (int24 _tickLower, int24 _tickUpper) = _decode(_rangeSet.at(i));
-            (uint256 amount0, uint256 amount1) = _positionAmounts(
+            (uint256 amount0, uint256 amount1) = positionAmounts(
                 _tickLower,
                 _tickUpper
             );
@@ -264,7 +295,7 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         require(to != address(0) && to != address(this), "to");
 
         // collect fee
-        harvestFee();
+        _harvestFee();
 
         (uint256 total0, uint256 total1) = getTotalAmounts();
 
@@ -332,11 +363,31 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         if (amount1Owed > 0) token1.safeTransfer(msg.sender, amount1Owed);
     }
 
-    function balanceToken0() public override view returns (uint256) {
+    function uniswapV3SwapCallback(
+        int256 amount0Delta,
+        int256 amount1Delta,
+        bytes calldata data
+    ) external override {
+        require(msg.sender == address(pool));
+        require(amount0Delta > 0 || amount1Delta > 0);
+        (address tokenIn, address tokenOut) = abi.decode(data, (address, address));
+        (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
+            ? (tokenIn < tokenOut, uint256(amount0Delta))
+            : (tokenOut < tokenIn, uint256(amount1Delta));
+        if (isExactInput) {
+            if (amountToPay > 0)
+                IERC20(tokenIn).safeTransfer(msg.sender, amountToPay);
+        } else {
+            if (amountToPay > 0)
+                IERC20(tokenOut).safeTransfer(msg.sender, amountToPay);
+        }
+    }
+
+    function balanceToken0() public view override returns (uint256) {
         return token0.balanceOf(address(this)).sub(_accruedProtocolFees0);
     }
 
-    function balanceToken1() public override view returns (uint256) {
+    function balanceToken1() public view override returns (uint256) {
         return token1.balanceOf(address(this)).sub(_accruedProtocolFees1);
     }
 
@@ -382,7 +433,11 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         }
     }
 
-    function harvestFee() public {
+    function harvestFee() external {
+        _harvestFee();
+    }
+
+    function _harvestFee() internal {
         uint256 collect0 = 0;
         uint256 collect1 = 0;
         // update pool
@@ -529,25 +584,6 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         );
     }
 
-    function _positionAmounts(int24 tickLower, int24 tickUpper)
-        internal
-        view
-        returns (uint256 amount0, uint256 amount1)
-    {
-        bytes32 positionKey = keccak256(
-            abi.encodePacked(address(this), tickLower, tickUpper)
-        );
-        (uint128 liquidity, , , uint128 tokensOwed0, uint128 tokensOwed1) = pool
-            .positions(positionKey);
-        (amount0, amount1) = _amountsForLiquidity(
-            tickLower,
-            tickUpper,
-            liquidity
-        );
-        amount0 = amount0.add(uint256(tokensOwed0));
-        amount1 = amount1.add(uint256(tokensOwed1));
-    }
-
     function _amountsForLiquidity(
         int24 tickLower,
         int24 tickUpper,
@@ -660,8 +696,45 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         }
     }
 
+    function swapPercentage(
+        address tokenIn,
+        address tokenOut,
+        uint256 percentage
+    ) external override returns (uint256 amountOut) {
+        uint256 percentageBase = 1e6;
+        require(percentage < percentageBase, "percentage");
+        require(
+            (tokenIn == address(token0) || tokenIn == address(token1)) &&
+                (tokenOut == address(token1) || tokenOut == address(token0)),
+            "invalid address"
+        );
+        uint256 totalAmount = tokenIn == address(token0)
+            ? balanceToken0()
+            : balanceToken1();
+        uint256 amountIn = totalAmount.mul(percentage).div(percentageBase);
+
+        bool zeroForOne = tokenIn < tokenOut;
+        (int256 amount0, int256 amount1) = pool.swap(
+            address(this),
+            zeroForOne,
+            toInt256(amountIn),
+            zeroForOne
+                ? TickMath.MIN_SQRT_RATIO + 1
+                : TickMath.MAX_SQRT_RATIO - 1,
+            abi.encode(tokenIn, tokenOut)
+        );
+
+        amountOut = uint256(-(zeroForOne ? amount1 : amount0));
+        emit Swap(tokenIn, tokenOut, amountIn, amountOut);
+    }
+
     function toUint128(uint256 x) private pure returns (uint128 y) {
         require((y = uint128(x)) == x);
+    }
+
+    function toInt256(uint256 y) internal pure returns (int256 z) {
+        require(y < 2**255);
+        z = int256(y);
     }
 
     /// @dev Get position liquidity

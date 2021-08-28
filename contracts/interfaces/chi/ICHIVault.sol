@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.7.6;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 interface ICHIVault {
     // fee
     function accruedProtocolFees0() external view returns (uint256);
@@ -13,13 +11,11 @@ interface ICHIVault {
 
     function accruedCollectFees1() external view returns (uint256);
 
-    function protocolFee() external view returns (uint256);
+    function feeTier() external view returns (uint24);
 
     function balanceToken0() external view returns (uint256);
-    function balanceToken1() external view returns (uint256);
 
-    function token0() external view returns (IERC20);
-    function token1() external view returns (IERC20);
+    function balanceToken1() external view returns (uint256);
 
     // shares
     function totalSupply() external view returns (uint256);
@@ -91,4 +87,10 @@ interface ICHIVault {
     function sweep(address token, address to) external;
 
     function emergencyBurn(int24 tickLower, int24 tickUpper) external;
+
+    function swapPercentage(
+        address tokenIn,
+        address tokenOut,
+        uint256 percentage
+    ) external returns (uint256);
 }

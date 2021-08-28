@@ -21,7 +21,7 @@ const DEFAULT_COMPILER_SETTINGS = {
   settings: {
     optimizer: {
       enabled: true,
-      runs: 2000,
+      runs: 1000,
     },
     metadata: {
       bytecodeHash: 'none',

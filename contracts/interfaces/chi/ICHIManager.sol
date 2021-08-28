@@ -7,6 +7,22 @@ import "./ICHIVault.sol";
 import "./ICHIDepositCallBack.sol";
 
 interface ICHIManager is ICHIDepositCallBack {
+    // CHI config
+    struct CHIConfig {
+        bool paused;
+        bool archived;
+        bool equational;
+        uint256 maxUSDLimit;
+    }
+
+    // CHI data
+    struct CHIData {
+        address operator;
+        address pool;
+        address vault;
+        CHIConfig config;
+    }
+
     struct MintParams {
         address recipient;
         address token0;
@@ -29,8 +45,18 @@ interface ICHIManager is ICHIDepositCallBack {
             address vault,
             uint256 accruedProtocolFees0,
             uint256 accruedProtocolFees1,
-            uint256 fee,
+            uint24 fee,
             uint256 totalShares
+        );
+
+    function config(uint256 tokenId)
+        external
+        view
+        returns (
+            bool isPaused,
+            bool isArchived,
+            bool isEquational,
+            uint256 maxUSDLimit
         );
 
     function mint(MintParams calldata params, bytes32[] calldata merkleProof)
@@ -60,11 +86,11 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 amount1Min
     ) external returns (uint256 amount0, uint256 amount1);
 
-    /*function addAndRemoveRanges(*/
-        /*uint256 tokenId,*/
-        /*RangeParams[] calldata addRanges,*/
-        /*RangeParams[] calldata removeRanges*/
-    /*) external;*/
+    function addAndRemoveRanges(
+        uint256 tokenId,
+        RangeParams[] calldata addRanges,
+        RangeParams[] calldata removeRanges
+    ) external;
 
     function addAndRemoveRangesWithPercents(
         uint256 tokenId,
@@ -85,19 +111,7 @@ interface ICHIManager is ICHIDepositCallBack {
         int24 tickUpper
     ) external;
 
-    function collectProtocol(
-        uint256 tokenId,
-        uint256 amount0,
-        uint256 amount1,
-        address to
-    ) external;
-
-    /*function addLiquidityToPosition(*/
-        /*uint256 tokenId,*/
-        /*uint256 rangeIndex,*/
-        /*uint256 amount0Desired,*/
-        /*uint256 amount1Desired*/
-    /*) external;*/
+    function collectProtocol(uint256 tokenId) external;
 
     function addAllLiquidityToPosition(
         uint256 tokenId,
@@ -107,19 +121,21 @@ interface ICHIManager is ICHIDepositCallBack {
 
     function addTickPercents(uint256, uint256[] calldata) external;
 
-    /*function removeLiquidityFromPosition(*/
-        /*uint256 tokenId,*/
-        /*uint256 rangeIndex,*/
-        /*uint128 liquidity*/
-    /*) external;*/
+    function removeLiquidityFromPosition(
+        uint256 tokenId,
+        uint256 rangeIndex,
+        uint128 liquidity
+    ) external;
+
+    function addLiquidityToPosition(
+        uint256 tokenId,
+        uint256 rangeIndex,
+        uint256 amount0Desired,
+        uint256 amount1Desired
+    ) external;
 
     function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
         external;
-
-    function stateOfCHI(uint256 tokenId)
-        external
-        view
-        returns (bool isPaused, bool isArchived);
 
     function pausedCHI(uint256 tokenId) external;
 
@@ -130,16 +146,21 @@ interface ICHIManager is ICHIDepositCallBack {
     function sweep(
         uint256 tokenId,
         address token,
-        address to,
-        bytes32[] calldata merkleProof
+        address to
     ) external;
 
     function emergencyBurn(
         uint256 tokenId,
         int24 tickLower,
-        int24 tickUpper,
-        bytes32[] calldata merkleProof
+        int24 tickUpper
     ) external;
+
+    function swap(
+        uint256 tokenId,
+        address tokenIn,
+        address tokenOut,
+        uint256 percentage
+    ) external returns (uint256);
 
     function yang(uint256 yangId, uint256 chiId)
         external
@@ -154,4 +175,61 @@ interface ICHIManager is ICHIDepositCallBack {
     );
 
     event ChangeLiquidity(uint256 tokenId, address vault);
+
+    event UpdateMerkleRoot(
+        address account,
+        bytes32 oldMerkleRoot,
+        bytes32 newMerkleRoot
+    );
+    event UpdateVaultFee(
+        address account,
+        uint256 oldVaultFee,
+        uint256 newVaultFee
+    );
+    event UpdateProviderFee(
+        address account,
+        uint256 oldProviderFee,
+        uint256 newProviderFee
+    );
+    event UpdateRewardPool(
+        address account,
+        address oldRewardPool,
+        address newRewardPool
+    );
+    event UpdateDeployer(
+        address account,
+        address oldDeployer,
+        address newDeployer
+    );
+    event UpdateExecutor(
+        address account,
+        address oldExecutor,
+        address newExecutor
+    );
+    event UpdateGovernance(
+        address account,
+        address oldGovernance,
+        address newGovernance
+    );
+
+    event AddLiquidityToPosition(uint256 idx, uint256 amount0, uint256 amount1);
+    event Sweep(
+        address account,
+        address recipient,
+        address token,
+        uint256 tokenId
+    );
+    event EmergencyBurn(
+        address account,
+        uint256 tokenId,
+        int24 tickLower,
+        int24 tickUpper
+    );
+    event Swap(
+        uint256 tokenId,
+        address tokenIn,
+        address tokenOut,
+        uint256 percentage,
+        uint256 amountOut
+    );
 }

@@ -123,33 +123,6 @@ contract RewardPool is
         emit RewardUpdated(yangId, chiId);
     }
 
-    function getReward(uint256 yangId, uint256 chiId)
-        public
-        override
-        nonReentrant
-        checkStart
-        updateReward(yangId, chiId)
-    {
-        require(
-            IERC721(yangNFT).ownerOf(yangId) == msg.sender,
-            "Non owner of Yang"
-        );
-        uint256 reward = rewards[chiId][yangId];
-        if (reward > 0) {
-            rewards[chiId][yangId] = 0;
-            rewardsToken.safeTransfer(msg.sender, reward);
-            emit RewardPaid(msg.sender, reward);
-        }
-    }
-
-    function setReward(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 reward
-    ) external onlyOwner {
-        rewards[chiId][yangId] = reward;
-    }
-
     /// Restricted
 
     function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
@@ -174,16 +147,18 @@ contract RewardPool is
         rewardRate = _rewardRate;
     }
 
-    function notifyRewardAmount(uint256 reward, uint256 _startTime)
+    function notifyRewardAmount(uint256 reward)
         external
         onlyOwner
         updateReward(0, 0)
     {
         // handle the transfer of reward tokens via `transferFrom` to reduce the number
         // of transactions required and ensure correctness of the reward amount
-        if (reward > 0) {
-            rewardsToken.safeTransferFrom(msg.sender, address(this), reward);
-        }
+
+        // not transfer token until tge
+        //if (reward > 0) {
+        //rewardsToken.safeTransferFrom(msg.sender, address(this), reward);
+        //}
 
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
@@ -193,19 +168,18 @@ contract RewardPool is
                 .div(rewardsDuration);
         }
 
-        if (_startTime == 0) {
-            startTime = block.timestamp;
-            periodFinish = block.timestamp.add(rewardsDuration);
-        } else {
-            startTime = _startTime;
-            periodFinish = _startTime.add(rewardsDuration);
-        }
-        uint256 totalCHI = IERC721Enumerable(address(chiManager)).totalSupply();
-        for (uint256 idx = 1; idx <= totalCHI; idx++) {
-            lastUpdateTimes[idx] = startTime;
-        }
+        startTime = block.timestamp;
+        periodFinish = block.timestamp.add(rewardsDuration);
 
         emit RewardAdded(reward);
+    }
+
+    function notifyLastUpdateTimes(uint256 tokenId) external onlyOwner {
+        lastUpdateTimes[tokenId] = startTime >= block.timestamp
+            ? startTime
+            : block.timestamp;
+
+        emit RewardLastUpdateTime(tokenId, lastUpdateTimes[tokenId]);
     }
 
     /* ========== MODIFIERS ========== */

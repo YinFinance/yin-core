@@ -15,20 +15,38 @@ import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
 import '@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol';
 
-import '../libraries/YANGPosition.sol';
 import '../interfaces/yang/IYangNFTVault.sol';
 import '../interfaces/chi/ICHIManager.sol';
 import '../interfaces/chi/ICHIVault.sol';
+import '../libraries/YANGPosition.sol';
+import '../libraries/OraclePriceHelper.sol';
+import './LockLiquidity.sol';
 
-contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgradeable {
+contract YangNFTVault is
+    IYangNFTVault,
+    LockLiquidity,
+    ReentrancyGuardUpgradeable,
+    ERC721Upgradeable
+{
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     using YANGPosition for mapping(bytes32 => YANGPosition.Info);
     using YANGPosition for YANGPosition.Info;
 
-    // owner
+    // owner & chiManager
     address public owner;
+    address public nextowner;
     address private chiManager;
+
+    // oracle
+    address public oracle;
+
+    // nft and Yang tokenId
+    uint256 private _nextId;
+    mapping(address => uint256) private _usersMap;
+
+    // YANGPosition
+    mapping(bytes32 => YANGPosition.Info) private _positions;
 
     modifier onlyOwner {
         require(msg.sender == owner, 'only owner');
@@ -40,23 +58,35 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
         _;
     }
 
-    // nft and Yang tokenId
-    uint256 private _nextId;
-    mapping(address => uint256) private _usersMap;
-
-    // YANGPosition
-    mapping(bytes32 => YANGPosition.Info) private _positions;
-
     // initialize
-    function initialize(uint256 _initId) public initializer {
+    function initialize(address _oracle) public initializer {
         owner = msg.sender;
-        _nextId = _initId;
-        __ERC721_init('YIN Asset Manager Vault', 'YANG');
+        nextowner = address(0);
+        oracle = _oracle;
+
+        _nextId = 1;
+        _updateLockState(3600 * 24 * 7, false);
+
         __ReentrancyGuard_init();
+        __ERC721_init('YIN Asset Manager Vault', 'YANG');
     }
 
     function setCHIManager(address _chiManager) external override onlyOwner {
         chiManager = _chiManager;
+    }
+
+    function updateLockState(uint256 _lockInSeconds_, bool _isLocked_) external onlyOwner {
+        _updateLockState(_lockInSeconds_, _isLocked_);
+    }
+
+    function transferOwnerShip(address _nextowner) external onlyOwner {
+        nextowner = _nextowner;
+    }
+
+    function acceptOwnerShip() external {
+        require(msg.sender == nextowner, 'nextowner not approved');
+        owner = nextowner;
+        nextowner = address(0);
     }
 
     function mint(address recipient) external override returns (uint256 tokenId) {
@@ -99,7 +129,7 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
     function _subscribe(
         address token0,
         address token1,
-        IYangNFTVault.SubscribeParam memory params
+        SubscribeParam memory params
     )
         internal
         returns (
@@ -124,7 +154,7 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
         IERC20(token1).safeApprove(chiManager, 0);
     }
 
-    function subscribe(IYangNFTVault.SubscribeParam memory params)
+    function subscribe(SubscribeParam memory params)
         external
         override
         isAuthorizedForToken(params.yangId)
@@ -136,16 +166,29 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
         )
     {
         require(chiManager != address(0), 'CHI');
-        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
+        (,,address _pool, address _vault,,,,) = ICHIManager(chiManager).chi(params.chiId);
 
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         address token0 = pool.token0();
         address token1 = pool.token1();
 
+        require(
+            OraclePriceHelper.isReachMaxUSDLimit(
+                params.chiId,
+                token0,
+                token1,
+                oracle,
+                chiManager,
+                _vault
+            ) == false,
+            "Max USD Limit"
+        );
+
         // deposit valut to yangNFT and then to chi
         _deposit(token0, params.amount0Desired, token1, params.amount1Desired);
 
         (amount0, amount1, shares) = _subscribe(token0, token1, params);
+        _updateAccountLockDurations(msg.sender, block.timestamp);
 
         YANGPosition.Info storage position = _positions.get(params.yangId, params.chiId);
         position.shares = position.shares.add(shares);
@@ -160,11 +203,12 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
         emit Subscribe(params.yangId, params.chiId, shares);
     }
 
-    function unsubscribe(IYangNFTVault.UnSubscribeParam memory params)
+    function unsubscribe(UnSubscribeParam memory params)
         external
         override
         nonReentrant
         isAuthorizedForToken(params.yangId)
+        afterLockUnsubscribe(msg.sender)
     {
         require(chiManager != address(0), 'CHI');
         (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
@@ -214,10 +258,17 @@ contract YangNFTVault is IYangNFTVault, ReentrancyGuardUpgradeable, ERC721Upgrad
 
     function getCHITotalBalances(uint256 chiId) external view override returns (uint256 balance0, uint256 balance1) {
         require(chiManager != address(0), 'CHI');
-        (, , , address _vault, uint256 accruedProtocolFees0, uint256 accruedProtocolFees1, , ) = ICHIManager(chiManager)
-        .chi(chiId);
-        IERC20 token0 = ICHIVault(_vault).token0();
-        IERC20 token1 = ICHIVault(_vault).token1();
+        (
+            ,
+            ,
+            address _pool,
+            address _vault,
+            uint256 accruedProtocolFees0,
+            uint256 accruedProtocolFees1,
+            ,
+        ) = ICHIManager(chiManager).chi(chiId);
+        IERC20 token0 = IERC20(IUniswapV3Pool(_pool).token0());
+        IERC20 token1 = IERC20(IUniswapV3Pool(_pool).token1());
         balance0 = token0.balanceOf(_vault).sub(accruedProtocolFees0);
         balance1 = token1.balanceOf(_vault).sub(accruedProtocolFees1);
     }
