@@ -19,35 +19,6 @@ function chi(uint256 tokenId)
     );
 ```
 
-```
-1. Get MaxTokenId
-
-const maxTokenId = ICHIManager(managerAddr).totalSupply();
-
-2. Traverse tokenId, and use **chi** function get **vault** address.
-
-Use vault address to ICHIVault get token0, token1, and Amount0, Amount1.
-
-for (let idx = 0; idx < maxTokenId; idx++) {
-    const chi = ICHIManager(managerAddr).chi(idx);
-
-    const vault: ICHIVault = ICHIVault(chi.vault);
-
-    // token0, token1
-    const token0 = vault.token0().symbol;
-    const token1 = vault.token1().symbol;
-
-    // range count, and range list
-    const rangeCount = vault.getRangeCount();
-    for (let _j = 0; _j < rangeCount(); _j++) {
-        const {tickLower, tickUpper} = vault.getRange(_j);
-    }
-
-    // tvl of token0, token1
-    const {totalAmount0, totalAmount1} = vault.getTotalAmounts()
-}
-```
-
 ## Create and Update strategy.
 
 ```
@@ -90,8 +61,10 @@ function mint(MintParams calldata params, bytes32[] calldata merkleProof)
 
     emit Create(tokenId, uniswapPool, vault, _vaultFee);
 }
+```
 
-// add, remove range
+### Add and remove range with or without percentages
+
 ```
 function addRange(
     uint256 tokenId,
@@ -252,5 +225,4 @@ function collectProtocol(uint256 tokenId) external override {
         treasury
     );
 }
-
 ```
