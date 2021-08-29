@@ -24,8 +24,17 @@ interface IYangNFTVault {
     }
 
     event MintYangNFT(address indexed recipient, uint256 indexed tokenId);
-    event Subscribe(uint256 indexed yangId, uint256 indexed chiId, uint256 indexed share);
-    event UnSubscribe(uint256 indexed yangId, uint256 indexed chiId, uint256 amount0, uint256 amount1);
+    event Subscribe(
+        uint256 indexed yangId,
+        uint256 indexed chiId,
+        uint256 indexed share
+    );
+    event UnSubscribe(
+        uint256 indexed yangId,
+        uint256 indexed chiId,
+        uint256 amount0,
+        uint256 amount1
+    );
 
     function setCHIManager(address) external;
 
@@ -55,13 +64,25 @@ interface IYangNFTVault {
             uint256
         );
 
-    function getAmounts(uint256 chiId, uint256 shares) external view returns (uint256, uint256);
+    function getAmounts(uint256 chiId, uint256 shares)
+        external
+        view
+        returns (uint256, uint256);
 
-    function getCHITotalBalances(uint256 chiId) external view returns (uint256 balance0, uint256 balance1);
+    function getCHITotalBalances(uint256 chiId)
+        external
+        view
+        returns (uint256 balance0, uint256 balance1);
 
-    function getCHITotalAmounts(uint256 chiId) external view returns (uint256, uint256);
+    function getCHITotalAmounts(uint256 chiId)
+        external
+        view
+        returns (uint256, uint256);
 
-    function getCHIAccruedCollectFees(uint256 chiId) external view returns (uint256 fee0, uint256 fee1);
+    function getCHIAccruedCollectFees(uint256 chiId)
+        external
+        view
+        returns (uint256 fee0, uint256 fee1);
 
     // positions
     function positions(uint256 yangId, uint256 chiId)

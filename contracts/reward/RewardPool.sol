@@ -31,6 +31,7 @@ contract RewardPool is
     uint256 public rewardRate;
     uint256 public rewardsDuration; // seconds
     uint256 public startTime;
+    uint256 public totalReward;
     mapping(uint256 => uint256) public lastUpdateTimes;
     mapping(uint256 => uint256) public rewardPerShareStored;
 
@@ -134,6 +135,8 @@ contract RewardPool is
             IERC721(yangNFT).ownerOf(yangId) == msg.sender,
             "Non owner of Yang"
         );
+        require(rewardsToken.balanceOf(address(this)) >= totalReward, "not tge");
+
         uint256 reward = rewards[chiId][yangId];
         if (reward > 0) {
             rewards[chiId][yangId] = 0;
@@ -189,6 +192,7 @@ contract RewardPool is
 
         startTime = block.timestamp;
         periodFinish = block.timestamp.add(rewardsDuration);
+        totalReward = reward;
 
         emit RewardAdded(reward);
     }

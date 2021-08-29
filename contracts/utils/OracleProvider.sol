@@ -108,4 +108,3 @@ contract OracleProvider is IOracleProvider, OwnableUpgradeable {
         price1 = getUSDPrice(token1);
     }
 }
-

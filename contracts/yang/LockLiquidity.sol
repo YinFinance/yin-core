@@ -2,26 +2,35 @@
 
 pragma solidity ^0.7.6;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 abstract contract LockLiquidity {
     using SafeMath for uint256;
 
     modifier afterLockUnsubscribe(address account) {
-        require(!_isLocked || (_isLocked && block.timestamp > _locks[account]), 'locks');
+        require(
+            !_isLocked || (_isLocked && block.timestamp > _locks[account]),
+            "locks"
+        );
         _;
     }
 
-    function _updateLockState(uint256 __lockInSeconds, bool __isLocked) internal {
+    function _updateLockState(uint256 __lockInSeconds, bool __isLocked)
+        internal
+    {
         _lockInSeconds = __lockInSeconds;
         _isLocked = __isLocked;
         emit LockState(_lockInSeconds, _isLocked);
     }
 
-    function _updateAccountLockDurations(address account, uint256 currentTime) internal {
+    function _updateAccountLockDurations(address account, uint256 currentTime)
+        internal
+    {
         if (_isLocked) {
             uint256 durationTime = currentTime.add(_lockInSeconds);
-            _locks[account] = durationTime > _locks[account] ? durationTime : _locks[account];
+            _locks[account] = durationTime > _locks[account]
+                ? durationTime
+                : _locks[account];
             emit LockAccount(account, _locks[account]);
         }
     }

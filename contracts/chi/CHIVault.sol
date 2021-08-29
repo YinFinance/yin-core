@@ -372,7 +372,7 @@ contract CHIVault is
     ) external override {
         require(msg.sender == address(pool));
         require(amount0Delta > 0 || amount1Delta > 0);
-        (address tokenIn, address tokenOut,) = data.decodeFirstPool();
+        (address tokenIn, address tokenOut, ) = data.decodeFirstPool();
         (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
             ? (tokenIn < tokenOut, uint256(amount0Delta))
             : (tokenOut < tokenIn, uint256(amount1Delta));
