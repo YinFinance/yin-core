@@ -135,9 +135,10 @@ contract RewardPool is
             IERC721(yangNFT).ownerOf(yangId) == msg.sender,
             "Non owner of Yang"
         );
-        require(rewardsToken.balanceOf(address(this)) >= totalReward, "not tge");
 
         uint256 reward = rewards[chiId][yangId];
+        require(rewardsToken.balanceOf(address(this)) >= reward, "not tge");
+
         if (reward > 0) {
             rewards[chiId][yangId] = 0;
             rewardsToken.safeTransfer(msg.sender, reward);
