@@ -14,6 +14,7 @@ import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.so
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import "@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
+import "@uniswap/v3-periphery/contracts/libraries/Path.sol";
 
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIDepositCallBack.sol";
@@ -24,6 +25,7 @@ contract CHIVault is
     IUniswapV3SwapCallback,
     ReentrancyGuard
 {
+    using Path for bytes;
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -370,7 +372,7 @@ contract CHIVault is
     ) external override {
         require(msg.sender == address(pool));
         require(amount0Delta > 0 || amount1Delta > 0);
-        (address tokenIn, address tokenOut) = abi.decode(data, (address, address));
+        (address tokenIn, address tokenOut,) = data.decodeFirstPool();
         (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
             ? (tokenIn < tokenOut, uint256(amount0Delta))
             : (tokenOut < tokenIn, uint256(amount1Delta));
@@ -696,13 +698,15 @@ contract CHIVault is
         }
     }
 
-    function swapPercentage(
-        address tokenIn,
-        address tokenOut,
-        uint256 percentage
-    ) external override returns (uint256 amountOut) {
+    function _calAmountInAndPriceLimit(SwapParams memory params)
+        internal
+        view
+        returns (uint256 amountIn, uint160 sqrtPriceLimitX96)
+    {
         uint256 percentageBase = 1e6;
-        require(percentage < percentageBase, "percentage");
+        address tokenIn = params.tokenIn;
+        address tokenOut = params.tokenOut;
+        require(params.percentage < percentageBase, "percentage");
         require(
             (tokenIn == address(token0) || tokenIn == address(token1)) &&
                 (tokenOut == address(token1) || tokenOut == address(token0)),
@@ -711,21 +715,43 @@ contract CHIVault is
         uint256 totalAmount = tokenIn == address(token0)
             ? balanceToken0()
             : balanceToken1();
-        uint256 amountIn = totalAmount.mul(percentage).div(percentageBase);
+        amountIn = totalAmount.mul(params.percentage).div(percentageBase);
+        sqrtPriceLimitX96 = toFixPriceLimitX96(
+            params.sqrtPriceLimitX96,
+            tokenIn < tokenOut
+        );
+    }
 
-        bool zeroForOne = tokenIn < tokenOut;
+    function swapPercentage(SwapParams memory params)
+        external
+        override
+        returns (uint256 amountOut)
+    {
+        bool zeroForOne = params.tokenIn < params.tokenOut;
+        (
+            uint256 amountIn,
+            uint160 sqrtPriceLimitX96
+        ) = _calAmountInAndPriceLimit(params);
         (int256 amount0, int256 amount1) = pool.swap(
             address(this),
             zeroForOne,
             toInt256(amountIn),
-            zeroForOne
-                ? TickMath.MIN_SQRT_RATIO + 1
-                : TickMath.MAX_SQRT_RATIO - 1,
-            abi.encode(tokenIn, tokenOut)
+            sqrtPriceLimitX96,
+            abi.encodePacked(params.tokenIn, fee, params.tokenOut)
         );
 
         amountOut = uint256(-(zeroForOne ? amount1 : amount0));
-        emit Swap(tokenIn, tokenOut, amountIn, amountOut);
+        emit Swap(params.tokenIn, params.tokenOut, amountIn, amountOut);
+    }
+
+    function toFixPriceLimitX96(uint160 x, bool flag)
+        internal
+        pure
+        returns (uint160 z)
+    {
+        z = x == 0
+            ? (flag ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
+            : x;
     }
 
     function toUint128(uint256 x) private pure returns (uint128 y) {

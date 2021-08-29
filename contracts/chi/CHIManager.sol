@@ -660,26 +660,25 @@ contract CHIManager is
         emit EmergencyBurn(msg.sender, tokenId, tickLower, tickUpper);
     }
 
-    function swap(
-        uint256 tokenId,
-        address tokenIn,
-        address tokenOut,
-        uint256 percentage
-    ) external override returns (uint256) {
+    function swap(uint256 tokenId, ICHIVault.SwapParams memory params)
+        external
+        override
+        returns (uint256 amountOut)
+    {
         require(
             _isApprovedOrOwner(msg.sender, tokenId) || msg.sender == executor,
             "not approved"
         );
 
         CHIData storage _chi_ = _chi[tokenId];
-        uint256 amountOut = ICHIVault(_chi_.vault).swapPercentage(
-            tokenIn,
-            tokenOut,
-            percentage
+        amountOut = ICHIVault(_chi_.vault).swapPercentage(params);
+        emit Swap(
+            tokenId,
+            params.tokenIn,
+            params.tokenOut,
+            params.percentage,
+            amountOut
         );
-        emit Swap(tokenId, tokenIn, tokenOut, percentage, amountOut);
-
-        return amountOut;
     }
 
     function tokenURI(uint256 tokenId)

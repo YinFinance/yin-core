@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.7.6;
+pragma abicoder v2;
 
 interface ICHIVault {
     // fee
@@ -88,9 +89,14 @@ interface ICHIVault {
 
     function emergencyBurn(int24 tickLower, int24 tickUpper) external;
 
-    function swapPercentage(
-        address tokenIn,
-        address tokenOut,
-        uint256 percentage
-    ) external returns (uint256);
+    function swapPercentage(SwapParams memory params)
+        external
+        returns (uint256);
+
+    struct SwapParams {
+        address tokenIn;
+        address tokenOut;
+        uint160 sqrtPriceLimitX96;
+        uint256 percentage;
+    }
 }

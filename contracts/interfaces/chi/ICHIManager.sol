@@ -157,9 +157,7 @@ interface ICHIManager is ICHIDepositCallBack {
 
     function swap(
         uint256 tokenId,
-        address tokenIn,
-        address tokenOut,
-        uint256 percentage
+        ICHIVault.SwapParams memory params
     ) external returns (uint256);
 
     function yang(uint256 yangId, uint256 chiId)
