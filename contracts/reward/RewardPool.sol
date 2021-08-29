@@ -123,6 +123,25 @@ contract RewardPool is
         emit RewardUpdated(yangId, chiId);
     }
 
+    function getReward(uint256 yangId, uint256 chiId)
+        public
+        override
+        nonReentrant
+        checkStart
+        updateReward(yangId, chiId)
+    {
+        require(
+            IERC721(yangNFT).ownerOf(yangId) == msg.sender,
+            "Non owner of Yang"
+        );
+        uint256 reward = rewards[chiId][yangId];
+        if (reward > 0) {
+            rewards[chiId][yangId] = 0;
+            rewardsToken.safeTransfer(msg.sender, reward);
+            emit RewardPaid(msg.sender, reward);
+        }
+    }
+
     /// Restricted
 
     function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
