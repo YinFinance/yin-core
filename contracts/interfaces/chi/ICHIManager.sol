@@ -143,6 +143,12 @@ interface ICHIManager is ICHIDepositCallBack {
 
     function archivedCHI(uint256 tokenId) external;
 
+    function addAllLiquidityToPositionEvent(
+        uint256 tokenId,
+        uint256 amount0Total,
+        uint256 amount1Total
+    ) external;
+
     function sweep(
         uint256 tokenId,
         address token,
@@ -208,6 +214,11 @@ interface ICHIManager is ICHIDepositCallBack {
         address oldGovernance,
         address newGovernance
     );
+    event UpdateMaxUSDLimit(
+        address account,
+        uint256 oldMaxUSDLimit,
+        uint256 newMaxUSDLimit
+    );
 
     event AddLiquidityToPosition(uint256 idx, uint256 amount0, uint256 amount1);
     event Sweep(
@@ -229,4 +240,6 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 percentage,
         uint256 amountOut
     );
+
+    event AddAllLiquidity(address account, uint256 tokenId, uint256 amount0Total, uint256 amount1Total);
 }

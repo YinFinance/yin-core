@@ -75,6 +75,11 @@ contract CHIManager is
         _;
     }
 
+    modifier onlyExecutor() {
+        require(msg.sender == executor, 'executor');
+        _;
+    }
+
     modifier onlyProviders(bytes32[] calldata merkleProof) {
         bytes32 node = keccak256(abi.encodePacked(msg.sender));
         require(
@@ -92,7 +97,7 @@ contract CHIManager is
 
     modifier isAuthorizedForToken(uint256 tokenId) {
         require(
-            _isApprovedOrOwner(msg.sender, tokenId) || msg.sender == executor,
+            _isApprovedOrOwner(msg.sender, tokenId),
             "not approved"
         );
         _;
@@ -240,6 +245,16 @@ contract CHIManager is
         emit UpdateGovernance(msg.sender, governance, _governance);
 
         governance = _governance;
+    }
+
+    function setMaxUSDLimit(uint256 tokenId, uint256 _maxUSDLimit)
+        external
+        isAuthorizedForToken(tokenId)
+    {
+        CHIData storage _chi_ = _chi[tokenId];
+        emit UpdateMaxUSDLimit(msg.sender, _chi_.config.maxUSDLimit, _maxUSDLimit);
+
+        _chi_.config.maxUSDLimit = _maxUSDLimit;
     }
 
     function _updateReward(
@@ -544,11 +559,20 @@ contract CHIManager is
         emit ChangeLiquidity(tokenId, _chi_.vault);
     }
 
+    function addAllLiquidityToPositionEvent(
+        uint256 tokenId,
+        uint256 amount0Total,
+        uint256 amount1Total
+    ) external override isAuthorizedForToken(tokenId) onlyWhenNotPaused(tokenId)
+    {
+        emit AddAllLiquidity(msg.sender, tokenId, amount0Total, amount1Total);
+    }
+
     function addAllLiquidityToPosition(
         uint256 tokenId,
         uint256 amount0Total,
         uint256 amount1Total
-    ) public override isAuthorizedForToken(tokenId) onlyWhenNotPaused(tokenId) {
+    ) external override onlyExecutor onlyWhenNotPaused(tokenId) {
         CHIData storage _chi_ = _chi[tokenId];
         _addAllLiquidityToPosition(_chi_, amount0Total, amount1Total);
 
@@ -558,7 +582,7 @@ contract CHIManager is
     function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
         external
         override
-        isAuthorizedForToken(tokenId)
+        onlyExecutor
     {
         CHIData storage _chi_ = _chi[tokenId];
         require(!_chi_.config.archived, "archived");
@@ -571,7 +595,7 @@ contract CHIManager is
         uint256 tokenId,
         uint256 rangeIndex,
         uint128 liquidity
-    ) external override isAuthorizedForToken(tokenId) {
+    ) external override onlyExecutor {
         CHIData storage _chi_ = _chi[tokenId];
         require(!_chi_.config.archived, "archived");
         ICHIVault(_chi_.vault).removeLiquidityFromPosition(
@@ -587,7 +611,7 @@ contract CHIManager is
         uint256 rangeIndex,
         uint256 amount0Desired,
         uint256 amount1Desired
-    ) external override isAuthorizedForToken(tokenId) {
+    ) external override onlyExecutor {
         CHIData storage _chi_ = _chi[tokenId];
         require(!_chi_.config.archived, "archived");
         ICHIVault(_chi_.vault).addLiquidityToPosition(

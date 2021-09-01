@@ -226,3 +226,19 @@ function collectProtocol(uint256 tokenId) external override {
     );
 }
 ```
+
+### addAllLiquidityToPositionEvent
+
+trigger all liquidity to position event
+
+```
+function addAllLiquidityToPositionEvent(
+    uint256 tokenId,
+    uint256 amount0Total,
+    uint256 amount1Total
+) external override isAuthorizedForToken(tokenId) onlyWhenNotPaused(tokenId)
+{
+    emit AddAllLiquidity(msg.sender, tokenId, amount0Total, amount1Total);
+}
+
+```
