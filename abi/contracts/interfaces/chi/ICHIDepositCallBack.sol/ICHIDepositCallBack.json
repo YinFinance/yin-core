@@ -1,0 +1,30 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "token1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ],
+    "name": "CHIDepositCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

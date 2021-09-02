@@ -1,0 +1,1118 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount0Total",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount1Total",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddAllLiquidity",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "idx",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddLiquidityToPosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "ChangeLiquidity",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "vaultFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "Create",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int24",
+        "name": "tickLower",
+        "type": "int24"
+      },
+      {
+        "indexed": false,
+        "internalType": "int24",
+        "name": "tickUpper",
+        "type": "int24"
+      }
+    ],
+    "name": "EmergencyBurn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "tokenIn",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "tokenOut",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "percentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ],
+    "name": "Swap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Sweep",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldDeployer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newDeployer",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateDeployer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldExecutor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newExecutor",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateExecutor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldGovernance",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newGovernance",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateGovernance",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldMaxUSDLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMaxUSDLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateMaxUSDLimit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "oldMerkleRoot",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "newMerkleRoot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UpdateMerkleRoot",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldProviderFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newProviderFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateProviderFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldRewardPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newRewardPool",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateRewardPool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldVaultFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newVaultFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateVaultFee",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "token1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ],
+    "name": "CHIDepositCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Total",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Total",
+        "type": "uint256"
+      }
+    ],
+    "name": "addAllLiquidityToPosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Total",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Total",
+        "type": "uint256"
+      }
+    ],
+    "name": "addAllLiquidityToPositionEvent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int24",
+            "name": "tickLower",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "tickUpper",
+            "type": "int24"
+          }
+        ],
+        "internalType": "struct ICHIManager.RangeParams[]",
+        "name": "addRanges",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int24",
+            "name": "tickLower",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "tickUpper",
+            "type": "int24"
+          }
+        ],
+        "internalType": "struct ICHIManager.RangeParams[]",
+        "name": "removeRanges",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addAndRemoveRanges",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int24",
+            "name": "tickLower",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "tickUpper",
+            "type": "int24"
+          }
+        ],
+        "internalType": "struct ICHIManager.RangeParams[]",
+        "name": "addRanges",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int24",
+            "name": "tickLower",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "tickUpper",
+            "type": "int24"
+          }
+        ],
+        "internalType": "struct ICHIManager.RangeParams[]",
+        "name": "removeRanges",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "percents",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "addAndRemoveRangesWithPercents",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rangeIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Desired",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Desired",
+        "type": "uint256"
+      }
+    ],
+    "name": "addLiquidityToPosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickLower",
+        "type": "int24"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickUpper",
+        "type": "int24"
+      }
+    ],
+    "name": "addRange",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "addTickPercents",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "archivedCHI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "chi",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accruedProtocolFees0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accruedProtocolFees1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint24",
+        "name": "fee",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalShares",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "collectProtocol",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "config",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isPaused",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isArchived",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isEquational",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxUSDLimit",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickLower",
+        "type": "int24"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickUpper",
+        "type": "int24"
+      }
+    ],
+    "name": "emergencyBurn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ICHIManager.MintParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "merkleProof",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "mint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "pausedCHI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rangeIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeAllLiquidityFromPosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rangeIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint128",
+        "name": "liquidity",
+        "type": "uint128"
+      }
+    ],
+    "name": "removeLiquidityFromPosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickLower",
+        "type": "int24"
+      },
+      {
+        "internalType": "int24",
+        "name": "tickUpper",
+        "type": "int24"
+      }
+    ],
+    "name": "removeRange",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Desired",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Desired",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Min",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Min",
+        "type": "uint256"
+      }
+    ],
+    "name": "subscribe",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "internalType": "uint160",
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          },
+          {
+            "internalType": "uint256",
+            "name": "percentage",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ICHIVault.SwapParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "swap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "sweep",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unpausedCHI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount0Min",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1Min",
+        "type": "uint256"
+      }
+    ],
+    "name": "unsubscribe",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "yang",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

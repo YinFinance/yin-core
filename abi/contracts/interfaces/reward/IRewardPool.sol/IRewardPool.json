@@ -1,0 +1,198 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardLastUpdateTime",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardPaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardsDurationUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "earned",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "shares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalShares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_shares_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalShares_",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateRewardFromCHI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
