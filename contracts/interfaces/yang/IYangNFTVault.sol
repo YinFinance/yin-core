@@ -23,15 +23,16 @@ interface IYangNFTVault {
         // recipient is tricky wait for confirm.
     }
 
-    event MintYangNFT(address indexed recipient, uint256 indexed tokenId);
+    event AcceptOwnerShip(address owner, address nextowner);
+    event MintYangNFT(address recipient, uint256 tokenId);
     event Subscribe(
-        uint256 indexed yangId,
-        uint256 indexed chiId,
-        uint256 indexed share
+        uint256 yangId,
+        uint256 chiId,
+        uint256 share
     );
     event UnSubscribe(
-        uint256 indexed yangId,
-        uint256 indexed chiId,
+        uint256 yangId,
+        uint256 chiId,
         uint256 amount0,
         uint256 amount1
     );
