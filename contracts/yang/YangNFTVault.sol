@@ -108,6 +108,7 @@ contract YangNFTVault is
             _usersMap[from] = 0;
         }
         if (to != address(0)) {
+            require(_usersMap[to] == 0, 'only accept one');
             _usersMap[to] = tokenId;
         }
     }

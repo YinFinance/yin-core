@@ -427,8 +427,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "startTime",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "startTimes",
     "outputs": [
       {
         "internalType": "uint256",

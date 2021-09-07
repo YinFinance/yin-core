@@ -30,10 +30,10 @@ contract RewardPool is
     uint256 public periodFinish;
     uint256 public rewardRate;
     uint256 public rewardsDuration; // seconds
-    uint256 public startTime;
     uint256 public totalReward;
     mapping(uint256 => uint256) public lastUpdateTimes;
     mapping(uint256 => uint256) public rewardPerShareStored;
+    mapping(uint256 => uint256 )public startTimes;
 
     mapping(uint256 => uint256) private _totalShares;
     mapping(uint256 => mapping(uint256 => uint256)) private _shares;
@@ -128,7 +128,7 @@ contract RewardPool is
         public
         override
         nonReentrant
-        checkStart
+        checkStart(chiId)
         updateReward(yangId, chiId)
     {
         require(
@@ -161,7 +161,6 @@ contract RewardPool is
     function updatePeriodFinish(uint256 timestamp)
         external
         onlyOwner
-        updateReward(0, 0)
     {
         periodFinish = timestamp;
     }
@@ -173,7 +172,6 @@ contract RewardPool is
     function notifyRewardAmount(uint256 reward)
         external
         onlyOwner
-        updateReward(0, 0)
     {
         // handle the transfer of reward tokens via `transferFrom` to reduce the number
         // of transactions required and ensure correctness of the reward amount
@@ -191,7 +189,6 @@ contract RewardPool is
                 .div(rewardsDuration);
         }
 
-        startTime = block.timestamp;
         periodFinish = block.timestamp.add(rewardsDuration);
         totalReward = reward;
 
@@ -199,9 +196,8 @@ contract RewardPool is
     }
 
     function notifyLastUpdateTimes(uint256 tokenId) external onlyOwner {
-        lastUpdateTimes[tokenId] = startTime >= block.timestamp
-            ? startTime
-            : block.timestamp;
+        startTimes[tokenId] = block.timestamp;
+        lastUpdateTimes[tokenId] = block.timestamp;
 
         emit RewardLastUpdateTime(tokenId, lastUpdateTimes[tokenId]);
     }
@@ -220,8 +216,8 @@ contract RewardPool is
         _;
     }
 
-    modifier checkStart() {
-        require(startTime != 0 && (block.timestamp > startTime), "not start");
+    modifier checkStart(uint256 tokenId) {
+        require(startTimes[tokenId] != 0 && (block.timestamp > startTimes[tokenId]), "not start");
         _;
     }
 
