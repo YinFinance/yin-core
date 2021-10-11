@@ -380,14 +380,24 @@
             "type": "address"
           },
           {
-            "internalType": "uint160",
-            "name": "sqrtPriceLimitX96",
-            "type": "uint160"
+            "internalType": "uint32",
+            "name": "interval",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slippageTolerance",
+            "type": "uint16"
           },
           {
             "internalType": "uint256",
             "name": "percentage",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "sqrtRatioX96",
+            "type": "uint160"
           }
         ],
         "internalType": "struct ICHIVault.SwapParams",

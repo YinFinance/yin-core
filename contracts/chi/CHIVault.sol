@@ -9,23 +9,21 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol";
-import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
+import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
+
+import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
-import "@uniswap/v3-periphery/contracts/libraries/Path.sol";
+import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
 
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIDepositCallBack.sol";
 
-contract CHIVault is
-    ICHIVault,
-    IUniswapV3MintCallback,
-    IUniswapV3SwapCallback,
-    ReentrancyGuard
-{
-    using Path for bytes;
+contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -46,11 +44,18 @@ contract CHIVault is
 
     event CollectFee(uint256 feesFromPool0, uint256 feesFromPool1);
 
-    event Swap(address from, address to, uint256 amountIn, uint256 amountOut);
+    event Swap(
+        address from,
+        address to,
+        uint256 amountIn,
+        uint256 amountOut,
+        uint256 amountOutMin
+    );
 
     IUniswapV3Pool public pool;
     ICHIManager public CHIManager;
 
+    ISwapRouter public immutable router;
     IERC20 public immutable token0;
     IERC20 public immutable token1;
     uint24 public immutable fee;
@@ -84,6 +89,7 @@ contract CHIVault is
         tickSpacing = pool.tickSpacing();
 
         CHIManager = ICHIManager(_manager);
+        router = ISwapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
 
         _protocolFee = _protocolFee_;
 
@@ -363,26 +369,6 @@ contract CHIVault is
         require(msg.sender == address(pool));
         if (amount0Owed > 0) token0.safeTransfer(msg.sender, amount0Owed);
         if (amount1Owed > 0) token1.safeTransfer(msg.sender, amount1Owed);
-    }
-
-    function uniswapV3SwapCallback(
-        int256 amount0Delta,
-        int256 amount1Delta,
-        bytes calldata data
-    ) external override {
-        require(msg.sender == address(pool));
-        require(amount0Delta > 0 || amount1Delta > 0);
-        (address tokenIn, address tokenOut, ) = data.decodeFirstPool();
-        (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
-            ? (tokenIn < tokenOut, uint256(amount0Delta))
-            : (tokenOut < tokenIn, uint256(amount1Delta));
-        if (isExactInput) {
-            if (amountToPay > 0)
-                IERC20(tokenIn).safeTransfer(msg.sender, amountToPay);
-        } else {
-            if (amountToPay > 0)
-                IERC20(tokenOut).safeTransfer(msg.sender, amountToPay);
-        }
     }
 
     function balanceToken0() public view override returns (uint256) {
@@ -698,71 +684,6 @@ contract CHIVault is
         }
     }
 
-    function _calAmountInAndPriceLimit(SwapParams memory params)
-        internal
-        view
-        returns (uint256 amountIn, uint160 sqrtPriceLimitX96)
-    {
-        uint256 percentageBase = 1e6;
-        address tokenIn = params.tokenIn;
-        address tokenOut = params.tokenOut;
-        require(params.percentage < percentageBase, "percentage");
-        require(
-            (tokenIn == address(token0) || tokenIn == address(token1)) &&
-                (tokenOut == address(token1) || tokenOut == address(token0)),
-            "invalid address"
-        );
-        uint256 totalAmount = tokenIn == address(token0)
-            ? balanceToken0()
-            : balanceToken1();
-        amountIn = totalAmount.mul(params.percentage).div(percentageBase);
-        sqrtPriceLimitX96 = toFixPriceLimitX96(
-            params.sqrtPriceLimitX96,
-            tokenIn < tokenOut
-        );
-    }
-
-    function swapPercentage(SwapParams memory params)
-        external
-        override
-        returns (uint256 amountOut)
-    {
-        bool zeroForOne = params.tokenIn < params.tokenOut;
-        (
-            uint256 amountIn,
-            uint160 sqrtPriceLimitX96
-        ) = _calAmountInAndPriceLimit(params);
-        (int256 amount0, int256 amount1) = pool.swap(
-            address(this),
-            zeroForOne,
-            toInt256(amountIn),
-            sqrtPriceLimitX96,
-            abi.encodePacked(params.tokenIn, fee, params.tokenOut)
-        );
-
-        amountOut = uint256(-(zeroForOne ? amount1 : amount0));
-        emit Swap(params.tokenIn, params.tokenOut, amountIn, amountOut);
-    }
-
-    function toFixPriceLimitX96(uint160 x, bool flag)
-        internal
-        pure
-        returns (uint160 z)
-    {
-        z = x == 0
-            ? (flag ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
-            : x;
-    }
-
-    function toUint128(uint256 x) private pure returns (uint128 y) {
-        require((y = uint128(x)) == x);
-    }
-
-    function toInt256(uint256 y) internal pure returns (int256 z) {
-        require(y < 2**255);
-        z = int256(y);
-    }
-
     /// @dev Get position liquidity
     function _positionLiquidity(int24 tickLower, int24 tickUpper)
         internal
@@ -806,5 +727,72 @@ contract CHIVault is
             type(uint128).max,
             type(uint128).max
         );
+    }
+
+    function toUint128(uint256 x) private pure returns (uint128 y) {
+        require((y = uint128(x)) == x);
+    }
+
+    function toInt256(uint256 y) internal pure returns (int256 z) {
+        require(y < (1 << 255));
+        z = int256(y);
+    }
+
+    function swapPercentage(SwapParams memory params)
+        external
+        override
+        onlyManager
+        returns (uint256 amountOut)
+    {
+        address tokenIn = params.tokenIn;
+        address tokenOut = params.tokenOut;
+
+        require(address(router) != address(0), "zero router");
+        require(params.percentage < FEE_BASE, "percentage");
+        require(
+            params.slippageTolerance >= 500 &&
+                params.slippageTolerance <= 10000,
+            "slippage invalid"
+        );
+        require(
+            (tokenIn == address(token0) || tokenIn == address(token1)) &&
+                (tokenOut == address(token1) || tokenOut == address(token0)),
+            "invalid address"
+        );
+        uint256 amountIn = (
+            tokenIn == address(token0) ? balanceToken0() : balanceToken1()
+        ).mul(params.percentage).div(FEE_BASE);
+        uint256 amountOutMin;
+        {
+            int24 tick = OracleLibrary.consult(address(pool), params.interval);
+            uint256 amountOutQuote = OracleLibrary.getQuoteAtTick(
+                tick,
+                toUint128(amountIn.sub(amountIn.mul(fee).div(FEE_BASE))),
+                tokenIn,
+                tokenOut
+            );
+            amountOutMin = amountOutQuote.sub(
+                amountOutQuote.mul(params.slippageTolerance).div(FEE_BASE)
+            );
+        }
+        {
+            // Approve and Swap
+            TransferHelper.safeApprove(tokenIn, address(router), amountIn);
+            amountOut = router.exactInputSingle(
+                ISwapRouter.ExactInputSingleParams({
+                    tokenIn: tokenIn,
+                    tokenOut: tokenOut,
+                    fee: fee,
+                    recipient: address(this),
+                    deadline: block.timestamp,
+                    amountIn: amountIn,
+                    amountOutMinimum: 0,
+                    sqrtPriceLimitX96: params.sqrtRatioX96
+                })
+            );
+            TransferHelper.safeApprove(tokenIn, address(router), 0);
+        }
+        require(amountOut >= amountOutMin, "minimum");
+        emit Swap(tokenIn, tokenOut, amountIn, amountOut, amountOutMin);
     }
 }

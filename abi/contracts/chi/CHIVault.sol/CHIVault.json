@@ -96,6 +96,12 @@
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountOutMin",
+        "type": "uint256"
       }
     ],
     "name": "Swap",
@@ -580,6 +586,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "router",
+    "outputs": [
+      {
+        "internalType": "contract ISwapRouter",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
@@ -594,14 +613,24 @@
             "type": "address"
           },
           {
-            "internalType": "uint160",
-            "name": "sqrtPriceLimitX96",
-            "type": "uint160"
+            "internalType": "uint32",
+            "name": "interval",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "slippageTolerance",
+            "type": "uint16"
           },
           {
             "internalType": "uint256",
             "name": "percentage",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "sqrtRatioX96",
+            "type": "uint160"
           }
         ],
         "internalType": "struct ICHIVault.SwapParams",
@@ -709,29 +738,6 @@
       }
     ],
     "name": "uniswapV3MintCallback",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "int256",
-        "name": "amount0Delta",
-        "type": "int256"
-      },
-      {
-        "internalType": "int256",
-        "name": "amount1Delta",
-        "type": "int256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "uniswapV3SwapCallback",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -13,6 +13,8 @@ interface IRewardPool {
     // Mutation
     function getReward(uint256 yangId, uint256 chiId) external;
 
+    function transferToRewardPool(uint256 reward) external;
+
     function earned(uint256 yangId, uint256 chiId)
         external
         view
@@ -25,10 +27,14 @@ interface IRewardPool {
         uint256 _totalShares_
     ) external;
 
+    function notifyLastUpdateTimes(uint256 tokenId) external;
+
     /// Event
     event RewardAdded(uint256 reward);
     event RewardUpdated(uint256 yangId, uint256 chiId);
     event RewardPaid(address indexed user, uint256 reward);
     event RewardsDurationUpdated(uint256 newDuration);
     event RewardLastUpdateTime(uint256 tokenId, uint256 timestamp);
+    event RewardUpdateRate(uint256 oldRate, uint256 newRate);
+    event RewardSetCHIManager(address oldAddr, address newAddr);
 }

@@ -96,7 +96,9 @@ interface ICHIVault {
     struct SwapParams {
         address tokenIn;
         address tokenOut;
-        uint160 sqrtPriceLimitX96;
+        uint32 interval;
+        uint16 slippageTolerance;
         uint256 percentage;
+        uint160 sqrtRatioX96;
     }
 }

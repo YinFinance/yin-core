@@ -33,7 +33,7 @@ contract RewardPool is
     uint256 public totalReward;
     mapping(uint256 => uint256) public lastUpdateTimes;
     mapping(uint256 => uint256) public rewardPerShareStored;
-    mapping(uint256 => uint256 )public startTimes;
+    mapping(uint256 => uint256) public startTimes;
 
     mapping(uint256 => uint256) private _totalShares;
     mapping(uint256 => mapping(uint256 => uint256)) private _shares;
@@ -135,15 +135,24 @@ contract RewardPool is
             IERC721(yangNFT).ownerOf(yangId) == msg.sender,
             "Non owner of Yang"
         );
+        require(address(rewardsToken) != address(0), "not tge");
 
         uint256 reward = rewards[chiId][yangId];
-        require(rewardsToken.balanceOf(address(this)) >= reward, "not tge");
-
         if (reward > 0) {
-            rewards[chiId][yangId] = 0;
             rewardsToken.safeTransfer(msg.sender, reward);
+            rewards[chiId][yangId] = 0;
             emit RewardPaid(msg.sender, reward);
         }
+    }
+
+    function transferToRewardPool(uint256 reward) external override {
+        require(address(rewardsToken) != address(0), "not tge");
+
+        uint256 accruedReward = rewardsToken.balanceOf(address(this));
+        if (accruedReward.add(reward) >= totalReward) {
+            totalReward = accruedReward.add(reward);
+        }
+        rewardsToken.safeTransferFrom(msg.sender, address(this), reward);
     }
 
     /// Restricted
@@ -157,30 +166,22 @@ contract RewardPool is
         emit RewardsDurationUpdated(rewardsDuration);
     }
 
+    function setCHIManager(address _chiManager) external onlyOwner {
+        emit RewardSetCHIManager(address(chiManager), _chiManager);
+        chiManager = ICHIManager(_chiManager);
+    }
+
     // End rewards emission earlier
-    function updatePeriodFinish(uint256 timestamp)
-        external
-        onlyOwner
-    {
+    function updatePeriodFinish(uint256 timestamp) external onlyOwner {
         periodFinish = timestamp;
     }
 
     function updateRewardRate(uint256 _rewardRate) external onlyOwner {
+        emit RewardUpdateRate(rewardRate, _rewardRate);
         rewardRate = _rewardRate;
     }
 
-    function notifyRewardAmount(uint256 reward)
-        external
-        onlyOwner
-    {
-        // handle the transfer of reward tokens via `transferFrom` to reduce the number
-        // of transactions required and ensure correctness of the reward amount
-
-        // not transfer token until tge
-        //if (reward > 0) {
-        //rewardsToken.safeTransferFrom(msg.sender, address(this), reward);
-        //}
-
+    function notifyRewardAmount(uint256 reward) external onlyOwner {
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {
@@ -195,7 +196,11 @@ contract RewardPool is
         emit RewardAdded(reward);
     }
 
-    function notifyLastUpdateTimes(uint256 tokenId) external onlyOwner {
+    function notifyLastUpdateTimes(uint256 tokenId) external override {
+        require(
+            msg.sender == owner() || msg.sender == address(chiManager),
+            "not approved"
+        );
         startTimes[tokenId] = block.timestamp;
         lastUpdateTimes[tokenId] = block.timestamp;
 
@@ -217,7 +222,10 @@ contract RewardPool is
     }
 
     modifier checkStart(uint256 tokenId) {
-        require(startTimes[tokenId] != 0 && (block.timestamp > startTimes[tokenId]), "not start");
+        require(
+            startTimes[tokenId] != 0 && (block.timestamp > startTimes[tokenId]),
+            "not start"
+        );
         _;
     }
 

@@ -116,7 +116,8 @@ interface ICHIManager is ICHIDepositCallBack {
     function addAllLiquidityToPosition(
         uint256 tokenId,
         uint256 amount0Total,
-        uint256 amount1Total
+        uint256 amount1Total,
+        bool useEvent
     ) external;
 
     function addTickPercents(uint256, uint256[] calldata) external;
@@ -124,30 +125,29 @@ interface ICHIManager is ICHIDepositCallBack {
     function removeLiquidityFromPosition(
         uint256 tokenId,
         uint256 rangeIndex,
-        uint128 liquidity
+        uint128 liquidity,
+        bool useEvent
     ) external;
 
     function addLiquidityToPosition(
         uint256 tokenId,
         uint256 rangeIndex,
         uint256 amount0Desired,
-        uint256 amount1Desired
+        uint256 amount1Desired,
+        bool useEvent
     ) external;
 
-    function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
-        external;
+    function removeAllLiquidityFromPosition(
+        uint256 tokenId,
+        uint256 rangeIndex,
+        bool useEvent
+    ) external;
 
     function pausedCHI(uint256 tokenId) external;
 
     function unpausedCHI(uint256 tokenId) external;
 
     function archivedCHI(uint256 tokenId) external;
-
-    function addAllLiquidityToPositionEvent(
-        uint256 tokenId,
-        uint256 amount0Total,
-        uint256 amount1Total
-    ) external;
 
     function sweep(
         uint256 tokenId,
@@ -220,7 +220,8 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 newMaxUSDLimit
     );
 
-    event AddLiquidityToPosition(uint256 idx, uint256 amount0, uint256 amount1);
+    // Events
+
     event Sweep(
         address account,
         address recipient,
@@ -241,5 +242,29 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 amountOut
     );
 
-    event AddAllLiquidity(address account, uint256 tokenId, uint256 amount0Total, uint256 amount1Total);
+    // Liquidity operations
+    event RemoveLiquidityFromPositionEvent(
+        address account,
+        uint256 tokenId,
+        uint256 rangeIndex,
+        uint128 liquidity
+    );
+    event RemoveAllLiquidityFromPositionEvent(
+        address account,
+        uint256 tokenId,
+        uint256 rangeIndex
+    );
+    event AddAllLiquidityToPositionEvent(
+        address account,
+        uint256 tokenId,
+        uint256 amount0Total,
+        uint256 amount1Total
+    );
+    event AddLiquidityToPositionEvent(
+        address account,
+        uint256 tokenId,
+        uint256 rangeIndex,
+        uint256 amount0,
+        uint256 amount1
+    );
 }
