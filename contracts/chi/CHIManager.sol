@@ -75,10 +75,7 @@ contract CHIManager is
 
     modifier onlyProviders(bytes32[] calldata merkleProof) {
         bytes32 node = keccak256(abi.encodePacked(msg.sender));
-        require(
-            MerkleProof.verify(merkleProof, merkleRoot, node),
-            "providers"
-        );
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), "providers");
         _;
     }
 
