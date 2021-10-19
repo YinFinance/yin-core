@@ -17,7 +17,6 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "../libraries/YANGPosition.sol";
 import "../libraries/LiquidityHelper.sol";
 
-import "../interfaces/reward/IRewardPool.sol";
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIVaultDeployer.sol";
 
@@ -46,7 +45,6 @@ contract CHIManager is
 
     address public v3Factory;
     address public yangNFT;
-    address public rewardpool;
     bytes32 public merkleRoot;
 
     address public manager;
@@ -79,7 +77,7 @@ contract CHIManager is
         bytes32 node = keccak256(abi.encodePacked(msg.sender));
         require(
             MerkleProof.verify(merkleProof, merkleRoot, node),
-            "only providers"
+            "providers"
         );
         _;
     }
@@ -91,7 +89,10 @@ contract CHIManager is
     }
 
     modifier isAuthorizedForToken(uint256 tokenId) {
-        require(_isApprovedOrOwner(msg.sender, tokenId) || msg.sender == executor, "not approved");
+        require(
+            _isApprovedOrOwner(msg.sender, tokenId) || msg.sender == executor,
+            "not approved"
+        );
         _;
     }
 
@@ -100,7 +101,6 @@ contract CHIManager is
         bytes32 _merkleRoot,
         address _v3Factory,
         address _yangNFT,
-        address _rewardpool,
         address _deployer,
         address _executor,
         address _manager,
@@ -115,7 +115,6 @@ contract CHIManager is
         treasury = _treasury;
         governance = _governance;
         deployer = _deployer;
-        rewardpool = _rewardpool;
         executor = _executor;
 
         _vaultFee = 15 * 1e4;
@@ -197,7 +196,7 @@ contract CHIManager is
 
     function setVaultFee(uint256 _vaultFee_) external {
         require(_vaultFee_ < 1e6, "f");
-        require(msg.sender == governance, "only gov");
+        require(msg.sender == governance, "gov");
 
         emit UpdateVaultFee(msg.sender, _vaultFee, _vaultFee_);
 
@@ -207,17 +206,11 @@ contract CHIManager is
     function setProviderFee(uint256 _providerFee_) external {
         require(_providerFee_ < 1e6, "f");
         require(_providerFee_ < _vaultFee, "PLV");
-        require(msg.sender == governance, "only gov");
+        require(msg.sender == governance, "gov");
 
         emit UpdateProviderFee(msg.sender, _providerFee, _providerFee_);
 
         _providerFee = _providerFee_;
-    }
-
-    function setRewardPool(address _rewardpool) external onlyManager {
-        emit UpdateRewardPool(msg.sender, rewardpool, _rewardpool);
-
-        rewardpool = _rewardpool;
     }
 
     function setDeployer(address _deployer) external onlyManager {
@@ -250,22 +243,6 @@ contract CHIManager is
         );
 
         _chi_.config.maxUSDLimit = _maxUSDLimit;
-    }
-
-    function _updateReward(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 shares
-    ) internal {
-        if (rewardpool != address(0)) {
-            CHIData storage _chi_ = _chi[chiId];
-            IRewardPool(rewardpool).updateRewardFromCHI(
-                yangId,
-                chiId,
-                shares,
-                ICHIVault(_chi_.vault).totalSupply()
-            );
-        }
     }
 
     // CHI OPERATIONS
@@ -305,11 +282,42 @@ contract CHIManager is
             config: _config_
         });
 
-        // update RewardPool Timestamp
-        if (rewardpool != address(0))
-            IRewardPool(rewardpool).notifyLastUpdateTimes(tokenId);
-
         emit Create(tokenId, uniswapPool, vault, _vaultFee);
+    }
+
+    function subscribeSingle(
+        uint256 yangId,
+        uint256 tokenId,
+        bool zeroForOne,
+        uint256 exactAmount,
+        uint256 maxTokenAmount,
+        uint256 minShares
+    )
+        external
+        override
+        onlyYANG
+        subscripting(tokenId)
+        onlyWhenNotPaused(tokenId)
+        nonReentrant
+        returns (
+            uint256 shares,
+            uint256 amount0,
+            uint256 amount1
+        )
+    {
+        CHIData storage _chi_ = _chi[tokenId];
+        (shares, amount0, amount1) = ICHIVault(_chi_.vault).depositSingle(
+            yangId,
+            zeroForOne,
+            exactAmount,
+            maxTokenAmount,
+            minShares
+        );
+
+        bytes32 positionKey = keccak256(abi.encodePacked(yangId, tokenId));
+        positions[positionKey].shares = positions[positionKey].shares.add(
+            shares
+        );
     }
 
     function subscribe(
@@ -345,9 +353,6 @@ contract CHIManager is
         positions[positionKey].shares = positions[positionKey].shares.add(
             shares
         );
-
-        // update rewardpool
-        _updateReward(yangId, tokenId, positions[positionKey].shares);
     }
 
     function unsubscribe(
@@ -364,7 +369,7 @@ contract CHIManager is
         returns (uint256 amount0, uint256 amount1)
     {
         CHIData storage _chi_ = _chi[tokenId];
-        require(!_chi_.config.archived, "CHI Archived");
+        require(!_chi_.config.archived, "archived");
 
         bytes32 positionKey = keccak256(abi.encodePacked(yangId, tokenId));
         YANGPosition.Info storage _position = positions[positionKey];
@@ -378,9 +383,30 @@ contract CHIManager is
             yangNFT
         );
         _position.shares = positions[positionKey].shares.sub(shares);
+    }
 
-        // update rewardpool
-        _updateReward(yangId, tokenId, _position.shares);
+    function unsubscribeSingle(
+        uint256 yangId,
+        uint256 tokenId,
+        bool zeroForOne,
+        uint256 shares,
+        uint256 amountOutMin
+    ) external override onlyYANG nonReentrant returns (uint256 amount) {
+        CHIData storage _chi_ = _chi[tokenId];
+        require(!_chi_.config.archived, "archived");
+
+        bytes32 positionKey = keccak256(abi.encodePacked(yangId, tokenId));
+        YANGPosition.Info storage _position = positions[positionKey];
+        require(_position.shares >= shares, "s");
+
+        amount = ICHIVault(_chi_.vault).withdrawSingle(
+            yangId,
+            zeroForOne,
+            shares,
+            amountOutMin,
+            yangNFT
+        );
+        _position.shares = positions[positionKey].shares.sub(shares);
     }
 
     // CALLBACK
@@ -394,15 +420,16 @@ contract CHIManager is
         IERC20 token0,
         uint256 amount0,
         IERC20 token1,
-        uint256 amount1
+        uint256 amount1,
+        address recipient
     ) external override {
         _verifyCallback(msg.sender);
-        if (amount0 > 0) token0.safeTransferFrom(yangNFT, msg.sender, amount0);
-        if (amount1 > 0) token1.safeTransferFrom(yangNFT, msg.sender, amount1);
+        if (amount0 > 0) token0.safeTransferFrom(yangNFT, recipient, amount0);
+        if (amount1 > 0) token1.safeTransferFrom(yangNFT, recipient, amount1);
     }
 
     function collectProtocol(uint256 tokenId) external override {
-        require(msg.sender == executor, "only executor");
+        require(msg.sender == executor, "executor");
 
         CHIData storage _chi_ = _chi[tokenId];
         ICHIVault vault = ICHIVault(_chi_.vault);
@@ -563,7 +590,12 @@ contract CHIManager is
         uint256 amount0Total,
         uint256 amount1Total,
         bool useEvent
-    ) external override isAuthorizedForToken(tokenId) onlyWhenNotPaused(tokenId) {
+    )
+        external
+        override
+        isAuthorizedForToken(tokenId)
+        onlyWhenNotPaused(tokenId)
+    {
         if (!useEvent) {
             CHIData storage _chi_ = _chi[tokenId];
             _addAllLiquidityToPosition(_chi_, amount0Total, amount1Total);

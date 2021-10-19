@@ -20,6 +20,11 @@
         "internalType": "uint256",
         "name": "amount1",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
     "name": "CHIDepositCallback",

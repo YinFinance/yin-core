@@ -23,19 +23,27 @@ interface IYangNFTVault {
         // recipient is tricky wait for confirm.
     }
 
+    struct SubscribeSingleParam {
+        uint256 yangId;
+        uint256 chiId;
+        bool zeroForOne;
+        uint256 exactAmount;
+        uint256 maxTokenAmount;
+        uint256 minShares;
+    }
+
+    struct UnSubscribeSingleParam {
+        uint256 yangId;
+        uint256 chiId;
+        bool zeroForOne;
+        uint256 shares;
+        uint256 amountOutMin;
+    }
+
     event AcceptOwnerShip(address owner, address nextowner);
     event MintYangNFT(address recipient, uint256 tokenId);
-    event Subscribe(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 share
-    );
-    event UnSubscribe(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 amount0,
-        uint256 amount1
-    );
+    event Subscribe(uint256 yangId, uint256 chiId, uint256 share);
+    event UnSubscribe(uint256 yangId, uint256 chiId, uint256 amount0, uint256 amount1);
 
     function setCHIManager(address) external;
 
@@ -51,6 +59,16 @@ interface IYangNFTVault {
 
     function unsubscribe(UnSubscribeParam memory params) external;
 
+    function subscribeSingle(SubscribeSingleParam memory params)
+        external
+        returns (
+            uint256 amount0,
+            uint256 amount1,
+            uint256 share
+        );
+
+    function unsubscribeSingle(UnSubscribeSingleParam memory params) external;
+
     // view
     function getShares(
         uint256 chiId,
@@ -65,25 +83,11 @@ interface IYangNFTVault {
             uint256
         );
 
-    function getAmounts(uint256 chiId, uint256 shares)
-        external
-        view
-        returns (uint256, uint256);
+    function getAmounts(uint256 chiId, uint256 shares) external view returns (uint256, uint256);
 
-    function getCHITotalBalances(uint256 chiId)
-        external
-        view
-        returns (uint256 balance0, uint256 balance1);
+    function getCHITotalAmounts(uint256 chiId) external view returns (uint256, uint256);
 
-    function getCHITotalAmounts(uint256 chiId)
-        external
-        view
-        returns (uint256, uint256);
-
-    function getCHIAccruedCollectFees(uint256 chiId)
-        external
-        view
-        returns (uint256 fee0, uint256 fee1);
+    function getCHIAccruedCollectFees(uint256 chiId) external view returns (uint256 fee0, uint256 fee1);
 
     // positions
     function positions(uint256 yangId, uint256 chiId)

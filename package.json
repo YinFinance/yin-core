@@ -11,7 +11,7 @@
     "test": "hardhat test",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier --write 'contracts/**/*.sol'",
-    "clear-cache": "rm -rf artifacts/ cache/ typechain/"
+    "clear-cache": "rm -rf artifacts/ cache/ typechain/ abi/"
   },
   "engines": {
     "node": ">=12"

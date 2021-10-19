@@ -414,30 +414,6 @@
         "internalType": "uint256",
         "name": "chiId",
         "type": "uint256"
-      }
-    ],
-    "name": "getCHITotalBalances",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "balance0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balance1",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "chiId",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -797,6 +773,67 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "yangId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "chiId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "zeroForOne",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exactAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxTokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minShares",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IYangNFTVault.SubscribeSingleParam",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "subscribeSingle",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"
@@ -973,6 +1010,46 @@
       }
     ],
     "name": "unsubscribe",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "yangId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "chiId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "zeroForOne",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountOutMin",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IYangNFTVault.UnSubscribeSingleParam",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "unsubscribeSingle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

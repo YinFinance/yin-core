@@ -49,6 +49,20 @@ interface ICHIVault {
         address to
     ) external;
 
+    function depositSingle(
+        uint256 yangId,
+        bool zeroForOne,
+        uint256 exactAmount,
+        uint256 maxTokenAmount,
+        uint256 minShares
+    )
+        external
+        returns (
+            uint256 shares,
+            uint256 amount0,
+            uint256 amount1
+        );
+
     function deposit(
         uint256 yangId,
         uint256 amount0Desired,
@@ -62,6 +76,14 @@ interface ICHIVault {
             uint256 amount0,
             uint256 amount1
         );
+
+    function withdrawSingle(
+        uint256 yangId,
+        bool zeroForOne,
+        uint256 shares,
+        uint256 amountOutMin,
+        address to
+    ) external returns (uint256 amount);
 
     function withdraw(
         uint256 yangId,
@@ -100,5 +122,11 @@ interface ICHIVault {
         uint16 slippageTolerance;
         uint256 percentage;
         uint160 sqrtRatioX96;
+    }
+
+    struct SwapCallbackData {
+        bool isDeposit;
+        address tokenIn;
+        address tokenOut;
     }
 }

@@ -63,6 +63,21 @@ interface ICHIManager is ICHIDepositCallBack {
         external
         returns (uint256 tokenId, address vault);
 
+    function subscribeSingle(
+        uint256 yangId,
+        uint256 tokenId,
+        bool zeroForOne,
+        uint256 exactAmount,
+        uint256 maxTokenAmount,
+        uint256 minShares
+    )
+        external
+        returns (
+            uint256 shares,
+            uint256 amount0,
+            uint256 amount1
+        );
+
     function subscribe(
         uint256 yangId,
         uint256 tokenId,
@@ -77,6 +92,14 @@ interface ICHIManager is ICHIDepositCallBack {
             uint256 amount0,
             uint256 amount1
         );
+
+    function unsubscribeSingle(
+        uint256 yangId,
+        uint256 tokenId,
+        bool zeroForOne,
+        uint256 shares,
+        uint256 amountOutMin
+    ) external returns (uint256 amount);
 
     function unsubscribe(
         uint256 yangId,

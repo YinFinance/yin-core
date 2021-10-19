@@ -22,12 +22,7 @@ import "../libraries/YANGPosition.sol";
 import "../libraries/OraclePriceHelper.sol";
 import "./LockLiquidity.sol";
 
-contract YangNFTVault is
-    IYangNFTVault,
-    LockLiquidity,
-    ReentrancyGuardUpgradeable,
-    ERC721Upgradeable
-{
+contract YangNFTVault is IYangNFTVault, LockLiquidity, ReentrancyGuardUpgradeable, ERC721Upgradeable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -43,7 +38,7 @@ contract YangNFTVault is
     uint256 private _nextId;
     mapping(address => uint256) private _usersMap;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, 'only owner');
         _;
     }
@@ -102,7 +97,7 @@ contract YangNFTVault is
         address from,
         address to,
         uint256 tokenId
-    ) internal override virtual {
+    ) internal virtual override {
         if (from != address(0)) {
             require(_usersMap[from] == tokenId, 'invalid tokenId');
             _usersMap[from] = 0;
@@ -169,6 +164,51 @@ contract YangNFTVault is
         IERC20(token1).safeApprove(chiManager, 0);
     }
 
+    function _subscribeSingle(address tokenIn, SubscribeSingleParam memory params)
+        internal
+        returns (
+            uint256 amount0,
+            uint256 amount1,
+            uint256 shares
+        )
+    {
+        IERC20(tokenIn).safeApprove(chiManager, params.maxTokenAmount);
+        (shares, amount0, amount1) = ICHIManager(chiManager).subscribeSingle(
+            params.yangId,
+            params.chiId,
+            params.zeroForOne,
+            params.exactAmount,
+            params.maxTokenAmount,
+            params.minShares
+        );
+        IERC20(tokenIn).safeApprove(chiManager, 0);
+    }
+
+    function subscribeSingle(SubscribeSingleParam memory params)
+        external
+        override
+        isAuthorizedForToken(params.yangId)
+        nonReentrant
+        returns (
+            uint256 amount0,
+            uint256 amount1,
+            uint256 shares
+        )
+    {
+        (, , address _pool, address _vault, , , , ) = ICHIManager(chiManager).chi(params.chiId);
+        IUniswapV3Pool pool = IUniswapV3Pool(_pool);
+        address tokenIn = params.zeroForOne ? pool.token0() : pool.token1();
+        _deposit(tokenIn, params.maxTokenAmount, address(0), 0);
+        uint256 vaultTokenInAmount = IERC20(tokenIn).balanceOf(_vault);
+        (amount0, amount1, shares) = _subscribeSingle(tokenIn, params);
+        uint256 remainAmount = params.maxTokenAmount.sub(IERC20(tokenIn).balanceOf(_vault).sub(vaultTokenInAmount));
+        if (remainAmount > 0) {
+            _withdraw(tokenIn, remainAmount, address(0), 0);
+        }
+        _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
+        emit Subscribe(params.yangId, params.chiId, shares);
+    }
+
     function subscribe(SubscribeParam memory params)
         external
         override
@@ -181,22 +221,15 @@ contract YangNFTVault is
         )
     {
         require(chiManager != address(0), 'CHI');
-        (,,address _pool, address _vault,,,,) = ICHIManager(chiManager).chi(params.chiId);
+        (, , address _pool, address _vault, , , , ) = ICHIManager(chiManager).chi(params.chiId);
 
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         address token0 = pool.token0();
         address token1 = pool.token1();
 
         require(
-            OraclePriceHelper.isReachMaxUSDLimit(
-                params.chiId,
-                token0,
-                token1,
-                oracle,
-                chiManager,
-                _vault
-            ) == false,
-            "Max USD Limit"
+            OraclePriceHelper.isReachMaxUSDLimit(params.chiId, token0, token1, oracle, chiManager, _vault) == false,
+            'Max USD Limit'
         );
 
         // deposit valut to yangNFT and then to chi
@@ -239,6 +272,32 @@ contract YangNFTVault is
         emit UnSubscribe(params.yangId, params.chiId, amount0, amount1);
     }
 
+    function unsubscribeSingle(UnSubscribeSingleParam memory params)
+        external
+        override
+        nonReentrant
+        isAuthorizedForToken(params.yangId)
+        afterLockUnsubscribe(params.yangId, params.chiId)
+    {
+        require(chiManager != address(0), 'CHI');
+        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
+        IUniswapV3Pool pool = IUniswapV3Pool(_pool);
+
+        uint256 amount = ICHIManager(chiManager).unsubscribeSingle(
+            params.yangId,
+            params.chiId,
+            params.zeroForOne,
+            params.shares,
+            params.amountOutMin
+        );
+        require(amount >= params.amountOutMin);
+        address tokenOut = params.zeroForOne ? pool.token0() : pool.token1();
+        _withdraw(tokenOut, amount, address(0), 0);
+
+        // Single last value equal 0
+        emit UnSubscribe(params.yangId, params.chiId, amount, 0);
+    }
+
     // views function
 
     function positions(uint256 yangId, uint256 chiId)
@@ -259,23 +318,6 @@ contract YangNFTVault is
 
     function getTokenId(address recipient) public view override returns (uint256) {
         return _usersMap[recipient];
-    }
-
-    function getCHITotalBalances(uint256 chiId) external view override returns (uint256 balance0, uint256 balance1) {
-        require(chiManager != address(0), 'CHI');
-        (
-            ,
-            ,
-            address _pool,
-            address _vault,
-            uint256 accruedProtocolFees0,
-            uint256 accruedProtocolFees1,
-            ,
-        ) = ICHIManager(chiManager).chi(chiId);
-        IERC20 token0 = IERC20(IUniswapV3Pool(_pool).token0());
-        IERC20 token1 = IERC20(IUniswapV3Pool(_pool).token1());
-        balance0 = token0.balanceOf(_vault).sub(accruedProtocolFees0);
-        balance1 = token1.balanceOf(_vault).sub(accruedProtocolFees1);
     }
 
     function getCHITotalAmounts(uint256 chiId) external view override returns (uint256 amount0, uint256 amount1) {

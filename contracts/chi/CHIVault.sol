@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol";
+import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
@@ -23,7 +24,12 @@ import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIDepositCallBack.sol";
 
-contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
+contract CHIVault is
+    ICHIVault,
+    IUniswapV3MintCallback,
+    IUniswapV3SwapCallback,
+    ReentrancyGuard
+{
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -244,6 +250,110 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         total1 = total1.add(balanceToken1());
     }
 
+    /// @dev Deposit with single token
+    /// @param yangId YANG ID
+    /// @param zeroForOne Deposit is token0 or token1
+    /// @param exactAmount Exact amount that swap to another token
+    /// @param maxTokenAmount The maximum value of user cost
+    /// @param minShares The Minimum value of shares that user obtain
+    function depositSingle(
+        uint256 yangId,
+        bool zeroForOne,
+        uint256 exactAmount,
+        uint256 maxTokenAmount,
+        uint256 minShares
+    )
+        external
+        override
+        nonReentrant
+        onlyManager
+        returns (
+            uint256 shares,
+            uint256 amount0,
+            uint256 amount1
+        )
+    {
+        IERC20 tokenIn = zeroForOne ? token0 : token1;
+        (int256 swapAmount0, int256 swapAmount1) = _swapTokenSingle(
+            true,
+            tokenIn,
+            zeroForOne,
+            exactAmount
+        );
+        // update pool
+        _updateLiquidity();
+
+        uint256 leftTokenIn = maxTokenAmount.sub(exactAmount);
+
+        (uint256 total0, uint256 total1) = getTotalAmounts();
+
+        if (zeroForOne) {
+            (shares, amount0, amount1) = _calcSharesAndAmounts(
+                total0,
+                total1.sub(uint256(-swapAmount1)),
+                leftTokenIn,
+                uint256(-swapAmount1)
+            );
+        } else {
+            (shares, amount0, amount1) = _calcSharesAndAmounts(
+                total0.sub(uint256(-swapAmount0)),
+                total1,
+                uint256(-swapAmount0),
+                leftTokenIn
+            );
+        }
+
+        // require the swap amount is exact
+        require(
+            (zeroForOne && amount1 == uint256(-swapAmount1)) ||
+                (!zeroForOne && amount0 == uint256(-swapAmount0)),
+            "stm"
+        );
+
+        require(
+            zeroForOne ? (amount0 <= leftTokenIn) : (amount1 <= leftTokenIn),
+            "over"
+        );
+        require(shares >= minShares, "s");
+
+        ICHIDepositCallBack(msg.sender).CHIDepositCallback(
+            tokenIn,
+            zeroForOne ? amount0 : amount1,
+            IERC20(0),
+            0,
+            address(this)
+        );
+
+        _mint(shares);
+        emit Deposit(yangId, shares, amount0, amount1);
+    }
+
+    function _swapTokenSingle(
+        bool isDeposit,
+        IERC20 tokenIn,
+        bool zeroForOne,
+        uint256 exactAmount
+    ) internal returns (int256 swapAmount0, int256 swapAmount1) {
+        // swap token.
+        (swapAmount0, swapAmount1) = pool.swap(
+            address(this),
+            zeroForOne,
+            toInt256(exactAmount),
+            zeroForOne
+                ? TickMath.MIN_SQRT_RATIO + 1
+                : TickMath.MAX_SQRT_RATIO - 1,
+            abi.encode(
+                SwapCallbackData({
+                    isDeposit: isDeposit,
+                    tokenIn: address(tokenIn),
+                    tokenOut: tokenIn == token0
+                        ? address(token1)
+                        : address(token0)
+                })
+            )
+        );
+    }
+
     function deposit(
         uint256 yangId,
         uint256 amount0Desired,
@@ -266,7 +376,10 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         // update pool
         _updateLiquidity();
 
+        (uint256 total0, uint256 total1) = getTotalAmounts();
         (shares, amount0, amount1) = _calcSharesAndAmounts(
+            total0,
+            total1,
             amount0Desired,
             amount1Desired
         );
@@ -279,11 +392,57 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
             token0,
             amount0,
             token1,
-            amount1
+            amount1,
+            address(this)
         );
 
         _mint(shares);
         emit Deposit(yangId, shares, amount0, amount1);
+    }
+
+    /// @dev Withdraw with single token
+    /// @param yangId YANG ID
+    /// @param zeroForOne Withdraw token0 or token1
+    /// @param shares The share amount user want
+    /// @param amountOutMin The Minimum amount of token withdrawal
+    /// @param to The receiver of token
+    function withdrawSingle(
+        uint256 yangId,
+        bool zeroForOne,
+        uint256 shares,
+        uint256 amountOutMin,
+        address to
+    ) external override nonReentrant onlyManager returns (uint256 amount) {
+        require(shares > 0, "s");
+        require(to != address(0) && to != address(this), "to");
+
+        (uint256 withdrawal0, uint256 withdrawal1) = _withdrawShare(
+            shares,
+            0,
+            0
+        );
+
+        IERC20 tokenIn = zeroForOne ? token0 : token1;
+        (int256 swapAmount0, int256 swapAmount1) = _swapTokenSingle(
+            false,
+            tokenIn,
+            zeroForOne,
+            zeroForOne ? withdrawal0 : withdrawal1
+        );
+
+        amount = zeroForOne
+            ? withdrawal1.add(uint256(-swapAmount1))
+            : withdrawal0.add(uint256(-swapAmount0));
+
+        require(amount > amountOutMin, "m");
+
+        if (zeroForOne) {
+            token1.safeTransfer(to, amount);
+        } else {
+            token0.safeTransfer(to, amount);
+        }
+
+        emit Withdraw(yangId, to, shares, withdrawal0, withdrawal1);
     }
 
     function withdraw(
@@ -302,6 +461,23 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         require(shares > 0, "s");
         require(to != address(0) && to != address(this), "to");
 
+        (withdrawal0, withdrawal1) = _withdrawShare(
+            shares,
+            amount0Min,
+            amount1Min
+        );
+
+        if (withdrawal0 > 0) token0.safeTransfer(to, withdrawal0);
+        if (withdrawal1 > 0) token1.safeTransfer(to, withdrawal1);
+
+        emit Withdraw(yangId, to, shares, withdrawal0, withdrawal1);
+    }
+
+    function _withdrawShare(
+        uint256 shares,
+        uint256 amount0Min,
+        uint256 amount1Min
+    ) internal returns (uint256 withdrawal0, uint256 withdrawal1) {
         // collect fee
         _harvestFee();
 
@@ -352,13 +528,8 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
 
             _burnMultLiquidityScale(shouldLiquidity, address(this));
         }
-
-        if (withdrawal0 > 0) token0.safeTransfer(to, withdrawal0);
-        if (withdrawal1 > 0) token1.safeTransfer(to, withdrawal1);
-
         // Burn shares
         _burn(shares);
-        emit Withdraw(yangId, to, shares, withdrawal0, withdrawal1);
     }
 
     function uniswapV3MintCallback(
@@ -371,6 +542,48 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
         if (amount1Owed > 0) token1.safeTransfer(msg.sender, amount1Owed);
     }
 
+    function uniswapV3SwapCallback(
+        int256 amount0Delta,
+        int256 amount1Delta,
+        bytes calldata _data
+    ) external override {
+        require(amount0Delta > 0 || amount1Delta > 0); // swaps entirely within 0-liquidity regions are not supported
+        require(msg.sender == address(pool));
+        SwapCallbackData memory data = abi.decode(_data, (SwapCallbackData));
+
+        address _tokenIn = data.tokenIn;
+        address _tokenOut = data.tokenOut;
+        (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
+            ? (_tokenIn < _tokenOut, uint256(amount0Delta))
+            : (_tokenOut < _tokenIn, uint256(amount1Delta));
+        if (isExactInput) {
+            if (data.isDeposit) {
+                ICHIDepositCallBack(CHIManager).CHIDepositCallback(
+                    IERC20(_tokenIn),
+                    amountToPay,
+                    IERC20(0),
+                    0,
+                    address(pool)
+                );
+            } else {
+                token0.safeTransfer(address(pool), amountToPay);
+            }
+        } else {
+            if (data.isDeposit) {
+                _tokenIn = _tokenOut; // swap in/out because exact output swaps are reversed
+                ICHIDepositCallBack(CHIManager).CHIDepositCallback(
+                    IERC20(_tokenIn),
+                    amountToPay,
+                    IERC20(0),
+                    0,
+                    address(pool)
+                );
+            } else {
+                token1.safeTransfer(address(pool), amountToPay);
+            }
+        }
+    }
+
     function balanceToken0() public view override returns (uint256) {
         return token0.balanceOf(address(this)).sub(_accruedProtocolFees0);
     }
@@ -380,6 +593,8 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
     }
 
     function _calcSharesAndAmounts(
+        uint256 total0,
+        uint256 total1,
         uint256 amount0Desired,
         uint256 amount1Desired
     )
@@ -391,8 +606,6 @@ contract CHIVault is ICHIVault, IUniswapV3MintCallback, ReentrancyGuard {
             uint256 amount1
         )
     {
-        (uint256 total0, uint256 total1) = getTotalAmounts();
-
         // If total supply > 0, vault can't be empty
         assert(_totalSupply == 0 || total0 > 0 || total1 > 0);
 
