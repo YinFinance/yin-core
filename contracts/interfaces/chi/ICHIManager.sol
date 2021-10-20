@@ -217,26 +217,6 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 oldProviderFee,
         uint256 newProviderFee
     );
-    event UpdateRewardPool(
-        address account,
-        address oldRewardPool,
-        address newRewardPool
-    );
-    event UpdateDeployer(
-        address account,
-        address oldDeployer,
-        address newDeployer
-    );
-    event UpdateExecutor(
-        address account,
-        address oldExecutor,
-        address newExecutor
-    );
-    event UpdateGovernance(
-        address account,
-        address oldGovernance,
-        address newGovernance
-    );
     event UpdateMaxUSDLimit(
         address account,
         uint256 oldMaxUSDLimit,

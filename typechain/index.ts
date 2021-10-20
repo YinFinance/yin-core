@@ -36,7 +36,6 @@ export type { ICHIVaultDeployer } from "./ICHIVaultDeployer";
 export type { IRewardPool } from "./IRewardPool";
 export type { IOracleProvider } from "./IOracleProvider";
 export type { IYangNFTVault } from "./IYangNFTVault";
-export type { LiquidityHelper } from "./LiquidityHelper";
 export type { RewardPool } from "./RewardPool";
 export type { OracleProvider } from "./OracleProvider";
 export type { Timelock } from "./Timelock";
@@ -78,7 +77,6 @@ export { ICHIVaultDeployer__factory } from "./factories/ICHIVaultDeployer__facto
 export { IRewardPool__factory } from "./factories/IRewardPool__factory";
 export { IOracleProvider__factory } from "./factories/IOracleProvider__factory";
 export { IYangNFTVault__factory } from "./factories/IYangNFTVault__factory";
-export { LiquidityHelper__factory } from "./factories/LiquidityHelper__factory";
 export { RewardPool__factory } from "./factories/RewardPool__factory";
 export { OracleProvider__factory } from "./factories/OracleProvider__factory";
 export { Timelock__factory } from "./factories/Timelock__factory";

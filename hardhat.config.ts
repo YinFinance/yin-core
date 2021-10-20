@@ -5,6 +5,7 @@ import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
+require('hardhat-contract-sizer');
 
 require("dotenv").config();
 
@@ -26,7 +27,7 @@ const DEFAULT_COMPILER_SETTINGS = {
   settings: {
     optimizer: {
       enabled: true,
-      runs: 50,
+      runs: 200,
     },
     metadata: {
       bytecodeHash: "none",

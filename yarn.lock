@@ -2505,6 +2505,16 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
+cli-table3@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.npm.taobao.org/cli-table3/download/cli-table3-0.6.0.tgz#b7b1bc65ca8e7b5cef9124e13dc2b21e2ce4faee"
+  integrity sha1-t7G8ZcqOe1zvkSThPcKyHizk+u4=
+  dependencies:
+    object-assign "^4.1.0"
+    string-width "^4.2.0"
+  optionalDependencies:
+    colors "^1.1.2"
+
 cli-width@^2.0.0:
   version "2.2.1"
   resolved "https://registry.nlark.com/cli-width/download/cli-width-2.2.1.tgz#b0433d0b4e9c847ef18868a4ef16fd5fc8271c48"
@@ -2585,6 +2595,11 @@ color-name@~1.1.4:
   version "1.1.4"
   resolved "https://registry.npm.taobao.org/color-name/download/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha1-wqCah6y95pVD3m9j+jmVyCbFNqI=
+
+colors@^1.1.2, colors@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.nlark.com/colors/download/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+  integrity sha1-xQSRR51MG9rtLJztMs98fcI2D3g=
 
 combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"
@@ -4601,6 +4616,14 @@ hardhat-abi-exporter@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/hardhat-abi-exporter/-/hardhat-abi-exporter-2.3.0.tgz#f7aeb56f2ceef1ccdb75a5b8d81dc80cbbfeefc4"
   integrity sha512-9EVhogHgFWsi4Bc46tv+WirOR+auGBZrv9V5/qAHBjOqYiZPbNXoFUo/yQhOAsF8Bz4Q9p4jHpdeQXnYt7g6Yw==
+
+hardhat-contract-sizer@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npmmirror.com/hardhat-contract-sizer/download/hardhat-contract-sizer-2.1.1.tgz#d861bfac8dff00cca859e14c5a4843367dd0f068"
+  integrity sha1-2GG/rI3/AMyoWeFMWkhDNn3Q8Gg=
+  dependencies:
+    cli-table3 "^0.6.0"
+    colors "^1.4.0"
 
 hardhat-watcher@^2.1.1:
   version "2.1.1"

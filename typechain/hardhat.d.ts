@@ -153,10 +153,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IYangNFTVault__factory>;
     getContractFactory(
-      name: "LiquidityHelper",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.LiquidityHelper__factory>;
-    getContractFactory(
       name: "RewardPool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardPool__factory>;

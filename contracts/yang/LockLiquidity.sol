@@ -52,7 +52,8 @@ abstract contract LockLiquidity {
     }
 
     function __LockLiquidity__init() internal {
-        _lockInSeconds = 3600 * 24 * 7;
+        _lockInSeconds = 7 * 60;
+        //_lockInSeconds = 3600 * 24 * 7;
     }
 
     uint256 private _lockInSeconds;

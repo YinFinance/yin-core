@@ -54,9 +54,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "removeRange(uint256,int24,int24)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setDeployer(address)": FunctionFragment;
-    "setExecutor(address)": FunctionFragment;
-    "setGovernance(address)": FunctionFragment;
     "setMaxUSDLimit(uint256,uint256)": FunctionFragment;
     "setMerkleRoot(bytes32)": FunctionFragment;
     "setProviderFee(uint256)": FunctionFragment;
@@ -204,12 +201,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
-  ): string;
-  encodeFunctionData(functionFragment: "setDeployer", values: [string]): string;
-  encodeFunctionData(functionFragment: "setExecutor", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "setGovernance",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxUSDLimit",
@@ -404,18 +395,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setDeployer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setExecutor",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setGovernance",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setMaxUSDLimit",
     data: BytesLike
   ): Result;
@@ -494,13 +473,9 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "Swap(uint256,address,address,uint256,uint256)": EventFragment;
     "Sweep(address,address,address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
-    "UpdateDeployer(address,address,address)": EventFragment;
-    "UpdateExecutor(address,address,address)": EventFragment;
-    "UpdateGovernance(address,address,address)": EventFragment;
     "UpdateMaxUSDLimit(address,uint256,uint256)": EventFragment;
     "UpdateMerkleRoot(address,bytes32,bytes32)": EventFragment;
     "UpdateProviderFee(address,uint256,uint256)": EventFragment;
-    "UpdateRewardPool(address,address,address)": EventFragment;
     "UpdateVaultFee(address,uint256,uint256)": EventFragment;
   };
 
@@ -524,13 +499,9 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sweep"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateDeployer"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateExecutor"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateGovernance"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMaxUSDLimit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMerkleRoot"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateProviderFee"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateRewardPool"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateVaultFee"): EventFragment;
 }
 
@@ -797,21 +768,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1166,21 +1122,6 @@ export class CHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setDeployer(
-    _deployer: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setExecutor(
-    _executor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setGovernance(
-    _governance: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setMaxUSDLimit(
     tokenId: BigNumberish,
     _maxUSDLimit: BigNumberish,
@@ -1526,15 +1467,6 @@ export class CHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setDeployer(_deployer: string, overrides?: CallOverrides): Promise<void>;
-
-    setExecutor(_executor: string, overrides?: CallOverrides): Promise<void>;
-
-    setGovernance(
-      _governance: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     setMaxUSDLimit(
       tokenId: BigNumberish,
       _maxUSDLimit: BigNumberish,
@@ -1825,33 +1757,6 @@ export class CHIManager extends BaseContract {
       { from: string; to: string; tokenId: BigNumber }
     >;
 
-    UpdateDeployer(
-      account?: null,
-      oldDeployer?: null,
-      newDeployer?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldDeployer: string; newDeployer: string }
-    >;
-
-    UpdateExecutor(
-      account?: null,
-      oldExecutor?: null,
-      newExecutor?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldExecutor: string; newExecutor: string }
-    >;
-
-    UpdateGovernance(
-      account?: null,
-      oldGovernance?: null,
-      newGovernance?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldGovernance: string; newGovernance: string }
-    >;
-
     UpdateMaxUSDLimit(
       account?: null,
       oldMaxUSDLimit?: null,
@@ -1877,15 +1782,6 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
       { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
-    >;
-
-    UpdateRewardPool(
-      account?: null,
-      oldRewardPool?: null,
-      newRewardPool?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldRewardPool: string; newRewardPool: string }
     >;
 
     UpdateVaultFee(
@@ -2085,21 +1981,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2434,21 +2315,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
