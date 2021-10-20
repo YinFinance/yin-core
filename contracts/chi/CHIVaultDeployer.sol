@@ -4,7 +4,7 @@ pragma solidity ^0.7.6;
 import "../interfaces/chi/ICHIVaultDeployer.sol";
 import "./CHIVault.sol";
 
-abstract contract CHIVaultDeployer is ICHIVaultDeployer {
+contract CHIVaultDeployer is ICHIVaultDeployer {
     address public override owner;
     address public override CHIManager;
 
