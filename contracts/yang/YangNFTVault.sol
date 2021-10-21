@@ -207,19 +207,14 @@ contract YangNFTVault is
             uint256 shares
         )
     {
-        (, , address _pool, address _vault, , , , ) = ICHIManager(chiManager)
+        (, , address _pool,, , , , ) = ICHIManager(chiManager)
             .chi(params.chiId);
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         address tokenIn = params.zeroForOne ? pool.token0() : pool.token1();
+
         _deposit(tokenIn, params.maxTokenAmount, address(0), 0);
-        uint256 vaultTokenInAmount = IERC20(tokenIn).balanceOf(_vault);
         (amount0, amount1, shares) = _subscribeSingle(tokenIn, params);
-        uint256 remainAmount = params.maxTokenAmount.sub(
-            IERC20(tokenIn).balanceOf(_vault).sub(vaultTokenInAmount)
-        );
-        if (remainAmount > 0) {
-            _withdraw(tokenIn, remainAmount, address(0), 0);
-        }
+
         _updateAccountLockDurations(
             params.yangId,
             params.chiId,
