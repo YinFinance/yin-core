@@ -22,17 +22,16 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface CHIManagerInterface extends ethers.utils.Interface {
   functions: {
     "CHIDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
-    "addAllLiquidityToPosition(uint256,uint256,uint256,bool)": FunctionFragment;
+    "addAllLiquidityToPosition(uint256,uint256[],uint256[],uint256[])": FunctionFragment;
     "addAndRemoveRanges(uint256,tuple[],tuple[])": FunctionFragment;
-    "addAndRemoveRangesWithPercents(uint256,tuple[],tuple[],uint256[])": FunctionFragment;
-    "addLiquidityToPosition(uint256,uint256,uint256,uint256,bool)": FunctionFragment;
+    "addLiquidityToPosition(uint256,uint256,uint256,uint256)": FunctionFragment;
     "addRange(uint256,int24,int24)": FunctionFragment;
-    "addTickPercents(uint256,uint256[])": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "archivedCHI(uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
     "chi(uint256)": FunctionFragment;
+    "chiVault(uint256)": FunctionFragment;
     "collectProtocol(uint256)": FunctionFragment;
     "config(uint256)": FunctionFragment;
     "deployer()": FunctionFragment;
@@ -49,14 +48,11 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "ownerOf(uint256)": FunctionFragment;
     "pausedCHI(uint256)": FunctionFragment;
     "positions(bytes32)": FunctionFragment;
-    "removeAllLiquidityFromPosition(uint256,uint256,bool)": FunctionFragment;
-    "removeLiquidityFromPosition(uint256,uint256,uint128,bool)": FunctionFragment;
+    "removeAllLiquidityFromPosition(uint256,uint256)": FunctionFragment;
+    "removeLiquidityFromPosition(uint256,uint256,uint128)": FunctionFragment;
     "removeRange(uint256,int24,int24)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setDeployer(address)": FunctionFragment;
-    "setExecutor(address)": FunctionFragment;
-    "setGovernance(address)": FunctionFragment;
     "setMaxUSDLimit(uint256,uint256)": FunctionFragment;
     "setMerkleRoot(bytes32)": FunctionFragment;
     "setProviderFee(uint256)": FunctionFragment;
@@ -67,7 +63,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "swap(uint256,tuple)": FunctionFragment;
     "sweep(uint256,address,address)": FunctionFragment;
     "symbol()": FunctionFragment;
-    "tickPercents(address,uint256)": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
     "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
@@ -88,7 +83,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "addAllLiquidityToPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish[], BigNumberish[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "addAndRemoveRanges",
@@ -99,25 +94,12 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "addAndRemoveRangesWithPercents",
-    values: [
-      BigNumberish,
-      { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      BigNumberish[]
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "addLiquidityToPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "addRange",
     values: [BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "addTickPercents",
-    values: [BigNumberish, BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
@@ -130,6 +112,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(functionFragment: "chi", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "chiVault",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "collectProtocol",
     values: [BigNumberish]
@@ -187,11 +173,11 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "removeAllLiquidityFromPosition",
-    values: [BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityFromPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "removeRange",
@@ -204,12 +190,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
-  ): string;
-  encodeFunctionData(functionFragment: "setDeployer", values: [string]): string;
-  encodeFunctionData(functionFragment: "setExecutor", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "setGovernance",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxUSDLimit",
@@ -273,10 +253,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "tickPercents",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "tokenByIndex",
     values: [BigNumberish]
   ): string;
@@ -335,18 +311,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "addAndRemoveRangesWithPercents",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "addLiquidityToPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "addRange", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "addTickPercents",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "archivedCHI",
@@ -355,6 +323,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chi", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "chiVault", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "collectProtocol",
     data: BytesLike
@@ -404,18 +373,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setDeployer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setExecutor",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setGovernance",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setMaxUSDLimit",
     data: BytesLike
   ): Result;
@@ -443,10 +400,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "swap", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sweep", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "tickPercents",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "tokenByIndex",
     data: BytesLike
@@ -482,7 +435,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
 
   events: {
-    "AddAllLiquidityToPositionEvent(address,uint256,uint256,uint256)": EventFragment;
+    "AddAllLiquidityToPositionEvent(address,uint256,uint256[],uint256[],uint256[])": EventFragment;
     "AddLiquidityToPositionEvent(address,uint256,uint256,uint256,uint256)": EventFragment;
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
@@ -589,9 +542,9 @@ export class CHIManager extends BaseContract {
 
     addAllLiquidityToPosition(
       tokenId: BigNumberish,
-      amount0Total: BigNumberish,
-      amount1Total: BigNumberish,
-      useEvent: boolean,
+      ranges: BigNumberish[],
+      amount0Totals: BigNumberish[],
+      amount1Totals: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -602,20 +555,11 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    addAndRemoveRangesWithPercents(
-      tokenId: BigNumberish,
-      addRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      removeRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      percents: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     addLiquidityToPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       amount0Desired: BigNumberish,
       amount1Desired: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -623,12 +567,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    addTickPercents(
-      tokenId: BigNumberish,
-      percents: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -672,6 +610,18 @@ export class CHIManager extends BaseContract {
       }
     >;
 
+    chiVault(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        amount0: BigNumber;
+        amount1: BigNumber;
+        collect0: BigNumber;
+        collect1: BigNumber;
+      }
+    >;
+
     collectProtocol(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -681,10 +631,9 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [boolean, boolean, boolean, BigNumber] & {
+      [boolean, boolean, BigNumber] & {
         isPaused: boolean;
         isArchived: boolean;
-        isEquational: boolean;
         maxUSDLimit: BigNumber;
       }
     >;
@@ -760,7 +709,6 @@ export class CHIManager extends BaseContract {
     removeAllLiquidityFromPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -768,7 +716,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       liquidity: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -797,21 +744,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -882,12 +814,6 @@ export class CHIManager extends BaseContract {
     ): Promise<ContractTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
-
-    tickPercents(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
 
     tokenByIndex(
       index: BigNumberish,
@@ -961,9 +887,9 @@ export class CHIManager extends BaseContract {
 
   addAllLiquidityToPosition(
     tokenId: BigNumberish,
-    amount0Total: BigNumberish,
-    amount1Total: BigNumberish,
-    useEvent: boolean,
+    ranges: BigNumberish[],
+    amount0Totals: BigNumberish[],
+    amount1Totals: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -974,20 +900,11 @@ export class CHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  addAndRemoveRangesWithPercents(
-    tokenId: BigNumberish,
-    addRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-    removeRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-    percents: BigNumberish[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   addLiquidityToPosition(
     tokenId: BigNumberish,
     rangeIndex: BigNumberish,
     amount0Desired: BigNumberish,
     amount1Desired: BigNumberish,
-    useEvent: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -995,12 +912,6 @@ export class CHIManager extends BaseContract {
     tokenId: BigNumberish,
     tickLower: BigNumberish,
     tickUpper: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  addTickPercents(
-    tokenId: BigNumberish,
-    percents: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1044,6 +955,18 @@ export class CHIManager extends BaseContract {
     }
   >;
 
+  chiVault(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      amount0: BigNumber;
+      amount1: BigNumber;
+      collect0: BigNumber;
+      collect1: BigNumber;
+    }
+  >;
+
   collectProtocol(
     tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1053,10 +976,9 @@ export class CHIManager extends BaseContract {
     tokenId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [boolean, boolean, boolean, BigNumber] & {
+    [boolean, boolean, BigNumber] & {
       isPaused: boolean;
       isArchived: boolean;
-      isEquational: boolean;
       maxUSDLimit: BigNumber;
     }
   >;
@@ -1126,7 +1048,6 @@ export class CHIManager extends BaseContract {
   removeAllLiquidityFromPosition(
     tokenId: BigNumberish,
     rangeIndex: BigNumberish,
-    useEvent: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1134,7 +1055,6 @@ export class CHIManager extends BaseContract {
     tokenId: BigNumberish,
     rangeIndex: BigNumberish,
     liquidity: BigNumberish,
-    useEvent: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1163,21 +1083,6 @@ export class CHIManager extends BaseContract {
   setApprovalForAll(
     operator: string,
     approved: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setDeployer(
-    _deployer: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setExecutor(
-    _executor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setGovernance(
-    _governance: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1249,12 +1154,6 @@ export class CHIManager extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  tickPercents(
-    arg0: string,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   tokenByIndex(
     index: BigNumberish,
     overrides?: CallOverrides
@@ -1324,9 +1223,9 @@ export class CHIManager extends BaseContract {
 
     addAllLiquidityToPosition(
       tokenId: BigNumberish,
-      amount0Total: BigNumberish,
-      amount1Total: BigNumberish,
-      useEvent: boolean,
+      ranges: BigNumberish[],
+      amount0Totals: BigNumberish[],
+      amount1Totals: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1337,20 +1236,11 @@ export class CHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    addAndRemoveRangesWithPercents(
-      tokenId: BigNumberish,
-      addRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      removeRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      percents: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     addLiquidityToPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       amount0Desired: BigNumberish,
       amount1Desired: BigNumberish,
-      useEvent: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1358,12 +1248,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    addTickPercents(
-      tokenId: BigNumberish,
-      percents: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1407,6 +1291,18 @@ export class CHIManager extends BaseContract {
       }
     >;
 
+    chiVault(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        amount0: BigNumber;
+        amount1: BigNumber;
+        collect0: BigNumber;
+        collect1: BigNumber;
+      }
+    >;
+
     collectProtocol(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1416,10 +1312,9 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [boolean, boolean, boolean, BigNumber] & {
+      [boolean, boolean, BigNumber] & {
         isPaused: boolean;
         isArchived: boolean;
-        isEquational: boolean;
         maxUSDLimit: BigNumber;
       }
     >;
@@ -1486,7 +1381,6 @@ export class CHIManager extends BaseContract {
     removeAllLiquidityFromPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
-      useEvent: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1494,7 +1388,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       liquidity: BigNumberish,
-      useEvent: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1523,15 +1416,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setDeployer(_deployer: string, overrides?: CallOverrides): Promise<void>;
-
-    setExecutor(_executor: string, overrides?: CallOverrides): Promise<void>;
-
-    setGovernance(
-      _governance: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1615,12 +1499,6 @@ export class CHIManager extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    tickPercents(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
@@ -1685,15 +1563,17 @@ export class CHIManager extends BaseContract {
     AddAllLiquidityToPositionEvent(
       account?: null,
       tokenId?: null,
-      amount0Total?: null,
-      amount1Total?: null
+      ranges?: null,
+      amount0Totals?: null,
+      amount1Totals?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber, BigNumber],
+      [string, BigNumber, BigNumber[], BigNumber[], BigNumber[]],
       {
         account: string;
         tokenId: BigNumber;
-        amount0Total: BigNumber;
-        amount1Total: BigNumber;
+        ranges: BigNumber[];
+        amount0Totals: BigNumber[];
+        amount1Totals: BigNumber[];
       }
     >;
 
@@ -1910,9 +1790,9 @@ export class CHIManager extends BaseContract {
 
     addAllLiquidityToPosition(
       tokenId: BigNumberish,
-      amount0Total: BigNumberish,
-      amount1Total: BigNumberish,
-      useEvent: boolean,
+      ranges: BigNumberish[],
+      amount0Totals: BigNumberish[],
+      amount1Totals: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1923,20 +1803,11 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    addAndRemoveRangesWithPercents(
-      tokenId: BigNumberish,
-      addRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      removeRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      percents: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     addLiquidityToPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       amount0Desired: BigNumberish,
       amount1Desired: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1944,12 +1815,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    addTickPercents(
-      tokenId: BigNumberish,
-      percents: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1969,6 +1834,11 @@ export class CHIManager extends BaseContract {
     baseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
     chi(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    chiVault(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     collectProtocol(
       tokenId: BigNumberish,
@@ -2048,7 +1918,6 @@ export class CHIManager extends BaseContract {
     removeAllLiquidityFromPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2056,7 +1925,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       liquidity: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2085,21 +1953,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2170,12 +2023,6 @@ export class CHIManager extends BaseContract {
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tickPercents(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     tokenByIndex(
       index: BigNumberish,
@@ -2250,9 +2097,9 @@ export class CHIManager extends BaseContract {
 
     addAllLiquidityToPosition(
       tokenId: BigNumberish,
-      amount0Total: BigNumberish,
-      amount1Total: BigNumberish,
-      useEvent: boolean,
+      ranges: BigNumberish[],
+      amount0Totals: BigNumberish[],
+      amount1Totals: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2263,20 +2110,11 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    addAndRemoveRangesWithPercents(
-      tokenId: BigNumberish,
-      addRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      removeRanges: { tickLower: BigNumberish; tickUpper: BigNumberish }[],
-      percents: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     addLiquidityToPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       amount0Desired: BigNumberish,
       amount1Desired: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2284,12 +2122,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    addTickPercents(
-      tokenId: BigNumberish,
-      percents: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2312,6 +2144,11 @@ export class CHIManager extends BaseContract {
     baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     chi(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    chiVault(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2397,7 +2234,6 @@ export class CHIManager extends BaseContract {
     removeAllLiquidityFromPosition(
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2405,7 +2241,6 @@ export class CHIManager extends BaseContract {
       tokenId: BigNumberish,
       rangeIndex: BigNumberish,
       liquidity: BigNumberish,
-      useEvent: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2434,21 +2269,6 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDeployer(
-      _deployer: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setExecutor(
-      _executor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setGovernance(
-      _governance: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2519,12 +2339,6 @@ export class CHIManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    tickPercents(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     tokenByIndex(
       index: BigNumberish,

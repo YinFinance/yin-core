@@ -21,7 +21,7 @@ library OraclePriceHelper {
         address chiManager,
         address chiVault
     ) internal view returns (bool) {
-        (, , , uint256 maxUSDLimit) = ICHIManager(chiManager).config(tokenId);
+        (, , uint256 maxUSDLimit) = ICHIManager(chiManager).config(tokenId);
         if (maxUSDLimit == 0) {
             return false;
         } else {

@@ -207,8 +207,9 @@ contract YangNFTVault is
             uint256 shares
         )
     {
-        (, , address _pool,, , , , ) = ICHIManager(chiManager)
-            .chi(params.chiId);
+        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(
+            params.chiId
+        );
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         address tokenIn = params.zeroForOne ? pool.token0() : pool.token1();
 

@@ -24,15 +24,21 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "amount0Total",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "ranges",
+        type: "uint256[]",
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "amount1Total",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "amount0Totals",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "amount1Totals",
+        type: "uint256[]",
       },
     ],
     name: "AddAllLiquidityToPositionEvent",
@@ -521,19 +527,19 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "uint256",
-        name: "amount0Total",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "ranges",
+        type: "uint256[]",
       },
       {
-        internalType: "uint256",
-        name: "amount1Total",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "amount0Totals",
+        type: "uint256[]",
       },
       {
-        internalType: "bool",
-        name: "useEvent",
-        type: "bool",
+        internalType: "uint256[]",
+        name: "amount1Totals",
+        type: "uint256[]",
       },
     ],
     name: "addAllLiquidityToPosition",
@@ -596,58 +602,6 @@ const _abi = [
         type: "uint256",
       },
       {
-        components: [
-          {
-            internalType: "int24",
-            name: "tickLower",
-            type: "int24",
-          },
-          {
-            internalType: "int24",
-            name: "tickUpper",
-            type: "int24",
-          },
-        ],
-        internalType: "struct ICHIManager.RangeParams[]",
-        name: "addRanges",
-        type: "tuple[]",
-      },
-      {
-        components: [
-          {
-            internalType: "int24",
-            name: "tickLower",
-            type: "int24",
-          },
-          {
-            internalType: "int24",
-            name: "tickUpper",
-            type: "int24",
-          },
-        ],
-        internalType: "struct ICHIManager.RangeParams[]",
-        name: "removeRanges",
-        type: "tuple[]",
-      },
-      {
-        internalType: "uint256[]",
-        name: "percents",
-        type: "uint256[]",
-      },
-    ],
-    name: "addAndRemoveRangesWithPercents",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
         internalType: "uint256",
         name: "rangeIndex",
         type: "uint256",
@@ -661,11 +615,6 @@ const _abi = [
         internalType: "uint256",
         name: "amount1Desired",
         type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "useEvent",
-        type: "bool",
       },
     ],
     name: "addLiquidityToPosition",
@@ -692,24 +641,6 @@ const _abi = [
       },
     ],
     name: "addRange",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256[]",
-        name: "",
-        type: "uint256[]",
-      },
-    ],
-    name: "addTickPercents",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -789,6 +720,40 @@ const _abi = [
         type: "uint256",
       },
     ],
+    name: "chiVault",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amount0",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "amount1",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "collect0",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "collect1",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
     name: "collectProtocol",
     outputs: [],
     stateMutability: "nonpayable",
@@ -812,11 +777,6 @@ const _abi = [
       {
         internalType: "bool",
         name: "isArchived",
-        type: "bool",
-      },
-      {
-        internalType: "bool",
-        name: "isEquational",
         type: "bool",
       },
       {
@@ -927,11 +887,6 @@ const _abi = [
         name: "rangeIndex",
         type: "uint256",
       },
-      {
-        internalType: "bool",
-        name: "useEvent",
-        type: "bool",
-      },
     ],
     name: "removeAllLiquidityFromPosition",
     outputs: [],
@@ -954,11 +909,6 @@ const _abi = [
         internalType: "uint128",
         name: "liquidity",
         type: "uint128",
-      },
-      {
-        internalType: "bool",
-        name: "useEvent",
-        type: "bool",
       },
     ],
     name: "removeLiquidityFromPosition",

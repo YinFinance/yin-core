@@ -11,7 +11,6 @@ interface ICHIManager is ICHIDepositCallBack {
     struct CHIConfig {
         bool paused;
         bool archived;
-        bool equational;
         uint256 maxUSDLimit;
     }
 
@@ -55,8 +54,17 @@ interface ICHIManager is ICHIDepositCallBack {
         returns (
             bool isPaused,
             bool isArchived,
-            bool isEquational,
             uint256 maxUSDLimit
+        );
+
+    function chiVault(uint256 tokenId)
+        external
+        view
+        returns (
+            uint256 amount0,
+            uint256 amount1,
+            uint256 collect0,
+            uint256 collect1
         );
 
     function mint(MintParams calldata params, bytes32[] calldata merkleProof)
@@ -115,13 +123,6 @@ interface ICHIManager is ICHIDepositCallBack {
         RangeParams[] calldata removeRanges
     ) external;
 
-    function addAndRemoveRangesWithPercents(
-        uint256 tokenId,
-        RangeParams[] calldata addRanges,
-        RangeParams[] calldata removeRanges,
-        uint256[] calldata percents
-    ) external;
-
     function addRange(
         uint256 tokenId,
         int24 tickLower,
@@ -138,33 +139,26 @@ interface ICHIManager is ICHIDepositCallBack {
 
     function addAllLiquidityToPosition(
         uint256 tokenId,
-        uint256 amount0Total,
-        uint256 amount1Total,
-        bool useEvent
+        uint256[] calldata ranges,
+        uint256[] calldata amount0Totals,
+        uint256[] calldata amount1Totals
     ) external;
-
-    function addTickPercents(uint256, uint256[] calldata) external;
 
     function removeLiquidityFromPosition(
         uint256 tokenId,
         uint256 rangeIndex,
-        uint128 liquidity,
-        bool useEvent
+        uint128 liquidity
     ) external;
 
     function addLiquidityToPosition(
         uint256 tokenId,
         uint256 rangeIndex,
         uint256 amount0Desired,
-        uint256 amount1Desired,
-        bool useEvent
+        uint256 amount1Desired
     ) external;
 
-    function removeAllLiquidityFromPosition(
-        uint256 tokenId,
-        uint256 rangeIndex,
-        bool useEvent
-    ) external;
+    function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
+        external;
 
     function pausedCHI(uint256 tokenId) external;
 
@@ -280,8 +274,9 @@ interface ICHIManager is ICHIDepositCallBack {
     event AddAllLiquidityToPositionEvent(
         address account,
         uint256 tokenId,
-        uint256 amount0Total,
-        uint256 amount1Total
+        uint256[] ranges,
+        uint256[] amount0Totals,
+        uint256[] amount1Totals
     );
     event AddLiquidityToPositionEvent(
         address account,
