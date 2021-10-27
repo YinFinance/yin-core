@@ -434,7 +434,7 @@ contract CHIManager is
     }
 
     function collectProtocol(uint256 tokenId) external override {
-        require(msg.sender == executor, "executor");
+        require(msg.sender == executor || msg.sender == manager, "authority");
 
         ICHIVault vault = ICHIVault(_chi[tokenId].vault);
         uint256 accruedProtocolFees0 = vault.accruedProtocolFees0();
