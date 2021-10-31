@@ -292,6 +292,25 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "chiId",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkMaxUSDLimit",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "yangId",
         "type": "uint256"
       },
@@ -366,54 +385,6 @@
         "internalType": "uint256",
         "name": "chiId",
         "type": "uint256"
-      }
-    ],
-    "name": "getCHIAccruedCollectFees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "collect0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "collect1",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "chiId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getCHITotalAmounts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "chiId",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -470,7 +441,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_oracle",
+        "name": "_registry",
         "type": "address"
       }
     ],
@@ -550,19 +521,6 @@
   },
   {
     "inputs": [],
-    "name": "oracle",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -622,6 +580,19 @@
         "internalType": "uint256",
         "name": "shares",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "registry",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

@@ -21,9 +21,8 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IYangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
+    "checkMaxUSDLimit(uint256)": FunctionFragment;
     "getAmounts(uint256,uint256)": FunctionFragment;
-    "getCHIAccruedCollectFees(uint256)": FunctionFragment;
-    "getCHITotalAmounts(uint256)": FunctionFragment;
     "getShares(uint256,uint256,uint256)": FunctionFragment;
     "getTokenId(address)": FunctionFragment;
     "mint(address)": FunctionFragment;
@@ -36,16 +35,12 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(
+    functionFragment: "checkMaxUSDLimit",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAmounts",
     values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getCHIAccruedCollectFees",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getCHITotalAmounts",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getShares",
@@ -112,15 +107,11 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "checkMaxUSDLimit",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getAmounts", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getCHIAccruedCollectFees",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getCHITotalAmounts",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "getShares", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getTokenId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -200,19 +191,14 @@ export class IYangNFTVault extends BaseContract {
   interface: IYangNFTVaultInterface;
 
   functions: {
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     getAmounts(
       chiId: BigNumberish,
       shares: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { fee0: BigNumber; fee1: BigNumber }>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
@@ -291,19 +277,14 @@ export class IYangNFTVault extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  checkMaxUSDLimit(
+    chiId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   getAmounts(
     chiId: BigNumberish,
     shares: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber]>;
-
-  getCHIAccruedCollectFees(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber] & { fee0: BigNumber; fee1: BigNumber }>;
-
-  getCHITotalAmounts(
-    chiId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
 
@@ -379,19 +360,14 @@ export class IYangNFTVault extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     getAmounts(
       chiId: BigNumberish,
       shares: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { fee0: BigNumber; fee1: BigNumber }>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
@@ -522,19 +498,14 @@ export class IYangNFTVault extends BaseContract {
   };
 
   estimateGas: {
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getAmounts(
       chiId: BigNumberish,
       shares: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -614,19 +585,14 @@ export class IYangNFTVault extends BaseContract {
   };
 
   populateTransaction: {
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getAmounts(
       chiId: BigNumberish,
       shares: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

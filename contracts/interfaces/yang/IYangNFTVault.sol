@@ -19,8 +19,6 @@ interface IYangNFTVault {
         uint256 shares;
         uint256 amount0Min;
         uint256 amount1Min;
-        // address recipient;
-        // recipient is tricky wait for confirm.
     }
 
     struct SubscribeSingleParam {
@@ -43,12 +41,7 @@ interface IYangNFTVault {
     event AcceptOwnerShip(address owner, address nextowner);
     event MintYangNFT(address recipient, uint256 tokenId);
     event Subscribe(uint256 yangId, uint256 chiId, uint256 share);
-    event UnSubscribe(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 amount0,
-        uint256 amount1
-    );
+    event UnSubscribe(uint256 yangId, uint256 chiId, uint256 amount0, uint256 amount1);
 
     function setCHIManager(address) external;
 
@@ -88,20 +81,9 @@ interface IYangNFTVault {
             uint256
         );
 
-    function getAmounts(uint256 chiId, uint256 shares)
-        external
-        view
-        returns (uint256, uint256);
+    function getAmounts(uint256 chiId, uint256 shares) external view returns (uint256, uint256);
 
-    function getCHITotalAmounts(uint256 chiId)
-        external
-        view
-        returns (uint256, uint256);
-
-    function getCHIAccruedCollectFees(uint256 chiId)
-        external
-        view
-        returns (uint256 fee0, uint256 fee1);
+    function checkMaxUSDLimit(uint256 chiId) external view returns (bool);
 
     // positions
     function positions(uint256 yangId, uint256 chiId)

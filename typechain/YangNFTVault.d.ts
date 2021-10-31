@@ -25,11 +25,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
+    "checkMaxUSDLimit(uint256)": FunctionFragment;
     "durations(uint256,uint256)": FunctionFragment;
     "getAmounts(uint256,uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "getCHIAccruedCollectFees(uint256)": FunctionFragment;
-    "getCHITotalAmounts(uint256)": FunctionFragment;
     "getShares(uint256,uint256,uint256)": FunctionFragment;
     "getTokenId(address)": FunctionFragment;
     "initialize(address)": FunctionFragment;
@@ -37,10 +36,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "mint(address)": FunctionFragment;
     "name()": FunctionFragment;
     "nextowner()": FunctionFragment;
-    "oracle()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "positions(uint256,uint256)": FunctionFragment;
+    "registry()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setCHIManager(address)": FunctionFragment;
@@ -71,6 +70,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "checkMaxUSDLimit",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "durations",
     values: [BigNumberish, BigNumberish]
   ): string;
@@ -80,14 +83,6 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getCHIAccruedCollectFees",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getCHITotalAmounts",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -103,7 +98,6 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "mint", values: [string]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nextowner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "oracle", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
@@ -113,6 +107,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     functionFragment: "positions",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "registry", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom",
     values: [string, string, BigNumberish]
@@ -220,18 +215,14 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "checkMaxUSDLimit",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "durations", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getAmounts", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getCHIAccruedCollectFees",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getCHITotalAmounts",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getShares", data: BytesLike): Result;
@@ -244,10 +235,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nextowner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "positions", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
     data: BytesLike
@@ -391,6 +382,11 @@ export class YangNFTVault extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<[string]>;
 
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     durations(
       yangId: BigNumberish,
       chiId: BigNumberish,
@@ -409,20 +405,6 @@ export class YangNFTVault extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { collect0: BigNumber; collect1: BigNumber }
-    >;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
-    >;
 
     getShares(
       chiId: BigNumberish,
@@ -443,7 +425,7 @@ export class YangNFTVault extends BaseContract {
     ): Promise<[BigNumber]>;
 
     initialize(
-      _oracle: string,
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -461,8 +443,6 @@ export class YangNFTVault extends BaseContract {
     name(overrides?: CallOverrides): Promise<[string]>;
 
     nextowner(overrides?: CallOverrides): Promise<[string]>;
-
-    oracle(overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -482,6 +462,8 @@ export class YangNFTVault extends BaseContract {
         shares: BigNumber;
       }
     >;
+
+    registry(overrides?: CallOverrides): Promise<[string]>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -618,6 +600,11 @@ export class YangNFTVault extends BaseContract {
 
   baseURI(overrides?: CallOverrides): Promise<string>;
 
+  checkMaxUSDLimit(
+    chiId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   durations(
     yangId: BigNumberish,
     chiId: BigNumberish,
@@ -637,20 +624,6 @@ export class YangNFTVault extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getCHIAccruedCollectFees(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & { collect0: BigNumber; collect1: BigNumber }
-  >;
-
-  getCHITotalAmounts(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
-  >;
-
   getShares(
     chiId: BigNumberish,
     amount0Desired: BigNumberish,
@@ -667,7 +640,7 @@ export class YangNFTVault extends BaseContract {
   getTokenId(recipient: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   initialize(
-    _oracle: string,
+    _registry: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -686,8 +659,6 @@ export class YangNFTVault extends BaseContract {
 
   nextowner(overrides?: CallOverrides): Promise<string>;
 
-  oracle(overrides?: CallOverrides): Promise<string>;
-
   owner(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -703,6 +674,8 @@ export class YangNFTVault extends BaseContract {
       shares: BigNumber;
     }
   >;
+
+  registry(overrides?: CallOverrides): Promise<string>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
@@ -834,6 +807,11 @@ export class YangNFTVault extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<string>;
 
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     durations(
       yangId: BigNumberish,
       chiId: BigNumberish,
@@ -853,20 +831,6 @@ export class YangNFTVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { collect0: BigNumber; collect1: BigNumber }
-    >;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
-    >;
-
     getShares(
       chiId: BigNumberish,
       amount0Desired: BigNumberish,
@@ -885,7 +849,7 @@ export class YangNFTVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    initialize(_oracle: string, overrides?: CallOverrides): Promise<void>;
+    initialize(_registry: string, overrides?: CallOverrides): Promise<void>;
 
     isApprovedForAll(
       owner: string,
@@ -898,8 +862,6 @@ export class YangNFTVault extends BaseContract {
     name(overrides?: CallOverrides): Promise<string>;
 
     nextowner(overrides?: CallOverrides): Promise<string>;
-
-    oracle(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -916,6 +878,8 @@ export class YangNFTVault extends BaseContract {
         shares: BigNumber;
       }
     >;
+
+    registry(overrides?: CallOverrides): Promise<string>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1150,6 +1114,11 @@ export class YangNFTVault extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     durations(
       yangId: BigNumberish,
       chiId: BigNumberish,
@@ -1167,16 +1136,6 @@ export class YangNFTVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getShares(
       chiId: BigNumberish,
       amount0Desired: BigNumberish,
@@ -1190,7 +1149,7 @@ export class YangNFTVault extends BaseContract {
     ): Promise<BigNumber>;
 
     initialize(
-      _oracle: string,
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1209,8 +1168,6 @@ export class YangNFTVault extends BaseContract {
 
     nextowner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    oracle(overrides?: CallOverrides): Promise<BigNumber>;
-
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     ownerOf(
@@ -1223,6 +1180,8 @@ export class YangNFTVault extends BaseContract {
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    registry(overrides?: CallOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1363,6 +1322,11 @@ export class YangNFTVault extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    checkMaxUSDLimit(
+      chiId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     durations(
       yangId: BigNumberish,
       chiId: BigNumberish,
@@ -1380,16 +1344,6 @@ export class YangNFTVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getCHIAccruedCollectFees(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCHITotalAmounts(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getShares(
       chiId: BigNumberish,
       amount0Desired: BigNumberish,
@@ -1403,7 +1357,7 @@ export class YangNFTVault extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
-      _oracle: string,
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1422,8 +1376,6 @@ export class YangNFTVault extends BaseContract {
 
     nextowner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ownerOf(
@@ -1436,6 +1388,8 @@ export class YangNFTVault extends BaseContract {
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    registry(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,

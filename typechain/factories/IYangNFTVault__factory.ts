@@ -108,6 +108,25 @@ const _abi = [
         name: "chiId",
         type: "uint256",
       },
+    ],
+    name: "checkMaxUSDLimit",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "chiId",
+        type: "uint256",
+      },
       {
         internalType: "uint256",
         name: "shares",
@@ -115,54 +134,6 @@ const _abi = [
       },
     ],
     name: "getAmounts",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
-      },
-    ],
-    name: "getCHIAccruedCollectFees",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "fee0",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "fee1",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
-      },
-    ],
-    name: "getCHITotalAmounts",
     outputs: [
       {
         internalType: "uint256",

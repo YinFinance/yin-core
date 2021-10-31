@@ -592,57 +592,6 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rangeIndex",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount0Desired",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1Desired",
-        "type": "uint256"
-      }
-    ],
-    "name": "addLiquidityToPosition",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
-      }
-    ],
-    "name": "addRange",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
       }
     ],
     "name": "archivedCHI",
@@ -875,12 +824,12 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "rangeIndex",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "ranges",
+        "type": "uint256[]"
       }
     ],
-    "name": "removeAllLiquidityFromPosition",
+    "name": "removeRangesAllLiquidityFromPosition",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -893,40 +842,17 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "rangeIndex",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "ranges",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint128",
-        "name": "liquidity",
-        "type": "uint128"
+        "internalType": "uint128[]",
+        "name": "liquidities",
+        "type": "uint128[]"
       }
     ],
-    "name": "removeLiquidityFromPosition",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
-      }
-    ],
-    "name": "removeRange",
+    "name": "removeRangesLiquidityFromPosition",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

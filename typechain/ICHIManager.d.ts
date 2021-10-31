@@ -24,8 +24,6 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     "CHIDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
     "addAllLiquidityToPosition(uint256,uint256[],uint256[],uint256[])": FunctionFragment;
     "addAndRemoveRanges(uint256,tuple[],tuple[])": FunctionFragment;
-    "addLiquidityToPosition(uint256,uint256,uint256,uint256)": FunctionFragment;
-    "addRange(uint256,int24,int24)": FunctionFragment;
     "archivedCHI(uint256)": FunctionFragment;
     "chi(uint256)": FunctionFragment;
     "chiVault(uint256)": FunctionFragment;
@@ -34,9 +32,8 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     "emergencyBurn(uint256,int24,int24)": FunctionFragment;
     "mint(tuple,bytes32[])": FunctionFragment;
     "pausedCHI(uint256)": FunctionFragment;
-    "removeAllLiquidityFromPosition(uint256,uint256)": FunctionFragment;
-    "removeLiquidityFromPosition(uint256,uint256,uint128)": FunctionFragment;
-    "removeRange(uint256,int24,int24)": FunctionFragment;
+    "removeRangesAllLiquidityFromPosition(uint256,uint256[])": FunctionFragment;
+    "removeRangesLiquidityFromPosition(uint256,uint256[],uint128[])": FunctionFragment;
     "subscribe(uint256,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "subscribeSingle(uint256,uint256,bool,uint256,uint256,uint256)": FunctionFragment;
     "swap(uint256,tuple)": FunctionFragment;
@@ -62,14 +59,6 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
       { tickLower: BigNumberish; tickUpper: BigNumberish }[],
       { tickLower: BigNumberish; tickUpper: BigNumberish }[]
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "addLiquidityToPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "addRange",
-    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "archivedCHI",
@@ -104,16 +93,12 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeAllLiquidityFromPosition",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "removeRangesAllLiquidityFromPosition",
+    values: [BigNumberish, BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeLiquidityFromPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeRange",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    functionFragment: "removeRangesLiquidityFromPosition",
+    values: [BigNumberish, BigNumberish[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "subscribe",
@@ -191,11 +176,6 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "addLiquidityToPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "addRange", data: BytesLike): Result;
-  decodeFunctionResult(
     functionFragment: "archivedCHI",
     data: BytesLike
   ): Result;
@@ -213,15 +193,11 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pausedCHI", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "removeAllLiquidityFromPosition",
+    functionFragment: "removeRangesAllLiquidityFromPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeLiquidityFromPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "removeRange",
+    functionFragment: "removeRangesLiquidityFromPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "subscribe", data: BytesLike): Result;
@@ -360,21 +336,6 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    addLiquidityToPosition(
-      tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      amount0Desired: BigNumberish,
-      amount1Desired: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    addRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -456,23 +417,16 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    removeAllLiquidityFromPosition(
+    removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
+      ranges: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    removeLiquidityFromPosition(
+    removeRangesLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    removeRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
+      ranges: BigNumberish[],
+      liquidities: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -570,21 +524,6 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  addLiquidityToPosition(
-    tokenId: BigNumberish,
-    rangeIndex: BigNumberish,
-    amount0Desired: BigNumberish,
-    amount1Desired: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  addRange(
-    tokenId: BigNumberish,
-    tickLower: BigNumberish,
-    tickUpper: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   archivedCHI(
     tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -666,23 +605,16 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  removeAllLiquidityFromPosition(
+  removeRangesAllLiquidityFromPosition(
     tokenId: BigNumberish,
-    rangeIndex: BigNumberish,
+    ranges: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  removeLiquidityFromPosition(
+  removeRangesLiquidityFromPosition(
     tokenId: BigNumberish,
-    rangeIndex: BigNumberish,
-    liquidity: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  removeRange(
-    tokenId: BigNumberish,
-    tickLower: BigNumberish,
-    tickUpper: BigNumberish,
+    ranges: BigNumberish[],
+    liquidities: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -780,21 +712,6 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    addLiquidityToPosition(
-      tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      amount0Desired: BigNumberish,
-      amount1Desired: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    addRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -873,23 +790,16 @@ export class ICHIManager extends BaseContract {
 
     pausedCHI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    removeAllLiquidityFromPosition(
+    removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
+      ranges: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
-    removeLiquidityFromPosition(
+    removeRangesLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
+      ranges: BigNumberish[],
+      liquidities: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1194,21 +1104,6 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    addLiquidityToPosition(
-      tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      amount0Desired: BigNumberish,
-      amount1Desired: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    addRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1254,23 +1149,16 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    removeAllLiquidityFromPosition(
+    removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
+      ranges: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    removeLiquidityFromPosition(
+    removeRangesLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    removeRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
+      ranges: BigNumberish[],
+      liquidities: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1369,21 +1257,6 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    addLiquidityToPosition(
-      tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      amount0Desired: BigNumberish,
-      amount1Desired: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    addRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1432,23 +1305,16 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    removeAllLiquidityFromPosition(
+    removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
+      ranges: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    removeLiquidityFromPosition(
+    removeRangesLiquidityFromPosition(
       tokenId: BigNumberish,
-      rangeIndex: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeRange(
-      tokenId: BigNumberish,
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
+      ranges: BigNumberish[],
+      liquidities: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -11,23 +11,26 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
+  CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface LiquidityHelperInterface extends ethers.utils.Interface {
-  functions: {};
-
-  events: {
-    "AddLiquidityToPosition(uint256,uint256,uint256)": EventFragment;
+interface IERC20MinimalInterface extends ethers.utils.Interface {
+  functions: {
+    "decimals()": FunctionFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "AddLiquidityToPosition"): EventFragment;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+
+  events: {};
 }
 
-export class LiquidityHelper extends BaseContract {
+export class IERC20Minimal extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -68,24 +71,25 @@ export class LiquidityHelper extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: LiquidityHelperInterface;
+  interface: IERC20MinimalInterface;
 
-  functions: {};
-
-  callStatic: {};
-
-  filters: {
-    AddLiquidityToPosition(
-      idx?: null,
-      amount0?: null,
-      amount1?: null
-    ): TypedEventFilter<
-      [BigNumber, BigNumber, BigNumber],
-      { idx: BigNumber; amount0: BigNumber; amount1: BigNumber }
-    >;
+  functions: {
+    decimals(overrides?: CallOverrides): Promise<[number]>;
   };
 
-  estimateGas: {};
+  decimals(overrides?: CallOverrides): Promise<number>;
 
-  populateTransaction: {};
+  callStatic: {
+    decimals(overrides?: CallOverrides): Promise<number>;
+  };
+
+  filters: {};
+
+  estimateGas: {
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+  };
 }

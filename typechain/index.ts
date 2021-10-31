@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Denominations } from "./Denominations";
+export type { AggregatorInterface } from "./AggregatorInterface";
 export type { AggregatorV3Interface } from "./AggregatorV3Interface";
 export type { OwnableUpgradeable } from "./OwnableUpgradeable";
 export type { ERC165Upgradeable } from "./ERC165Upgradeable";
@@ -34,15 +35,19 @@ export type { ICHIManager } from "./ICHIManager";
 export type { ICHIVault } from "./ICHIVault";
 export type { ICHIVaultDeployer } from "./ICHIVaultDeployer";
 export type { IRewardPool } from "./IRewardPool";
+export type { IChainLinkFeedsRegistry } from "./IChainLinkFeedsRegistry";
+export type { IERC20Minimal } from "./IERC20Minimal";
 export type { IOracleProvider } from "./IOracleProvider";
 export type { IYangNFTVault } from "./IYangNFTVault";
 export type { RewardPool } from "./RewardPool";
 export type { OracleProvider } from "./OracleProvider";
 export type { Timelock } from "./Timelock";
+export type { ChainLinkFeedsRegistry } from "./ChainLinkFeedsRegistry";
 export type { LockLiquidity } from "./LockLiquidity";
 export type { YangNFTVault } from "./YangNFTVault";
 
 export { Denominations__factory } from "./factories/Denominations__factory";
+export { AggregatorInterface__factory } from "./factories/AggregatorInterface__factory";
 export { AggregatorV3Interface__factory } from "./factories/AggregatorV3Interface__factory";
 export { OwnableUpgradeable__factory } from "./factories/OwnableUpgradeable__factory";
 export { ERC165Upgradeable__factory } from "./factories/ERC165Upgradeable__factory";
@@ -75,10 +80,13 @@ export { ICHIManager__factory } from "./factories/ICHIManager__factory";
 export { ICHIVault__factory } from "./factories/ICHIVault__factory";
 export { ICHIVaultDeployer__factory } from "./factories/ICHIVaultDeployer__factory";
 export { IRewardPool__factory } from "./factories/IRewardPool__factory";
+export { IChainLinkFeedsRegistry__factory } from "./factories/IChainLinkFeedsRegistry__factory";
+export { IERC20Minimal__factory } from "./factories/IERC20Minimal__factory";
 export { IOracleProvider__factory } from "./factories/IOracleProvider__factory";
 export { IYangNFTVault__factory } from "./factories/IYangNFTVault__factory";
 export { RewardPool__factory } from "./factories/RewardPool__factory";
 export { OracleProvider__factory } from "./factories/OracleProvider__factory";
 export { Timelock__factory } from "./factories/Timelock__factory";
+export { ChainLinkFeedsRegistry__factory } from "./factories/ChainLinkFeedsRegistry__factory";
 export { LockLiquidity__factory } from "./factories/LockLiquidity__factory";
 export { YangNFTVault__factory } from "./factories/YangNFTVault__factory";

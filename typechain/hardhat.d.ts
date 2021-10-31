@@ -17,6 +17,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Denominations__factory>;
     getContractFactory(
+      name: "AggregatorInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AggregatorInterface__factory>;
+    getContractFactory(
       name: "AggregatorV3Interface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AggregatorV3Interface__factory>;
@@ -145,6 +149,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IRewardPool__factory>;
     getContractFactory(
+      name: "IChainLinkFeedsRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IChainLinkFeedsRegistry__factory>;
+    getContractFactory(
+      name: "IERC20Minimal",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Minimal__factory>;
+    getContractFactory(
       name: "IOracleProvider",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IOracleProvider__factory>;
@@ -164,6 +176,10 @@ declare module "hardhat/types/runtime" {
       name: "Timelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Timelock__factory>;
+    getContractFactory(
+      name: "ChainLinkFeedsRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ChainLinkFeedsRegistry__factory>;
     getContractFactory(
       name: "LockLiquidity",
       signerOrOptions?: ethers.Signer | FactoryOptions

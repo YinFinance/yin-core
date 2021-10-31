@@ -478,36 +478,6 @@ contract CHIManager is
         emit ChangeLiquidity(tokenId, _tempVault);
     }
 
-    function addRange(
-        uint256 tokenId,
-        int24 tickLower,
-        int24 tickUpper
-    )
-        external
-        override
-        isAuthorizedForToken(tokenId)
-        onlyWhenNotPaused(tokenId)
-    {
-        ICHIVault(_tempVault).addRange(tickLower, tickUpper);
-
-        emit ChangeLiquidity(tokenId, _tempVault);
-    }
-
-    function removeRange(
-        uint256 tokenId,
-        int24 tickLower,
-        int24 tickUpper
-    )
-        external
-        override
-        isAuthorizedForToken(tokenId)
-        onlyWhenNotPaused(tokenId)
-    {
-        ICHIVault(_tempVault).removeRange(tickLower, tickUpper);
-
-        emit ChangeLiquidity(tokenId, _tempVault);
-    }
-
     function addAllLiquidityToPosition(
         uint256 tokenId,
         uint256[] calldata ranges,
@@ -527,49 +497,38 @@ contract CHIManager is
         emit ChangeLiquidity(tokenId, _tempVault);
     }
 
-    function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
-        external
-        override
-        onlyWhenNotArchived(tokenId)
-        isAuthorizedForToken(tokenId)
-    {
-        ICHIVault(_tempVault).removeAllLiquidityFromPosition(rangeIndex);
-        emit ChangeLiquidity(tokenId, _tempVault);
-    }
-
-    function removeLiquidityFromPosition(
+    function removeRangesLiquidityFromPosition(
         uint256 tokenId,
-        uint256 rangeIndex,
-        uint128 liquidity
+        uint256[] calldata ranges,
+        uint128[] calldata liquidities
     )
         external
         override
         onlyWhenNotArchived(tokenId)
         isAuthorizedForToken(tokenId)
     {
-        ICHIVault(_tempVault).removeLiquidityFromPosition(
-            rangeIndex,
-            liquidity
-        );
+        require(ranges.length == liquidities.length, "len");
+        for (uint i = 0; i < ranges.length; i++) {
+            ICHIVault(_tempVault).removeLiquidityFromPosition(
+                ranges[i],
+                liquidities[i]
+            );
+        }
         emit ChangeLiquidity(tokenId, _tempVault);
     }
 
-    function addLiquidityToPosition(
+    function removeRangesAllLiquidityFromPosition(
         uint256 tokenId,
-        uint256 rangeIndex,
-        uint256 amount0Desired,
-        uint256 amount1Desired
+        uint256[] calldata ranges
     )
         external
         override
         onlyWhenNotArchived(tokenId)
         isAuthorizedForToken(tokenId)
     {
-        ICHIVault(_tempVault).addLiquidityToPosition(
-            rangeIndex,
-            amount0Desired,
-            amount1Desired
-        );
+        for (uint i = 0 ; i < ranges.length; i++) {
+            ICHIVault(_tempVault).removeAllLiquidityFromPosition(ranges[i]);
+        }
         emit ChangeLiquidity(tokenId, _tempVault);
     }
 

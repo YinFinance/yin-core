@@ -123,18 +123,6 @@ interface ICHIManager is ICHIDepositCallBack {
         RangeParams[] calldata removeRanges
     ) external;
 
-    function addRange(
-        uint256 tokenId,
-        int24 tickLower,
-        int24 tickUpper
-    ) external;
-
-    function removeRange(
-        uint256 tokenId,
-        int24 tickLower,
-        int24 tickUpper
-    ) external;
-
     function collectProtocol(uint256 tokenId) external;
 
     function addAllLiquidityToPosition(
@@ -144,21 +132,16 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256[] calldata amount1Totals
     ) external;
 
-    function removeLiquidityFromPosition(
+    function removeRangesLiquidityFromPosition(
         uint256 tokenId,
-        uint256 rangeIndex,
-        uint128 liquidity
+        uint256[] calldata ranges,
+        uint128[] calldata liquidities
     ) external;
 
-    function addLiquidityToPosition(
+    function removeRangesAllLiquidityFromPosition(
         uint256 tokenId,
-        uint256 rangeIndex,
-        uint256 amount0Desired,
-        uint256 amount1Desired
+        uint256[] calldata ranges
     ) external;
-
-    function removeAllLiquidityFromPosition(uint256 tokenId, uint256 rangeIndex)
-        external;
 
     function pausedCHI(uint256 tokenId) external;
 
