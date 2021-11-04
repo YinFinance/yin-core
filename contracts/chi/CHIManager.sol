@@ -17,6 +17,7 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "../libraries/YANGPosition.sol";
 import "../libraries/LiquidityHelper.sol";
 
+import "../interfaces/yang/IYANGDepositCallBack.sol";
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/chi/ICHIVaultDeployer.sol";
 
@@ -429,6 +430,13 @@ contract CHIManager is
         address recipient
     ) external override {
         _verifyCallback(msg.sender);
+        IYANGDepositCallBack(yangNFT).YANGDepositCallback(
+            token0,
+            amount0,
+            token1,
+            amount1,
+            yangNFT
+        );
         if (amount0 > 0) token0.safeTransferFrom(yangNFT, recipient, amount0);
         if (amount1 > 0) token1.safeTransferFrom(yangNFT, recipient, amount1);
     }

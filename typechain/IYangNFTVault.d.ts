@@ -21,6 +21,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IYangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
+    "YANGDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
     "checkMaxUSDLimit(uint256)": FunctionFragment;
     "getAmounts(uint256,uint256)": FunctionFragment;
     "getShares(uint256,uint256,uint256)": FunctionFragment;
@@ -34,6 +35,10 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
     "unsubscribeSingle(tuple)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "YANGDepositCallback",
+    values: [string, BigNumberish, string, BigNumberish, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "checkMaxUSDLimit",
     values: [BigNumberish]
@@ -107,6 +112,10 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "YANGDepositCallback",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "checkMaxUSDLimit",
     data: BytesLike
@@ -191,6 +200,15 @@ export class IYangNFTVault extends BaseContract {
   interface: IYangNFTVaultInterface;
 
   functions: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     checkMaxUSDLimit(
       chiId: BigNumberish,
       overrides?: CallOverrides
@@ -277,6 +295,15 @@ export class IYangNFTVault extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  YANGDepositCallback(
+    token0: string,
+    amount0: BigNumberish,
+    token1: string,
+    amount1: BigNumberish,
+    recipient: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   checkMaxUSDLimit(
     chiId: BigNumberish,
     overrides?: CallOverrides
@@ -360,6 +387,15 @@ export class IYangNFTVault extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     checkMaxUSDLimit(
       chiId: BigNumberish,
       overrides?: CallOverrides
@@ -498,6 +534,15 @@ export class IYangNFTVault extends BaseContract {
   };
 
   estimateGas: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     checkMaxUSDLimit(
       chiId: BigNumberish,
       overrides?: CallOverrides
@@ -585,6 +630,15 @@ export class IYangNFTVault extends BaseContract {
   };
 
   populateTransaction: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     checkMaxUSDLimit(
       chiId: BigNumberish,
       overrides?: CallOverrides

@@ -21,6 +21,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface YangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
+    "YANGDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
     "acceptOwnerShip()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
@@ -59,6 +60,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "updateLockState(uint256,bool)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "YANGDepositCallback",
+    values: [string, BigNumberish, string, BigNumberish, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "acceptOwnerShip",
     values?: undefined
@@ -208,6 +213,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "YANGDepositCallback",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "acceptOwnerShip",
     data: BytesLike
@@ -368,6 +377,15 @@ export class YangNFTVault extends BaseContract {
   interface: YangNFTVaultInterface;
 
   functions: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -586,6 +604,15 @@ export class YangNFTVault extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  YANGDepositCallback(
+    token0: string,
+    amount0: BigNumberish,
+    token1: string,
+    amount1: BigNumberish,
+    recipient: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   acceptOwnerShip(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -795,6 +822,15 @@ export class YangNFTVault extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     acceptOwnerShip(overrides?: CallOverrides): Promise<void>;
 
     approve(
@@ -1100,6 +1136,15 @@ export class YangNFTVault extends BaseContract {
   };
 
   estimateGas: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1305,6 +1350,15 @@ export class YangNFTVault extends BaseContract {
   };
 
   populateTransaction: {
+    YANGDepositCallback(
+      token0: string,
+      amount0: BigNumberish,
+      token1: string,
+      amount1: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

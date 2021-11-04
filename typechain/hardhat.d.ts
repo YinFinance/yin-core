@@ -161,6 +161,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IOracleProvider__factory>;
     getContractFactory(
+      name: "IYANGDepositCallBack",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IYANGDepositCallBack__factory>;
+    getContractFactory(
       name: "IYangNFTVault",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IYangNFTVault__factory>;

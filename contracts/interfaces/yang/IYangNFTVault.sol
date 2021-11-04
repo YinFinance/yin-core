@@ -3,7 +3,9 @@
 pragma solidity 0.7.6;
 pragma abicoder v2;
 
-interface IYangNFTVault {
+import "./IYANGDepositCallBack.sol";
+
+interface IYangNFTVault is IYANGDepositCallBack {
     struct SubscribeParam {
         uint256 yangId;
         uint256 chiId;

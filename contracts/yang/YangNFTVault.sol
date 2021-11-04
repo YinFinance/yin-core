@@ -41,6 +41,7 @@ contract YangNFTVault is
 
     // nft and Yang tokenId
     uint256 private _nextId;
+    address private _tempAccount;
     mapping(address => uint256) private _usersMap;
 
     modifier onlyOwner() {
@@ -51,6 +52,12 @@ contract YangNFTVault is
     modifier isAuthorizedForToken(uint256 tokenId) {
         require(_isApprovedOrOwner(msg.sender, tokenId), 'not approved');
         _;
+    }
+
+    modifier subscripting(address account) {
+        _tempAccount = account;
+        _;
+        _tempAccount = address(0);
     }
 
     // initialize
@@ -110,20 +117,6 @@ contract YangNFTVault is
         if (to != address(0)) {
             require(_usersMap[to] == 0, 'only accept one');
             _usersMap[to] = tokenId;
-        }
-    }
-
-    function _deposit(
-        address token0,
-        uint256 amount0,
-        address token1,
-        uint256 amount1
-    ) internal {
-        if (amount0 > 0) {
-            IERC20(token0).safeTransferFrom(msg.sender, address(this), amount0);
-        }
-        if (amount1 > 0) {
-            IERC20(token1).safeTransferFrom(msg.sender, address(this), amount1);
         }
     }
 
@@ -192,6 +185,7 @@ contract YangNFTVault is
     function subscribeSingle(SubscribeSingleParam memory params)
         external
         override
+        subscripting(msg.sender)
         isAuthorizedForToken(params.yangId)
         nonReentrant
         returns (
@@ -205,9 +199,7 @@ contract YangNFTVault is
         address tokenIn = params.zeroForOne ? pool.token0() : pool.token1();
         require(!checkMaxUSDLimit(params.chiId), 'MUL');
 
-        _deposit(tokenIn, params.maxTokenAmount, address(0), 0);
         (amount0, amount1, shares) = _subscribeSingle(tokenIn, params);
-
         _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
         emit Subscribe(params.yangId, params.chiId, shares);
     }
@@ -215,6 +207,7 @@ contract YangNFTVault is
     function subscribe(SubscribeParam memory params)
         external
         override
+        subscripting(msg.sender)
         isAuthorizedForToken(params.yangId)
         nonReentrant
         returns (
@@ -230,7 +223,6 @@ contract YangNFTVault is
         address token1 = pool.token1();
         require(!checkMaxUSDLimit(params.chiId), 'MUL');
 
-        _deposit(token0, params.amount0Desired, token1, params.amount1Desired);
         (amount0, amount1, shares) = _subscribe(token0, token1, params);
         _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
 
@@ -375,6 +367,20 @@ contract YangNFTVault is
             amount0 = total0.mul(shares).div(_totalShares);
             amount1 = total1.mul(shares).div(_totalShares);
         }
+    }
+
+    function YANGDepositCallback(
+        IERC20 token0,
+        uint256 amount0,
+        IERC20 token1,
+        uint256 amount1,
+        address recipient
+    ) external override
+    {
+        require(chiManager != address(0), "CHI");
+        require(msg.sender == chiManager, "manager");
+        if (amount0 > 0) token0.safeTransferFrom(_tempAccount, recipient, amount0);
+        if (amount1 > 0) token1.safeTransferFrom(_tempAccount, recipient, amount0);
     }
 
     function _amountsForLiquidity(
