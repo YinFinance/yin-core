@@ -435,10 +435,8 @@ contract CHIManager is
             amount0,
             token1,
             amount1,
-            yangNFT
+            recipient
         );
-        if (amount0 > 0) token0.safeTransferFrom(yangNFT, recipient, amount0);
-        if (amount1 > 0) token1.safeTransferFrom(yangNFT, recipient, amount1);
     }
 
     function collectProtocol(uint256 tokenId) external override {
