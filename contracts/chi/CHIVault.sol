@@ -526,7 +526,8 @@ contract CHIVault is
                 shouldLiquidity = scaleRate;
             }
 
-            _burnMultLiquidityScale(shouldLiquidity, address(this));
+            (uint256 burnTotal0, uint256 burnTotal1) = _burnMultLiquidityScale(shouldLiquidity, address(this));
+            require(burnTotal0 >= shouldWithdrawal0 && burnTotal1 >=  shouldWithdrawal1, "SW");
         }
         // Burn shares
         _burn(shares);
@@ -645,7 +646,7 @@ contract CHIVault is
         _updateLiquidity();
         for (uint256 i = 0; i < _rangeSet.length(); i++) {
             (int24 _tickLower, int24 _tickUpper) = _decode(_rangeSet.at(i));
-            (uint256 _collect0, uint256 _collect1) = _collet(
+            (uint256 _collect0, uint256 _collect1) = _collect(
                 _tickLower,
                 _tickUpper
             );
@@ -750,7 +751,7 @@ contract CHIVault is
         }
     }
 
-    function _collet(int24 tickLower, int24 tickUpper)
+    function _collect(int24 tickLower, int24 tickUpper)
         internal
         returns (uint256 collect0, uint256 collect1)
     {

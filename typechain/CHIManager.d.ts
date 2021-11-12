@@ -34,10 +34,9 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "config(uint256)": FunctionFragment;
     "deployer()": FunctionFragment;
     "emergencyBurn(uint256,int24,int24)": FunctionFragment;
-    "executor()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "governance()": FunctionFragment;
-    "initialize(bytes32,address,address,address,address,address,address,address)": FunctionFragment;
+    "initialize(bytes32,address,address,address,address,address,address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "manager()": FunctionFragment;
     "merkleRoot()": FunctionFragment;
@@ -50,6 +49,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "removeRangesLiquidityFromPosition(uint256,uint256[],uint128[])": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
+    "setGovernance(address)": FunctionFragment;
     "setMaxUSDLimit(uint256,uint256)": FunctionFragment;
     "setMerkleRoot(bytes32)": FunctionFragment;
     "setProviderFee(uint256)": FunctionFragment;
@@ -118,7 +118,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "emergencyBurn",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "executor", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -129,7 +128,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [BytesLike, string, string, string, string, string, string, string]
+    values: [BytesLike, string, string, string, string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -175,6 +174,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setGovernance",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxUSDLimit",
@@ -314,7 +317,6 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "emergencyBurn",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "executor", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -346,6 +348,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setApprovalForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setGovernance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -608,8 +614,6 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    executor(overrides?: CallOverrides): Promise<[string]>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -622,7 +626,6 @@ export class CHIManager extends BaseContract {
       _v3Factory: string,
       _yangNFT: string,
       _deployer: string,
-      _executor: string,
       _manager: string,
       _governance: string,
       _treasury: string,
@@ -698,6 +701,11 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setGovernance(
+      newGov: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -931,8 +939,6 @@ export class CHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  executor(overrides?: CallOverrides): Promise<string>;
-
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -945,7 +951,6 @@ export class CHIManager extends BaseContract {
     _v3Factory: string,
     _yangNFT: string,
     _deployer: string,
-    _executor: string,
     _manager: string,
     _governance: string,
     _treasury: string,
@@ -1015,6 +1020,11 @@ export class CHIManager extends BaseContract {
   setApprovalForAll(
     operator: string,
     approved: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setGovernance(
+    newGov: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1245,8 +1255,6 @@ export class CHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    executor(overrides?: CallOverrides): Promise<string>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1259,7 +1267,6 @@ export class CHIManager extends BaseContract {
       _v3Factory: string,
       _yangNFT: string,
       _deployer: string,
-      _executor: string,
       _manager: string,
       _governance: string,
       _treasury: string,
@@ -1328,6 +1335,8 @@ export class CHIManager extends BaseContract {
       approved: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setGovernance(newGov: string, overrides?: CallOverrides): Promise<void>;
 
     setMaxUSDLimit(
       tokenId: BigNumberish,
@@ -1754,8 +1763,6 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    executor(overrides?: CallOverrides): Promise<BigNumber>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1768,7 +1775,6 @@ export class CHIManager extends BaseContract {
       _v3Factory: string,
       _yangNFT: string,
       _deployer: string,
-      _executor: string,
       _manager: string,
       _governance: string,
       _treasury: string,
@@ -1841,6 +1847,11 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setGovernance(
+      newGov: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2045,8 +2056,6 @@ export class CHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    executor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -2059,7 +2068,6 @@ export class CHIManager extends BaseContract {
       _v3Factory: string,
       _yangNFT: string,
       _deployer: string,
-      _executor: string,
       _manager: string,
       _governance: string,
       _treasury: string,
@@ -2135,6 +2143,11 @@ export class CHIManager extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGovernance(
+      newGov: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -49,11 +49,10 @@ contract CHIManager is
     address public yangNFT;
     bytes32 public merkleRoot;
 
-    address public manager;
-    address public executor;
-    address public deployer;
-    address public treasury;
-    address public governance;
+    address public manager;  // MultiSig Address
+    address public deployer; // CHIVault Deployer Address
+    address public treasury; // MultiSig Address
+    address public governance;  // DAO Address, upgradable
 
     uint256 private _tempChiId;
     modifier subscripting(uint256 chiId) {
@@ -103,7 +102,7 @@ contract CHIManager is
 
     modifier isAuthorizedForToken(uint256 tokenId) {
         require(
-            _isApprovedOrOwner(msg.sender, tokenId) || msg.sender == executor,
+            _isApprovedOrOwner(msg.sender, tokenId),
             "not approved"
         );
         _;
@@ -115,7 +114,6 @@ contract CHIManager is
         address _v3Factory,
         address _yangNFT,
         address _deployer,
-        address _executor,
         address _manager,
         address _governance,
         address _treasury
@@ -128,7 +126,6 @@ contract CHIManager is
         treasury = _treasury;
         governance = _governance;
         deployer = _deployer;
-        executor = _executor;
 
         _vaultFee = 15 * 1e4;
         _providerFee = 5 * 1e4;
@@ -219,6 +216,12 @@ contract CHIManager is
         emit UpdateMerkleRoot(msg.sender, merkleRoot, _merkleRoot);
 
         merkleRoot = _merkleRoot;
+    }
+
+    function setGovernance(address newGov) external onlyManager {
+        emit UpdateGovernance(msg.sender, governance, newGov);
+
+        governance = newGov;
     }
 
     function setVaultFee(uint256 _vaultFee_) external {
@@ -440,7 +443,7 @@ contract CHIManager is
     }
 
     function collectProtocol(uint256 tokenId) external override {
-        require(msg.sender == executor || msg.sender == manager, "authority");
+        require(msg.sender == manager, "authority");
 
         ICHIVault vault = ICHIVault(_chi[tokenId].vault);
         uint256 accruedProtocolFees0 = vault.accruedProtocolFees0();
@@ -514,7 +517,7 @@ contract CHIManager is
         isAuthorizedForToken(tokenId)
     {
         require(ranges.length == liquidities.length, "len");
-        for (uint i = 0; i < ranges.length; i++) {
+        for (uint256 i = 0; i < ranges.length; i++) {
             ICHIVault(_tempVault).removeLiquidityFromPosition(
                 ranges[i],
                 liquidities[i]
@@ -532,7 +535,7 @@ contract CHIManager is
         onlyWhenNotArchived(tokenId)
         isAuthorizedForToken(tokenId)
     {
-        for (uint i = 0 ; i < ranges.length; i++) {
+        for (uint256 i = 0; i < ranges.length; i++) {
             ICHIVault(_tempVault).removeAllLiquidityFromPosition(ranges[i]);
         }
         emit ChangeLiquidity(tokenId, _tempVault);

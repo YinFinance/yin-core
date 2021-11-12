@@ -891,19 +891,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "executor",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -955,11 +942,6 @@
       {
         "internalType": "address",
         "name": "_deployer",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_executor",
         "type": "address"
       },
       {
@@ -1254,6 +1236,19 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newGov",
+        "type": "address"
+      }
+    ],
+    "name": "setGovernance",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

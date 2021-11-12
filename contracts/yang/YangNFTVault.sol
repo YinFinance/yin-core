@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
@@ -26,14 +27,13 @@ contract YangNFTVault is
     IYangNFTVault,
     LockLiquidity,
     ReentrancyGuardUpgradeable,
+    OwnableUpgradeable,
     ERC721Upgradeable
 {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    // owner & chiManager
-    address public owner;
-    address public nextowner;
+    // chiManager
     address private chiManager;
 
     // chainlink feed registry
@@ -43,11 +43,6 @@ contract YangNFTVault is
     uint256 private _nextId;
     address private _tempAccount;
     mapping(address => uint256) private _usersMap;
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, 'only owner');
-        _;
-    }
 
     modifier isAuthorizedForToken(uint256 tokenId) {
         require(_isApprovedOrOwner(msg.sender, tokenId), 'not approved');
@@ -62,12 +57,11 @@ contract YangNFTVault is
 
     // initialize
     function initialize(address _registry) public initializer {
-        owner = msg.sender;
-        nextowner = address(0);
         registry = _registry;
 
         _nextId = 1;
         __LockLiquidity__init();
+        __Ownable_init();
         __ReentrancyGuard_init();
         __ERC721_init('YIN Asset Manager Vault', 'YANG');
     }
@@ -82,19 +76,6 @@ contract YangNFTVault is
 
     function updateLockState(uint256 chiId, bool state) external onlyOwner {
         _updateLockState(chiId, state);
-    }
-
-    function transferOwnerShip(address _nextowner) external onlyOwner {
-        nextowner = _nextowner;
-    }
-
-    function acceptOwnerShip() external {
-        require(msg.sender == nextowner, 'nextowner not approved');
-
-        emit AcceptOwnerShip(owner, nextowner);
-
-        owner = nextowner;
-        nextowner = address(0);
     }
 
     function mint(address recipient) external override returns (uint256 tokenId) {
@@ -134,54 +115,6 @@ contract YangNFTVault is
         }
     }
 
-    function _subscribe(
-        address token0,
-        address token1,
-        SubscribeParam memory params
-    )
-        internal
-        returns (
-            uint256 amount0,
-            uint256 amount1,
-            uint256 shares
-        )
-    {
-        IERC20(token0).safeApprove(chiManager, params.amount0Desired);
-        IERC20(token1).safeApprove(chiManager, params.amount1Desired);
-
-        (shares, amount0, amount1) = ICHIManager(chiManager).subscribe(
-            params.yangId,
-            params.chiId,
-            params.amount0Desired,
-            params.amount1Desired,
-            params.amount0Min,
-            params.amount1Min
-        );
-
-        IERC20(token0).safeApprove(chiManager, 0);
-        IERC20(token1).safeApprove(chiManager, 0);
-    }
-
-    function _subscribeSingle(address tokenIn, SubscribeSingleParam memory params)
-        internal
-        returns (
-            uint256 amount0,
-            uint256 amount1,
-            uint256 shares
-        )
-    {
-        IERC20(tokenIn).safeApprove(chiManager, params.maxTokenAmount);
-        (shares, amount0, amount1) = ICHIManager(chiManager).subscribeSingle(
-            params.yangId,
-            params.chiId,
-            params.zeroForOne,
-            params.exactAmount,
-            params.maxTokenAmount,
-            params.minShares
-        );
-        IERC20(tokenIn).safeApprove(chiManager, 0);
-    }
-
     function subscribeSingle(SubscribeSingleParam memory params)
         external
         override
@@ -194,12 +127,16 @@ contract YangNFTVault is
             uint256 shares
         )
     {
-        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
-        IUniswapV3Pool pool = IUniswapV3Pool(_pool);
-        address tokenIn = params.zeroForOne ? pool.token0() : pool.token1();
         require(!checkMaxUSDLimit(params.chiId), 'MUL');
 
-        (amount0, amount1, shares) = _subscribeSingle(tokenIn, params);
+        (shares, amount0, amount1) = ICHIManager(chiManager).subscribeSingle(
+            params.yangId,
+            params.chiId,
+            params.zeroForOne,
+            params.exactAmount,
+            params.maxTokenAmount,
+            params.minShares
+        );
         _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
         emit Subscribe(params.yangId, params.chiId, shares);
     }
@@ -217,19 +154,16 @@ contract YangNFTVault is
         )
     {
         require(chiManager != address(0), 'CHI');
-        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
-        IUniswapV3Pool pool = IUniswapV3Pool(_pool);
-        address token0 = pool.token0();
-        address token1 = pool.token1();
         require(!checkMaxUSDLimit(params.chiId), 'MUL');
-
-        (amount0, amount1, shares) = _subscribe(token0, token1, params);
+        (shares, amount0, amount1) = ICHIManager(chiManager).subscribe(
+            params.yangId,
+            params.chiId,
+            params.amount0Desired,
+            params.amount1Desired,
+            params.amount0Min,
+            params.amount1Min
+        );
         _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
-
-        // _withdraw rest to msg.sender
-        uint256 remain0 = params.amount0Desired.sub(amount0);
-        uint256 remain1 = params.amount1Desired.sub(amount1);
-        _withdraw(token0, remain0, token1, remain1);
 
         emit Subscribe(params.yangId, params.chiId, shares);
     }
@@ -276,7 +210,7 @@ contract YangNFTVault is
             params.amountOutMin
         );
         require(amount >= params.amountOutMin);
-        address tokenOut = params.zeroForOne ? pool.token0() : pool.token1();
+        address tokenOut = params.zeroForOne ? pool.token1() : pool.token0();
         _withdraw(tokenOut, amount, address(0), 0);
 
         emit UnSubscribe(params.yangId, params.chiId, amount, 0);
@@ -375,47 +309,10 @@ contract YangNFTVault is
         IERC20 token1,
         uint256 amount1,
         address recipient
-    ) external override
-    {
-        require(chiManager != address(0), "CHI");
-        require(msg.sender == chiManager, "manager");
+    ) external override {
+        require(chiManager != address(0), 'CHI');
+        require(msg.sender == chiManager, 'manager');
         if (amount0 > 0) token0.safeTransferFrom(_tempAccount, recipient, amount0);
-        if (amount1 > 0) token1.safeTransferFrom(_tempAccount, recipient, amount0);
-    }
-
-    function _amountsForLiquidity(
-        IUniswapV3Pool pool,
-        int24 tickLower,
-        int24 tickUpper,
-        uint128 liquidity
-    ) internal view returns (uint256 amount0, uint256 amount1) {
-        (uint160 sqrtRatioX96, , , , , , ) = pool.slot0();
-        (amount0, amount1) = LiquidityAmounts.getAmountsForLiquidity(
-            sqrtRatioX96,
-            TickMath.getSqrtRatioAtTick(tickLower),
-            TickMath.getSqrtRatioAtTick(tickUpper),
-            liquidity
-        );
-    }
-
-    function _liquidityForAmounts(
-        IUniswapV3Pool pool,
-        int24 tickLower,
-        int24 tickUpper,
-        uint256 amount0,
-        uint256 amount1
-    ) internal view returns (uint128 liquidity) {
-        (uint160 sqrtRatioX96, , , , , , ) = pool.slot0();
-        liquidity = LiquidityAmounts.getLiquidityForAmounts(
-            sqrtRatioX96,
-            TickMath.getSqrtRatioAtTick(tickLower),
-            TickMath.getSqrtRatioAtTick(tickUpper),
-            amount0,
-            amount1
-        );
-    }
-
-    function toUint128(uint256 x) private pure returns (uint128 y) {
-        require((y = uint128(x)) == x);
+        if (amount1 > 0) token1.safeTransferFrom(_tempAccount, recipient, amount1);
     }
 }

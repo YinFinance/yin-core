@@ -22,7 +22,6 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface YangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
     "YANGDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
-    "acceptOwnerShip()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
@@ -36,11 +35,11 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(address)": FunctionFragment;
     "name()": FunctionFragment;
-    "nextowner()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "positions(uint256,uint256)": FunctionFragment;
     "registry()": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setCHIManager(address)": FunctionFragment;
@@ -53,7 +52,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "tokenURI(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
-    "transferOwnerShip(address)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
     "unsubscribe(tuple)": FunctionFragment;
     "unsubscribeSingle(tuple)": FunctionFragment;
     "updateLockSeconds(uint256)": FunctionFragment;
@@ -63,10 +62,6 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "YANGDepositCallback",
     values: [string, BigNumberish, string, BigNumberish, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "acceptOwnerShip",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
@@ -102,7 +97,6 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [string]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "nextowner", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
@@ -113,6 +107,10 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "registry", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom",
     values: [string, string, BigNumberish]
@@ -177,7 +175,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "transferOwnerShip",
+    functionFragment: "transferOwnership",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -217,10 +215,6 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     functionFragment: "YANGDepositCallback",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "acceptOwnerShip",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
@@ -243,11 +237,14 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "nextowner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "positions", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
     data: BytesLike
@@ -288,7 +285,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "transferOwnerShip",
+    functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -316,6 +313,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "LockSeconds(uint256)": EventFragment;
     "LockState(uint256,bool,bool)": EventFragment;
     "MintYangNFT(address,uint256)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
     "Subscribe(uint256,uint256,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
     "UnSubscribe(uint256,uint256,uint256,uint256)": EventFragment;
@@ -328,6 +326,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "LockSeconds"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockState"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintYangNFT"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnSubscribe"): EventFragment;
@@ -383,10 +382,6 @@ export class YangNFTVault extends BaseContract {
       token1: string,
       amount1: BigNumberish,
       recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -460,8 +455,6 @@ export class YangNFTVault extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
-    nextowner(overrides?: CallOverrides): Promise<[string]>;
-
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     ownerOf(
@@ -482,6 +475,10 @@ export class YangNFTVault extends BaseContract {
     >;
 
     registry(overrides?: CallOverrides): Promise<[string]>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -565,8 +562,8 @@ export class YangNFTVault extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    transferOwnerShip(
-      _nextowner: string,
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -610,10 +607,6 @@ export class YangNFTVault extends BaseContract {
     token1: string,
     amount1: BigNumberish,
     recipient: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  acceptOwnerShip(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -684,8 +677,6 @@ export class YangNFTVault extends BaseContract {
 
   name(overrides?: CallOverrides): Promise<string>;
 
-  nextowner(overrides?: CallOverrides): Promise<string>;
-
   owner(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -703,6 +694,10 @@ export class YangNFTVault extends BaseContract {
   >;
 
   registry(overrides?: CallOverrides): Promise<string>;
+
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
@@ -783,8 +778,8 @@ export class YangNFTVault extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  transferOwnerShip(
-    _nextowner: string,
+  transferOwnership(
+    newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -830,8 +825,6 @@ export class YangNFTVault extends BaseContract {
       recipient: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    acceptOwnerShip(overrides?: CallOverrides): Promise<void>;
 
     approve(
       to: string,
@@ -897,8 +890,6 @@ export class YangNFTVault extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<string>;
 
-    nextowner(overrides?: CallOverrides): Promise<string>;
-
     owner(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -916,6 +907,8 @@ export class YangNFTVault extends BaseContract {
     >;
 
     registry(overrides?: CallOverrides): Promise<string>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1008,8 +1001,8 @@ export class YangNFTVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    transferOwnerShip(
-      _nextowner: string,
+    transferOwnership(
+      newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1101,6 +1094,14 @@ export class YangNFTVault extends BaseContract {
       { recipient: string; tokenId: BigNumber }
     >;
 
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     Subscribe(
       yangId?: null,
       chiId?: null,
@@ -1142,10 +1143,6 @@ export class YangNFTVault extends BaseContract {
       token1: string,
       amount1: BigNumberish,
       recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1211,8 +1208,6 @@ export class YangNFTVault extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
-    nextowner(overrides?: CallOverrides): Promise<BigNumber>;
-
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     ownerOf(
@@ -1227,6 +1222,10 @@ export class YangNFTVault extends BaseContract {
     ): Promise<BigNumber>;
 
     registry(overrides?: CallOverrides): Promise<BigNumber>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1310,8 +1309,8 @@ export class YangNFTVault extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    transferOwnerShip(
-      _nextowner: string,
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1356,10 +1355,6 @@ export class YangNFTVault extends BaseContract {
       token1: string,
       amount1: BigNumberish,
       recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    acceptOwnerShip(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1428,8 +1423,6 @@ export class YangNFTVault extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    nextowner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ownerOf(
@@ -1444,6 +1437,10 @@ export class YangNFTVault extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     registry(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1527,8 +1524,8 @@ export class YangNFTVault extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    transferOwnerShip(
-      _nextowner: string,
+    transferOwnership(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
