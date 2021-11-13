@@ -13,4 +13,3 @@ interface IYANGDepositCallBack {
         address recipient
     ) external;
 }
-

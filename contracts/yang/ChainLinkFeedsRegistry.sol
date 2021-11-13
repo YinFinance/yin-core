@@ -3,13 +3,13 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
-import '@chainlink/contracts/src/v0.7/interfaces/AggregatorInterface.sol';
-import '@chainlink/contracts/src/v0.7/Denominations.sol';
+import "@chainlink/contracts/src/v0.7/interfaces/AggregatorInterface.sol";
+import "@chainlink/contracts/src/v0.7/Denominations.sol";
 
-import '../interfaces/yang/IChainLinkFeedsRegistry.sol';
-import '../libraries/BinaryExp.sol';
+import "../interfaces/yang/IChainLinkFeedsRegistry.sol";
+import "../libraries/BinaryExp.sol";
 
 contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     using SafeMath for uint256;
@@ -24,7 +24,7 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     address public immutable WETH;
 
     modifier onlyGov() {
-        require(msg.sender == governance, 'gov');
+        require(msg.sender == governance, "gov");
         _;
     }
 
@@ -33,7 +33,7 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     }
 
     function acceptGovrnance() external {
-        require(msg.sender == nextgov, 'nextgov');
+        require(msg.sender == nextgov, "nextgov");
         governance = nextgov;
         nextgov = address(0);
     }
@@ -48,9 +48,15 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
         USD = Denominations.USD;
         for (uint256 i = 0; i < params.length; i++) {
             if (params[i].isUSD) {
-                assets2USD[params[i].asset] = Registry({index: params[i].registry, decimals: params[i].decimals});
+                assets2USD[params[i].asset] = Registry({
+                    index: params[i].registry,
+                    decimals: params[i].decimals
+                });
             } else {
-                assets2ETH[params[i].asset] = Registry({index: params[i].registry, decimals: params[i].decimals});
+                assets2ETH[params[i].asset] = Registry({
+                    index: params[i].registry,
+                    decimals: params[i].decimals
+                });
             }
         }
     }
@@ -59,23 +65,46 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     // All USD registry decimals is 8, all ETH registry decimals is 18
 
     // Return 1e8
-    function getUSDPrice(address asset) external view override returns (uint256) {
+    function getUSDPrice(address asset)
+        external
+        view
+        override
+        returns (uint256)
+    {
         uint256 price = 0;
         if (assets2USD[asset].index != address(0)) {
-            price = uint256(AggregatorInterface(assets2USD[asset].index).latestAnswer());
-        } else if (assets2ETH[asset].index != address(0) && assets2USD[WETH].index != address(0)) {
-            uint256 tokenETHPrice = uint256(AggregatorInterface(assets2ETH[asset].index).latestAnswer());
-            uint256 ethUSDPrice = uint256(AggregatorInterface(assets2USD[WETH].index).latestAnswer());
-            price = tokenETHPrice.mul(ethUSDPrice).div(BinaryExp.pow(10, assets2ETH[asset].decimals));
+            price = uint256(
+                AggregatorInterface(assets2USD[asset].index).latestAnswer()
+            );
+        } else if (
+            assets2ETH[asset].index != address(0) &&
+            assets2USD[WETH].index != address(0)
+        ) {
+            uint256 tokenETHPrice = uint256(
+                AggregatorInterface(assets2ETH[asset].index).latestAnswer()
+            );
+            uint256 ethUSDPrice = uint256(
+                AggregatorInterface(assets2USD[WETH].index).latestAnswer()
+            );
+            price = tokenETHPrice.mul(ethUSDPrice).div(
+                BinaryExp.pow(10, assets2ETH[asset].decimals)
+            );
         }
         return price;
     }
 
     // Returns 1e18
-    function getETHPrice(address asset) external view override returns (uint256) {
+    function getETHPrice(address asset)
+        external
+        view
+        override
+        returns (uint256)
+    {
         uint256 price = 0;
         if (assets2ETH[asset].index != address(0)) {
-            price = uint256(AggregatorInterface(assets2ETH[asset].index).latestAnswer());
+            price = uint256(
+                AggregatorInterface(assets2ETH[asset].index).latestAnswer()
+            );
         }
         return price;
     }

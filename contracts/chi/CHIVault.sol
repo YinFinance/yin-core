@@ -526,8 +526,15 @@ contract CHIVault is
                 shouldLiquidity = scaleRate;
             }
 
-            (uint256 burnTotal0, uint256 burnTotal1) = _burnMultLiquidityScale(shouldLiquidity, address(this));
-            require(burnTotal0 >= shouldWithdrawal0 && burnTotal1 >=  shouldWithdrawal1, "SW");
+            (uint256 burnTotal0, uint256 burnTotal1) = _burnMultLiquidityScale(
+                shouldLiquidity,
+                address(this)
+            );
+            require(
+                burnTotal0 >= shouldWithdrawal0 &&
+                    burnTotal1 >= shouldWithdrawal1,
+                "SW"
+            );
         }
         // Burn shares
         _burn(shares);
@@ -553,36 +560,19 @@ contract CHIVault is
         SwapCallbackData memory data = abi.decode(_data, (SwapCallbackData));
 
         address _tokenIn = data.tokenIn;
-        address _tokenOut = data.tokenOut;
-        (bool isExactInput, uint256 amountToPay) = amount0Delta > 0
-            ? (_tokenIn < _tokenOut, uint256(amount0Delta))
-            : (_tokenOut < _tokenIn, uint256(amount1Delta));
-        if (isExactInput) {
-            if (data.isDeposit) {
-                ICHIDepositCallBack(CHIManager).CHIDepositCallback(
-                    IERC20(_tokenIn),
-                    amountToPay,
-                    IERC20(0),
-                    0,
-                    address(pool)
-                );
-            } else {
-                IERC20(_tokenIn).safeTransfer(address(pool), amountToPay);
-            }
+        uint256 amountToPay = amount0Delta > 0
+            ? uint256(amount0Delta)
+            : uint256(amount1Delta);
+        if (data.isDeposit) {
+            ICHIDepositCallBack(CHIManager).CHIDepositCallback(
+                IERC20(_tokenIn),
+                amountToPay,
+                IERC20(0),
+                0,
+                address(pool)
+            );
         } else {
-            if (data.isDeposit) {
-                _tokenIn = _tokenOut; // swap in/out because exact output swaps are reversed
-                ICHIDepositCallBack(CHIManager).CHIDepositCallback(
-                    IERC20(_tokenIn),
-                    amountToPay,
-                    IERC20(0),
-                    0,
-                    address(pool)
-                );
-            } else {
-                _tokenIn = _tokenOut; // swap in/out because exact output swaps are reversed
-                IERC20(_tokenIn).safeTransfer(address(pool), amountToPay);
-            }
+            IERC20(_tokenIn).safeTransfer(address(pool), amountToPay);
         }
     }
 

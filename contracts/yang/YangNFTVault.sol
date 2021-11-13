@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
@@ -45,7 +45,7 @@ contract YangNFTVault is
     mapping(address => uint256) private _usersMap;
 
     modifier isAuthorizedForToken(uint256 tokenId) {
-        require(_isApprovedOrOwner(msg.sender, tokenId), 'not approved');
+        require(_isApprovedOrOwner(msg.sender, tokenId), "not approved");
         _;
     }
 
@@ -63,7 +63,7 @@ contract YangNFTVault is
         __LockLiquidity__init();
         __Ownable_init();
         __ReentrancyGuard_init();
-        __ERC721_init('YIN Asset Manager Vault', 'YANG');
+        __ERC721_init("YIN Asset Manager Vault", "YANG");
     }
 
     function setCHIManager(address _chiManager) external override onlyOwner {
@@ -78,8 +78,12 @@ contract YangNFTVault is
         _updateLockState(chiId, state);
     }
 
-    function mint(address recipient) external override returns (uint256 tokenId) {
-        require(_usersMap[recipient] == 0, 'only mint once');
+    function mint(address recipient)
+        external
+        override
+        returns (uint256 tokenId)
+    {
+        require(_usersMap[recipient] == 0, "only mint once");
         // _mint function check tokenId existence
         _mint(recipient, (tokenId = _nextId++));
 
@@ -92,11 +96,11 @@ contract YangNFTVault is
         uint256 tokenId
     ) internal virtual override {
         if (from != address(0)) {
-            require(_usersMap[from] == tokenId, 'invalid tokenId');
+            require(_usersMap[from] == tokenId, "invalid tokenId");
             _usersMap[from] = 0;
         }
         if (to != address(0)) {
-            require(_usersMap[to] == 0, 'only accept one');
+            require(_usersMap[to] == 0, "only accept one");
             _usersMap[to] = tokenId;
         }
     }
@@ -127,7 +131,7 @@ contract YangNFTVault is
             uint256 shares
         )
     {
-        require(!checkMaxUSDLimit(params.chiId), 'MUL');
+        require(!checkMaxUSDLimit(params.chiId), "MUL");
 
         (shares, amount0, amount1) = ICHIManager(chiManager).subscribeSingle(
             params.yangId,
@@ -137,7 +141,11 @@ contract YangNFTVault is
             params.maxTokenAmount,
             params.minShares
         );
-        _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
+        _updateAccountLockDurations(
+            params.yangId,
+            params.chiId,
+            block.timestamp
+        );
         emit Subscribe(params.yangId, params.chiId, shares);
     }
 
@@ -153,8 +161,8 @@ contract YangNFTVault is
             uint256 shares
         )
     {
-        require(chiManager != address(0), 'CHI');
-        require(!checkMaxUSDLimit(params.chiId), 'MUL');
+        require(chiManager != address(0), "CHI");
+        require(!checkMaxUSDLimit(params.chiId), "MUL");
         (shares, amount0, amount1) = ICHIManager(chiManager).subscribe(
             params.yangId,
             params.chiId,
@@ -163,7 +171,11 @@ contract YangNFTVault is
             params.amount0Min,
             params.amount1Min
         );
-        _updateAccountLockDurations(params.yangId, params.chiId, block.timestamp);
+        _updateAccountLockDurations(
+            params.yangId,
+            params.chiId,
+            block.timestamp
+        );
 
         emit Subscribe(params.yangId, params.chiId, shares);
     }
@@ -175,17 +187,20 @@ contract YangNFTVault is
         isAuthorizedForToken(params.yangId)
         afterLockUnsubscribe(params.yangId, params.chiId)
     {
-        require(chiManager != address(0), 'CHI');
+        require(chiManager != address(0), "CHI");
 
-        (uint256 amount0, uint256 amount1) = ICHIManager(chiManager).unsubscribe(
-            params.yangId,
-            params.chiId,
-            params.shares,
-            params.amount0Min,
-            params.amount1Min
+        (uint256 amount0, uint256 amount1) = ICHIManager(chiManager)
+            .unsubscribe(
+                params.yangId,
+                params.chiId,
+                params.shares,
+                params.amount0Min,
+                params.amount1Min
+            );
+
+        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(
+            params.chiId
         );
-
-        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         _withdraw(pool.token0(), amount0, pool.token1(), amount1);
 
@@ -199,8 +214,10 @@ contract YangNFTVault is
         isAuthorizedForToken(params.yangId)
         afterLockUnsubscribe(params.yangId, params.chiId)
     {
-        require(chiManager != address(0), 'CHI');
-        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(params.chiId);
+        require(chiManager != address(0), "CHI");
+        (, , address _pool, , , , , ) = ICHIManager(chiManager).chi(
+            params.chiId
+        );
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         uint256 amount = ICHIManager(chiManager).unsubscribeSingle(
             params.yangId,
@@ -218,8 +235,15 @@ contract YangNFTVault is
 
     // views function
 
-    function checkMaxUSDLimit(uint256 chiId) public view override returns (bool) {
-        (, , address pool, address vault, , , , ) = ICHIManager(chiManager).chi(chiId);
+    function checkMaxUSDLimit(uint256 chiId)
+        public
+        view
+        override
+        returns (bool)
+    {
+        (, , address pool, address vault, , , , ) = ICHIManager(chiManager).chi(
+            chiId
+        );
         (, , uint256 maxUSDLimit) = ICHIManager(chiManager).config(chiId);
         (uint256 amount0, uint256 amount1) = ICHIVault(vault).getTotalAmounts();
         return
@@ -249,7 +273,12 @@ contract YangNFTVault is
         amount1 = _amount1;
     }
 
-    function getTokenId(address recipient) public view override returns (uint256) {
+    function getTokenId(address recipient)
+        public
+        view
+        override
+        returns (uint256)
+    {
         return _usersMap[recipient];
     }
 
@@ -267,8 +296,10 @@ contract YangNFTVault is
             uint256 amount1
         )
     {
-        require(chiManager != address(0), 'CHI');
-        (, , , address _vault, , , , uint256 _totalShares) = ICHIManager(chiManager).chi(chiId);
+        require(chiManager != address(0), "CHI");
+        (, , , address _vault, , , , uint256 _totalShares) = ICHIManager(
+            chiManager
+        ).chi(chiId);
         (uint256 total0, uint256 total1) = ICHIVault(_vault).getTotalAmounts();
 
         if (_totalShares == 0) {
@@ -283,7 +314,10 @@ contract YangNFTVault is
             amount0 = amount0Desired;
             shares = amount0.mul(_totalShares).div(total0);
         } else {
-            uint256 cross = Math.min(amount0Desired.mul(total1), amount1Desired.mul(total0));
+            uint256 cross = Math.min(
+                amount0Desired.mul(total1),
+                amount1Desired.mul(total0)
+            );
             if (cross != 0) {
                 // Round up amounts
                 amount0 = cross.sub(1).div(total1).add(1);
@@ -293,11 +327,19 @@ contract YangNFTVault is
         }
     }
 
-    function getAmounts(uint256 chiId, uint256 shares) public view override returns (uint256 amount0, uint256 amount1) {
-        require(chiManager != address(0), 'CHI');
-        (, , , address _vault, , , , uint256 _totalShares) = ICHIManager(chiManager).chi(chiId);
+    function getAmounts(uint256 chiId, uint256 shares)
+        public
+        view
+        override
+        returns (uint256 amount0, uint256 amount1)
+    {
+        require(chiManager != address(0), "CHI");
+        (, , , address _vault, , , , uint256 _totalShares) = ICHIManager(
+            chiManager
+        ).chi(chiId);
         if (_totalShares > 0) {
-            (uint256 total0, uint256 total1) = ICHIVault(_vault).getTotalAmounts();
+            (uint256 total0, uint256 total1) = ICHIVault(_vault)
+                .getTotalAmounts();
             amount0 = total0.mul(shares).div(_totalShares);
             amount1 = total1.mul(shares).div(_totalShares);
         }
@@ -310,9 +352,11 @@ contract YangNFTVault is
         uint256 amount1,
         address recipient
     ) external override {
-        require(chiManager != address(0), 'CHI');
-        require(msg.sender == chiManager, 'manager');
-        if (amount0 > 0) token0.safeTransferFrom(_tempAccount, recipient, amount0);
-        if (amount1 > 0) token1.safeTransferFrom(_tempAccount, recipient, amount1);
+        require(chiManager != address(0), "CHI");
+        require(msg.sender == chiManager, "manager");
+        if (amount0 > 0)
+            token0.safeTransferFrom(_tempAccount, recipient, amount0);
+        if (amount1 > 0)
+            token1.safeTransferFrom(_tempAccount, recipient, amount1);
     }
 }

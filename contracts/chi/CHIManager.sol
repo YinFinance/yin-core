@@ -49,10 +49,10 @@ contract CHIManager is
     address public yangNFT;
     bytes32 public merkleRoot;
 
-    address public manager;  // MultiSig Address
+    address public manager; // MultiSig Address
     address public deployer; // CHIVault Deployer Address
     address public treasury; // MultiSig Address
-    address public governance;  // DAO Address, upgradable
+    address public governance; // DAO Address, upgradable
 
     uint256 private _tempChiId;
     modifier subscripting(uint256 chiId) {
@@ -101,10 +101,7 @@ contract CHIManager is
     }
 
     modifier isAuthorizedForToken(uint256 tokenId) {
-        require(
-            _isApprovedOrOwner(msg.sender, tokenId),
-            "not approved"
-        );
+        require(_isApprovedOrOwner(msg.sender, tokenId), "not approved");
         _;
     }
 

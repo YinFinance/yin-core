@@ -20,9 +20,17 @@ interface IChainLinkFeedsRegistry {
 
     function getETHPrice(address asset) external view returns (uint256);
 
-    function addUSDFeed(address asset, address index, uint256 decimals) external;
+    function addUSDFeed(
+        address asset,
+        address index,
+        uint256 decimals
+    ) external;
 
-    function addETHFeed(address asset, address index, uint256 decimals) external;
+    function addETHFeed(
+        address asset,
+        address index,
+        uint256 decimals
+    ) external;
 
     function removeUSDFeed(address asset) external;
 

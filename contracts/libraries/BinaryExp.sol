@@ -2,7 +2,7 @@
 
 pragma solidity ^0.7.6;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 library BinaryExp {
     using SafeMath for uint256;
@@ -25,4 +25,3 @@ library BinaryExp {
         }
     }
 }
-

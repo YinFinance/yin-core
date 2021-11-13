@@ -43,7 +43,12 @@ interface IYangNFTVault is IYANGDepositCallBack {
     event AcceptOwnerShip(address owner, address nextowner);
     event MintYangNFT(address recipient, uint256 tokenId);
     event Subscribe(uint256 yangId, uint256 chiId, uint256 share);
-    event UnSubscribe(uint256 yangId, uint256 chiId, uint256 amount0, uint256 amount1);
+    event UnSubscribe(
+        uint256 yangId,
+        uint256 chiId,
+        uint256 amount0,
+        uint256 amount1
+    );
 
     function setCHIManager(address) external;
 
@@ -83,7 +88,10 @@ interface IYangNFTVault is IYANGDepositCallBack {
             uint256
         );
 
-    function getAmounts(uint256 chiId, uint256 shares) external view returns (uint256, uint256);
+    function getAmounts(uint256 chiId, uint256 shares)
+        external
+        view
+        returns (uint256, uint256);
 
     function checkMaxUSDLimit(uint256 chiId) external view returns (bool);
 
