@@ -373,56 +373,6 @@ const _abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "oldDeployer",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newDeployer",
-        type: "address",
-      },
-    ],
-    name: "UpdateDeployer",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "oldExecutor",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newExecutor",
-        type: "address",
-      },
-    ],
-    name: "UpdateExecutor",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
         name: "oldGovernance",
         type: "address",
       },
@@ -509,31 +459,6 @@ const _abi = [
       },
     ],
     name: "UpdateProviderFee",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "oldRewardPool",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newRewardPool",
-        type: "address",
-      },
-    ],
-    name: "UpdateRewardPool",
     type: "event",
   },
   {

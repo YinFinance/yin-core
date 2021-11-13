@@ -567,7 +567,7 @@ contract CHIVault is
                     address(pool)
                 );
             } else {
-                token0.safeTransfer(address(pool), amountToPay);
+                IERC20(_tokenIn).safeTransfer(address(pool), amountToPay);
             }
         } else {
             if (data.isDeposit) {
@@ -580,7 +580,8 @@ contract CHIVault is
                     address(pool)
                 );
             } else {
-                token1.safeTransfer(address(pool), amountToPay);
+                _tokenIn = _tokenOut; // swap in/out because exact output swaps are reversed
+                IERC20(_tokenIn).safeTransfer(address(pool), amountToPay);
             }
         }
     }

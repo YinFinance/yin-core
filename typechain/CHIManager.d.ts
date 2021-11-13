@@ -429,13 +429,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "Swap(uint256,address,address,uint256,uint256)": EventFragment;
     "Sweep(address,address,address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
-    "UpdateDeployer(address,address,address)": EventFragment;
-    "UpdateExecutor(address,address,address)": EventFragment;
     "UpdateGovernance(address,address,address)": EventFragment;
     "UpdateMaxUSDLimit(address,uint256,uint256)": EventFragment;
     "UpdateMerkleRoot(address,bytes32,bytes32)": EventFragment;
     "UpdateProviderFee(address,uint256,uint256)": EventFragment;
-    "UpdateRewardPool(address,address,address)": EventFragment;
     "UpdateVaultFee(address,uint256,uint256)": EventFragment;
   };
 
@@ -459,13 +456,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sweep"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateDeployer"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateExecutor"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateGovernance"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMaxUSDLimit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMerkleRoot"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateProviderFee"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdateRewardPool"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateVaultFee"): EventFragment;
 }
 
@@ -1624,24 +1618,6 @@ export class CHIManager extends BaseContract {
       { from: string; to: string; tokenId: BigNumber }
     >;
 
-    UpdateDeployer(
-      account?: null,
-      oldDeployer?: null,
-      newDeployer?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldDeployer: string; newDeployer: string }
-    >;
-
-    UpdateExecutor(
-      account?: null,
-      oldExecutor?: null,
-      newExecutor?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldExecutor: string; newExecutor: string }
-    >;
-
     UpdateGovernance(
       account?: null,
       oldGovernance?: null,
@@ -1676,15 +1652,6 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
       { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
-    >;
-
-    UpdateRewardPool(
-      account?: null,
-      oldRewardPool?: null,
-      newRewardPool?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldRewardPool: string; newRewardPool: string }
     >;
 
     UpdateVaultFee(

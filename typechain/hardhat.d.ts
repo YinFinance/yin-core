@@ -57,9 +57,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Upgradeable__factory>;
     getContractFactory(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
       name: "IERC165",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
+    getContractFactory(
+      name: "ERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20__factory>;
     getContractFactory(
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -172,6 +180,10 @@ declare module "hardhat/types/runtime" {
       name: "RewardPool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardPool__factory>;
+    getContractFactory(
+      name: "Yin",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Yin__factory>;
     getContractFactory(
       name: "OracleProvider",
       signerOrOptions?: ethers.Signer | FactoryOptions
