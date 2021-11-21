@@ -55,6 +55,9 @@ contract CHIManager is
     address public governance; // DAO Address, upgradable
 
     uint256 private _tempChiId;
+    address private _tempVault;
+    bool private _enableSwap;
+
     modifier subscripting(uint256 chiId) {
         _tempChiId = chiId;
         _;
@@ -85,7 +88,6 @@ contract CHIManager is
         _;
     }
 
-    address _tempVault;
     modifier onlyWhenNotPaused(uint256 tokenId) {
         require(!_chi[tokenId].config.paused, "paused");
         _tempVault = _chi[tokenId].vault;
@@ -127,6 +129,7 @@ contract CHIManager is
         _vaultFee = 15 * 1e4;
         _providerFee = 5 * 1e4;
         _nextId = 1;
+        _enableSwap = true;
         __ERC721_init("YIN Uniswap V3 Positions Manager", "CHI");
         __ReentrancyGuard_init();
     }
@@ -251,6 +254,12 @@ contract CHIManager is
         );
 
         _chi[tokenId].config.maxUSDLimit = _maxUSDLimit;
+    }
+
+    function setSwapSwitch(bool _enableSwap_) external onlyManager {
+        emit UpdateSwapSwitch(msg.sender, _enableSwap, _enableSwap_);
+
+        _enableSwap = _enableSwap_;
     }
 
     // CHI OPERATIONS
@@ -594,6 +603,7 @@ contract CHIManager is
         isAuthorizedForToken(tokenId)
         returns (uint256 amountOut)
     {
+        require(_enableSwap, "unable");
         amountOut = ICHIVault(_chi[tokenId].vault).swapPercentage(params);
         emit Swap(
             tokenId,

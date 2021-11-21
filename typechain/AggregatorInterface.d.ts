@@ -16,7 +16,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface AggregatorInterfaceInterface extends ethers.utils.Interface {
   functions: {
@@ -74,6 +74,22 @@ interface AggregatorInterfaceInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "AnswerUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewRound"): EventFragment;
 }
+
+export type AnswerUpdatedEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber] & {
+    current: BigNumber;
+    roundId: BigNumber;
+    updatedAt: BigNumber;
+  }
+>;
+
+export type NewRoundEvent = TypedEvent<
+  [BigNumber, string, BigNumber] & {
+    roundId: BigNumber;
+    startedBy: string;
+    startedAt: BigNumber;
+  }
+>;
 
 export class AggregatorInterface extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -171,6 +187,15 @@ export class AggregatorInterface extends BaseContract {
   };
 
   filters: {
+    "AnswerUpdated(int256,uint256,uint256)"(
+      current?: BigNumberish | null,
+      roundId?: BigNumberish | null,
+      updatedAt?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      { current: BigNumber; roundId: BigNumber; updatedAt: BigNumber }
+    >;
+
     AnswerUpdated(
       current?: BigNumberish | null,
       roundId?: BigNumberish | null,
@@ -178,6 +203,15 @@ export class AggregatorInterface extends BaseContract {
     ): TypedEventFilter<
       [BigNumber, BigNumber, BigNumber],
       { current: BigNumber; roundId: BigNumber; updatedAt: BigNumber }
+    >;
+
+    "NewRound(uint256,address,uint256)"(
+      roundId?: BigNumberish | null,
+      startedBy?: string | null,
+      startedAt?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber],
+      { roundId: BigNumber; startedBy: string; startedAt: BigNumber }
     >;
 
     NewRound(

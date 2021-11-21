@@ -12,80 +12,6 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "ranges",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "amount0Totals",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "amount1Totals",
-        type: "uint256[]",
-      },
-    ],
-    name: "AddAllLiquidityToPositionEvent",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "rangeIndex",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount0",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount1",
-        type: "uint256",
-      },
-    ],
-    name: "AddLiquidityToPositionEvent",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
@@ -160,62 +86,6 @@ const _abi = [
       },
     ],
     name: "EmergencyBurn",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "rangeIndex",
-        type: "uint256",
-      },
-    ],
-    name: "RemoveAllLiquidityFromPositionEvent",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "rangeIndex",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint128",
-        name: "liquidity",
-        type: "uint128",
-      },
-    ],
-    name: "RemoveLiquidityFromPositionEvent",
     type: "event",
   },
   {
@@ -384,6 +254,31 @@ const _abi = [
       },
     ],
     name: "UpdateProviderFee",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "oldStatus",
+        type: "bool",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "newStatus",
+        type: "bool",
+      },
+    ],
+    name: "UpdateSwapSwitch",
     type: "event",
   },
   {

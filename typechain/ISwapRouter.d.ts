@@ -18,14 +18,14 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ISwapRouterInterface extends ethers.utils.Interface {
   functions: {
-    "exactInput(tuple)": FunctionFragment;
-    "exactInputSingle(tuple)": FunctionFragment;
-    "exactOutput(tuple)": FunctionFragment;
-    "exactOutputSingle(tuple)": FunctionFragment;
+    "exactInput((bytes,address,uint256,uint256,uint256))": FunctionFragment;
+    "exactInputSingle((address,address,uint24,address,uint256,uint256,uint256,uint160))": FunctionFragment;
+    "exactOutput((bytes,address,uint256,uint256,uint256))": FunctionFragment;
+    "exactOutputSingle((address,address,uint24,address,uint256,uint256,uint256,uint160))": FunctionFragment;
     "uniswapV3SwapCallback(int256,int256,bytes)": FunctionFragment;
   };
 

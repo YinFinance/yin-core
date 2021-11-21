@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface CHIVaultDeployerInterface extends ethers.utils.Interface {
   functions: {
@@ -63,6 +63,14 @@ interface CHIVaultDeployerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "CHIManagerChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnerChanged"): EventFragment;
 }
+
+export type CHIManagerChangedEvent = TypedEvent<
+  [string, string] & { oldCHIManager: string; newCHIManager: string }
+>;
+
+export type OwnerChangedEvent = TypedEvent<
+  [string, string] & { oldOwner: string; newOwner: string }
+>;
 
 export class CHIVaultDeployer extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -169,12 +177,28 @@ export class CHIVaultDeployer extends BaseContract {
   };
 
   filters: {
+    "CHIManagerChanged(address,address)"(
+      oldCHIManager?: string | null,
+      newCHIManager?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { oldCHIManager: string; newCHIManager: string }
+    >;
+
     CHIManagerChanged(
       oldCHIManager?: string | null,
       newCHIManager?: string | null
     ): TypedEventFilter<
       [string, string],
       { oldCHIManager: string; newCHIManager: string }
+    >;
+
+    "OwnerChanged(address,address)"(
+      oldOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { oldOwner: string; newOwner: string }
     >;
 
     OwnerChanged(

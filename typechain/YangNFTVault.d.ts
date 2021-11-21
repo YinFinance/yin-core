@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface YangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
@@ -43,8 +43,8 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setCHIManager(address)": FunctionFragment;
-    "subscribe(tuple)": FunctionFragment;
-    "subscribeSingle(tuple)": FunctionFragment;
+    "subscribe((uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "subscribeSingle((uint256,uint256,bool,uint256,uint256,uint256))": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
@@ -53,8 +53,8 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "unsubscribe(tuple)": FunctionFragment;
-    "unsubscribeSingle(tuple)": FunctionFragment;
+    "unsubscribe((uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "unsubscribeSingle((uint256,uint256,bool,uint256,uint256))": FunctionFragment;
     "updateLockSeconds(uint256)": FunctionFragment;
     "updateLockState(uint256,bool)": FunctionFragment;
   };
@@ -331,6 +331,73 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnSubscribe"): EventFragment;
 }
+
+export type AcceptOwnerShipEvent = TypedEvent<
+  [string, string] & { owner: string; nextowner: string }
+>;
+
+export type ApprovalEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    owner: string;
+    approved: string;
+    tokenId: BigNumber;
+  }
+>;
+
+export type ApprovalForAllEvent = TypedEvent<
+  [string, string, boolean] & {
+    owner: string;
+    operator: string;
+    approved: boolean;
+  }
+>;
+
+export type LockAccountEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber] & {
+    arg0: BigNumber;
+    arg1: BigNumber;
+    arg2: BigNumber;
+  }
+>;
+
+export type LockSecondsEvent = TypedEvent<[BigNumber] & { arg0: BigNumber }>;
+
+export type LockStateEvent = TypedEvent<
+  [BigNumber, boolean, boolean] & {
+    arg0: BigNumber;
+    arg1: boolean;
+    arg2: boolean;
+  }
+>;
+
+export type MintYangNFTEvent = TypedEvent<
+  [string, BigNumber] & { recipient: string; tokenId: BigNumber }
+>;
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type SubscribeEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    chiId: BigNumber;
+    share: BigNumber;
+  }
+>;
+
+export type TransferEvent = TypedEvent<
+  [string, string, BigNumber] & { from: string; to: string; tokenId: BigNumber }
+>;
+
+export type UnSubscribeEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    chiId: BigNumber;
+    amount0: BigNumber;
+    amount1: BigNumber;
+  }
+>;
 
 export class YangNFTVault extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -1041,10 +1108,24 @@ export class YangNFTVault extends BaseContract {
   };
 
   filters: {
+    "AcceptOwnerShip(address,address)"(
+      owner?: null,
+      nextowner?: null
+    ): TypedEventFilter<[string, string], { owner: string; nextowner: string }>;
+
     AcceptOwnerShip(
       owner?: null,
       nextowner?: null
     ): TypedEventFilter<[string, string], { owner: string; nextowner: string }>;
+
+    "Approval(address,address,uint256)"(
+      owner?: string | null,
+      approved?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; approved: string; tokenId: BigNumber }
+    >;
 
     Approval(
       owner?: string | null,
@@ -1053,6 +1134,15 @@ export class YangNFTVault extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; approved: string; tokenId: BigNumber }
+    >;
+
+    "ApprovalForAll(address,address,bool)"(
+      owner?: string | null,
+      operator?: string | null,
+      approved?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { owner: string; operator: string; approved: boolean }
     >;
 
     ApprovalForAll(
@@ -1064,6 +1154,15 @@ export class YangNFTVault extends BaseContract {
       { owner: string; operator: string; approved: boolean }
     >;
 
+    "LockAccount(uint256,uint256,uint256)"(
+      undefined?: null,
+      undefined?: null,
+      undefined?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      { arg0: BigNumber; arg1: BigNumber; arg2: BigNumber }
+    >;
+
     LockAccount(
       undefined?: null,
       undefined?: null,
@@ -1073,9 +1172,22 @@ export class YangNFTVault extends BaseContract {
       { arg0: BigNumber; arg1: BigNumber; arg2: BigNumber }
     >;
 
+    "LockSeconds(uint256)"(
+      undefined?: null
+    ): TypedEventFilter<[BigNumber], { arg0: BigNumber }>;
+
     LockSeconds(
       undefined?: null
     ): TypedEventFilter<[BigNumber], { arg0: BigNumber }>;
+
+    "LockState(uint256,bool,bool)"(
+      undefined?: null,
+      undefined?: null,
+      undefined?: null
+    ): TypedEventFilter<
+      [BigNumber, boolean, boolean],
+      { arg0: BigNumber; arg1: boolean; arg2: boolean }
+    >;
 
     LockState(
       undefined?: null,
@@ -1086,6 +1198,14 @@ export class YangNFTVault extends BaseContract {
       { arg0: BigNumber; arg1: boolean; arg2: boolean }
     >;
 
+    "MintYangNFT(address,uint256)"(
+      recipient?: null,
+      tokenId?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { recipient: string; tokenId: BigNumber }
+    >;
+
     MintYangNFT(
       recipient?: null,
       tokenId?: null
@@ -1094,12 +1214,29 @@ export class YangNFTVault extends BaseContract {
       { recipient: string; tokenId: BigNumber }
     >;
 
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
     ): TypedEventFilter<
       [string, string],
       { previousOwner: string; newOwner: string }
+    >;
+
+    "Subscribe(uint256,uint256,uint256)"(
+      yangId?: null,
+      chiId?: null,
+      share?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      { yangId: BigNumber; chiId: BigNumber; share: BigNumber }
     >;
 
     Subscribe(
@@ -1111,6 +1248,15 @@ export class YangNFTVault extends BaseContract {
       { yangId: BigNumber; chiId: BigNumber; share: BigNumber }
     >;
 
+    "Transfer(address,address,uint256)"(
+      from?: string | null,
+      to?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; tokenId: BigNumber }
+    >;
+
     Transfer(
       from?: string | null,
       to?: string | null,
@@ -1118,6 +1264,21 @@ export class YangNFTVault extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
+    >;
+
+    "UnSubscribe(uint256,uint256,uint256,uint256)"(
+      yangId?: null,
+      chiId?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        yangId: BigNumber;
+        chiId: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
     >;
 
     UnSubscribe(

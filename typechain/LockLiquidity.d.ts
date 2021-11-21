@@ -16,7 +16,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface LockLiquidityInterface extends ethers.utils.Interface {
   functions: {
@@ -40,6 +40,24 @@ interface LockLiquidityInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "LockSeconds"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockState"): EventFragment;
 }
+
+export type LockAccountEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber] & {
+    arg0: BigNumber;
+    arg1: BigNumber;
+    arg2: BigNumber;
+  }
+>;
+
+export type LockSecondsEvent = TypedEvent<[BigNumber] & { arg0: BigNumber }>;
+
+export type LockStateEvent = TypedEvent<
+  [BigNumber, boolean, boolean] & {
+    arg0: BigNumber;
+    arg1: boolean;
+    arg2: boolean;
+  }
+>;
 
 export class LockLiquidity extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -107,6 +125,15 @@ export class LockLiquidity extends BaseContract {
   };
 
   filters: {
+    "LockAccount(uint256,uint256,uint256)"(
+      undefined?: null,
+      undefined?: null,
+      undefined?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      { arg0: BigNumber; arg1: BigNumber; arg2: BigNumber }
+    >;
+
     LockAccount(
       undefined?: null,
       undefined?: null,
@@ -116,9 +143,22 @@ export class LockLiquidity extends BaseContract {
       { arg0: BigNumber; arg1: BigNumber; arg2: BigNumber }
     >;
 
+    "LockSeconds(uint256)"(
+      undefined?: null
+    ): TypedEventFilter<[BigNumber], { arg0: BigNumber }>;
+
     LockSeconds(
       undefined?: null
     ): TypedEventFilter<[BigNumber], { arg0: BigNumber }>;
+
+    "LockState(uint256,bool,bool)"(
+      undefined?: null,
+      undefined?: null,
+      undefined?: null
+    ): TypedEventFilter<
+      [BigNumber, boolean, boolean],
+      { arg0: BigNumber; arg1: boolean; arg2: boolean }
+    >;
 
     LockState(
       undefined?: null,

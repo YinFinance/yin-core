@@ -50,15 +50,20 @@ module.exports = {
     test: {
       url: `${process.env.TEST_API_URL}`,
     },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
     mainnet: {
-      url: `${process.env.MAINNET_API_URL}`,
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     kovan: {
       url: `${process.env.KOVAN_API_URL}`,
-    },
-    rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [`${process.env.PRIVATE_KEY}`],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
   },
   etherscan: {

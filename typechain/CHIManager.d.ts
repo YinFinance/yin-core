@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface CHIManagerInterface extends ethers.utils.Interface {
   functions: {
@@ -40,7 +40,7 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "isApprovedForAll(address,address)": FunctionFragment;
     "manager()": FunctionFragment;
     "merkleRoot()": FunctionFragment;
-    "mint(tuple,bytes32[])": FunctionFragment;
+    "mint((address,address,address,uint24),bytes32[])": FunctionFragment;
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "pausedCHI(uint256)": FunctionFragment;
@@ -53,11 +53,12 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "setMaxUSDLimit(uint256,uint256)": FunctionFragment;
     "setMerkleRoot(bytes32)": FunctionFragment;
     "setProviderFee(uint256)": FunctionFragment;
+    "setSwapSwitch(bool)": FunctionFragment;
     "setVaultFee(uint256)": FunctionFragment;
     "subscribe(uint256,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "subscribeSingle(uint256,uint256,bool,uint256,uint256,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "swap(uint256,tuple)": FunctionFragment;
+    "swap(uint256,(address,address,uint32,uint16,uint256,uint160))": FunctionFragment;
     "sweep(uint256,address,address)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
@@ -190,6 +191,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setProviderFee",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSwapSwitch",
+    values: [boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setVaultFee",
@@ -367,6 +372,10 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setSwapSwitch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setVaultFee",
     data: BytesLike
   ): Result;
@@ -417,15 +426,11 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
 
   events: {
-    "AddAllLiquidityToPositionEvent(address,uint256,uint256[],uint256[],uint256[])": EventFragment;
-    "AddLiquidityToPositionEvent(address,uint256,uint256,uint256,uint256)": EventFragment;
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
     "ChangeLiquidity(uint256,address)": EventFragment;
     "Create(uint256,address,address,uint256)": EventFragment;
     "EmergencyBurn(address,uint256,int24,int24)": EventFragment;
-    "RemoveAllLiquidityFromPositionEvent(address,uint256,uint256)": EventFragment;
-    "RemoveLiquidityFromPositionEvent(address,uint256,uint256,uint128)": EventFragment;
     "Swap(uint256,address,address,uint256,uint256)": EventFragment;
     "Sweep(address,address,address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
@@ -433,26 +438,15 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "UpdateMaxUSDLimit(address,uint256,uint256)": EventFragment;
     "UpdateMerkleRoot(address,bytes32,bytes32)": EventFragment;
     "UpdateProviderFee(address,uint256,uint256)": EventFragment;
+    "UpdateSwapSwitch(address,bool,bool)": EventFragment;
     "UpdateVaultFee(address,uint256,uint256)": EventFragment;
   };
 
-  getEvent(
-    nameOrSignatureOrTopic: "AddAllLiquidityToPositionEvent"
-  ): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "AddLiquidityToPositionEvent"
-  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ChangeLiquidity"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Create"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EmergencyBurn"): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "RemoveAllLiquidityFromPositionEvent"
-  ): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "RemoveLiquidityFromPositionEvent"
-  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sweep"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
@@ -460,8 +454,118 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UpdateMaxUSDLimit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMerkleRoot"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateProviderFee"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdateSwapSwitch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateVaultFee"): EventFragment;
 }
+
+export type ApprovalEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    owner: string;
+    approved: string;
+    tokenId: BigNumber;
+  }
+>;
+
+export type ApprovalForAllEvent = TypedEvent<
+  [string, string, boolean] & {
+    owner: string;
+    operator: string;
+    approved: boolean;
+  }
+>;
+
+export type ChangeLiquidityEvent = TypedEvent<
+  [BigNumber, string] & { tokenId: BigNumber; vault: string }
+>;
+
+export type CreateEvent = TypedEvent<
+  [BigNumber, string, string, BigNumber] & {
+    tokenId: BigNumber;
+    pool: string;
+    vault: string;
+    vaultFee: BigNumber;
+  }
+>;
+
+export type EmergencyBurnEvent = TypedEvent<
+  [string, BigNumber, number, number] & {
+    account: string;
+    tokenId: BigNumber;
+    tickLower: number;
+    tickUpper: number;
+  }
+>;
+
+export type SwapEvent = TypedEvent<
+  [BigNumber, string, string, BigNumber, BigNumber] & {
+    tokenId: BigNumber;
+    tokenIn: string;
+    tokenOut: string;
+    percentage: BigNumber;
+    amountOut: BigNumber;
+  }
+>;
+
+export type SweepEvent = TypedEvent<
+  [string, string, string, BigNumber] & {
+    account: string;
+    recipient: string;
+    token: string;
+    tokenId: BigNumber;
+  }
+>;
+
+export type TransferEvent = TypedEvent<
+  [string, string, BigNumber] & { from: string; to: string; tokenId: BigNumber }
+>;
+
+export type UpdateGovernanceEvent = TypedEvent<
+  [string, string, string] & {
+    account: string;
+    oldGovernance: string;
+    newGovernance: string;
+  }
+>;
+
+export type UpdateMaxUSDLimitEvent = TypedEvent<
+  [string, BigNumber, BigNumber] & {
+    account: string;
+    oldMaxUSDLimit: BigNumber;
+    newMaxUSDLimit: BigNumber;
+  }
+>;
+
+export type UpdateMerkleRootEvent = TypedEvent<
+  [string, string, string] & {
+    account: string;
+    oldMerkleRoot: string;
+    newMerkleRoot: string;
+  }
+>;
+
+export type UpdateProviderFeeEvent = TypedEvent<
+  [string, BigNumber, BigNumber] & {
+    account: string;
+    oldProviderFee: BigNumber;
+    newProviderFee: BigNumber;
+  }
+>;
+
+export type UpdateSwapSwitchEvent = TypedEvent<
+  [string, boolean, boolean] & {
+    account: string;
+    oldStatus: boolean;
+    newStatus: boolean;
+  }
+>;
+
+export type UpdateVaultFeeEvent = TypedEvent<
+  [string, BigNumber, BigNumber] & {
+    account: string;
+    oldVaultFee: BigNumber;
+    newVaultFee: BigNumber;
+  }
+>;
 
 export class CHIManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -716,6 +820,11 @@ export class CHIManager extends BaseContract {
 
     setProviderFee(
       _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1038,6 +1147,11 @@ export class CHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setSwapSwitch(
+    _enableSwap_: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setVaultFee(
     _vaultFee_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1348,6 +1462,11 @@ export class CHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setSwapSwitch(
+      _enableSwap_: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setVaultFee(
       _vaultFee_: BigNumberish,
       overrides?: CallOverrides
@@ -1473,38 +1592,13 @@ export class CHIManager extends BaseContract {
   };
 
   filters: {
-    AddAllLiquidityToPositionEvent(
-      account?: null,
-      tokenId?: null,
-      ranges?: null,
-      amount0Totals?: null,
-      amount1Totals?: null
+    "Approval(address,address,uint256)"(
+      owner?: string | null,
+      approved?: string | null,
+      tokenId?: BigNumberish | null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber[], BigNumber[], BigNumber[]],
-      {
-        account: string;
-        tokenId: BigNumber;
-        ranges: BigNumber[];
-        amount0Totals: BigNumber[];
-        amount1Totals: BigNumber[];
-      }
-    >;
-
-    AddLiquidityToPositionEvent(
-      account?: null,
-      tokenId?: null,
-      rangeIndex?: null,
-      amount0?: null,
-      amount1?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber, BigNumber, BigNumber],
-      {
-        account: string;
-        tokenId: BigNumber;
-        rangeIndex: BigNumber;
-        amount0: BigNumber;
-        amount1: BigNumber;
-      }
+      [string, string, BigNumber],
+      { owner: string; approved: string; tokenId: BigNumber }
     >;
 
     Approval(
@@ -1516,6 +1610,15 @@ export class CHIManager extends BaseContract {
       { owner: string; approved: string; tokenId: BigNumber }
     >;
 
+    "ApprovalForAll(address,address,bool)"(
+      owner?: string | null,
+      operator?: string | null,
+      approved?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { owner: string; operator: string; approved: boolean }
+    >;
+
     ApprovalForAll(
       owner?: string | null,
       operator?: string | null,
@@ -1523,6 +1626,14 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, string, boolean],
       { owner: string; operator: string; approved: boolean }
+    >;
+
+    "ChangeLiquidity(uint256,address)"(
+      tokenId?: null,
+      vault?: null
+    ): TypedEventFilter<
+      [BigNumber, string],
+      { tokenId: BigNumber; vault: string }
     >;
 
     ChangeLiquidity(
@@ -1533,6 +1644,16 @@ export class CHIManager extends BaseContract {
       { tokenId: BigNumber; vault: string }
     >;
 
+    "Create(uint256,address,address,uint256)"(
+      tokenId?: null,
+      pool?: null,
+      vault?: null,
+      vaultFee?: null
+    ): TypedEventFilter<
+      [BigNumber, string, string, BigNumber],
+      { tokenId: BigNumber; pool: string; vault: string; vaultFee: BigNumber }
+    >;
+
     Create(
       tokenId?: null,
       pool?: null,
@@ -1541,6 +1662,21 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [BigNumber, string, string, BigNumber],
       { tokenId: BigNumber; pool: string; vault: string; vaultFee: BigNumber }
+    >;
+
+    "EmergencyBurn(address,uint256,int24,int24)"(
+      account?: null,
+      tokenId?: null,
+      tickLower?: null,
+      tickUpper?: null
+    ): TypedEventFilter<
+      [string, BigNumber, number, number],
+      {
+        account: string;
+        tokenId: BigNumber;
+        tickLower: number;
+        tickUpper: number;
+      }
     >;
 
     EmergencyBurn(
@@ -1558,27 +1694,20 @@ export class CHIManager extends BaseContract {
       }
     >;
 
-    RemoveAllLiquidityFromPositionEvent(
-      account?: null,
+    "Swap(uint256,address,address,uint256,uint256)"(
       tokenId?: null,
-      rangeIndex?: null
+      tokenIn?: null,
+      tokenOut?: null,
+      percentage?: null,
+      amountOut?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; tokenId: BigNumber; rangeIndex: BigNumber }
-    >;
-
-    RemoveLiquidityFromPositionEvent(
-      account?: null,
-      tokenId?: null,
-      rangeIndex?: null,
-      liquidity?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber, BigNumber],
+      [BigNumber, string, string, BigNumber, BigNumber],
       {
-        account: string;
         tokenId: BigNumber;
-        rangeIndex: BigNumber;
-        liquidity: BigNumber;
+        tokenIn: string;
+        tokenOut: string;
+        percentage: BigNumber;
+        amountOut: BigNumber;
       }
     >;
 
@@ -1599,6 +1728,16 @@ export class CHIManager extends BaseContract {
       }
     >;
 
+    "Sweep(address,address,address,uint256)"(
+      account?: null,
+      recipient?: null,
+      token?: null,
+      tokenId?: null
+    ): TypedEventFilter<
+      [string, string, string, BigNumber],
+      { account: string; recipient: string; token: string; tokenId: BigNumber }
+    >;
+
     Sweep(
       account?: null,
       recipient?: null,
@@ -1607,6 +1746,15 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, string, string, BigNumber],
       { account: string; recipient: string; token: string; tokenId: BigNumber }
+    >;
+
+    "Transfer(address,address,uint256)"(
+      from?: string | null,
+      to?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; tokenId: BigNumber }
     >;
 
     Transfer(
@@ -1618,6 +1766,15 @@ export class CHIManager extends BaseContract {
       { from: string; to: string; tokenId: BigNumber }
     >;
 
+    "UpdateGovernance(address,address,address)"(
+      account?: null,
+      oldGovernance?: null,
+      newGovernance?: null
+    ): TypedEventFilter<
+      [string, string, string],
+      { account: string; oldGovernance: string; newGovernance: string }
+    >;
+
     UpdateGovernance(
       account?: null,
       oldGovernance?: null,
@@ -1625,6 +1782,15 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, string, string],
       { account: string; oldGovernance: string; newGovernance: string }
+    >;
+
+    "UpdateMaxUSDLimit(address,uint256,uint256)"(
+      account?: null,
+      oldMaxUSDLimit?: null,
+      newMaxUSDLimit?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; oldMaxUSDLimit: BigNumber; newMaxUSDLimit: BigNumber }
     >;
 
     UpdateMaxUSDLimit(
@@ -1636,6 +1802,15 @@ export class CHIManager extends BaseContract {
       { account: string; oldMaxUSDLimit: BigNumber; newMaxUSDLimit: BigNumber }
     >;
 
+    "UpdateMerkleRoot(address,bytes32,bytes32)"(
+      account?: null,
+      oldMerkleRoot?: null,
+      newMerkleRoot?: null
+    ): TypedEventFilter<
+      [string, string, string],
+      { account: string; oldMerkleRoot: string; newMerkleRoot: string }
+    >;
+
     UpdateMerkleRoot(
       account?: null,
       oldMerkleRoot?: null,
@@ -1645,6 +1820,15 @@ export class CHIManager extends BaseContract {
       { account: string; oldMerkleRoot: string; newMerkleRoot: string }
     >;
 
+    "UpdateProviderFee(address,uint256,uint256)"(
+      account?: null,
+      oldProviderFee?: null,
+      newProviderFee?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
+    >;
+
     UpdateProviderFee(
       account?: null,
       oldProviderFee?: null,
@@ -1652,6 +1836,33 @@ export class CHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
       { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
+    >;
+
+    "UpdateSwapSwitch(address,bool,bool)"(
+      account?: null,
+      oldStatus?: null,
+      newStatus?: null
+    ): TypedEventFilter<
+      [string, boolean, boolean],
+      { account: string; oldStatus: boolean; newStatus: boolean }
+    >;
+
+    UpdateSwapSwitch(
+      account?: null,
+      oldStatus?: null,
+      newStatus?: null
+    ): TypedEventFilter<
+      [string, boolean, boolean],
+      { account: string; oldStatus: boolean; newStatus: boolean }
+    >;
+
+    "UpdateVaultFee(address,uint256,uint256)"(
+      account?: null,
+      oldVaultFee?: null,
+      newVaultFee?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; oldVaultFee: BigNumber; newVaultFee: BigNumber }
     >;
 
     UpdateVaultFee(
@@ -1835,6 +2046,11 @@ export class CHIManager extends BaseContract {
 
     setProviderFee(
       _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2131,6 +2347,11 @@ export class CHIManager extends BaseContract {
 
     setProviderFee(
       _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

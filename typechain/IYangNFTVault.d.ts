@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IYangNFTVaultInterface extends ethers.utils.Interface {
   functions: {
@@ -29,10 +29,10 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
     "mint(address)": FunctionFragment;
     "positions(uint256,uint256)": FunctionFragment;
     "setCHIManager(address)": FunctionFragment;
-    "subscribe(tuple)": FunctionFragment;
-    "subscribeSingle(tuple)": FunctionFragment;
-    "unsubscribe(tuple)": FunctionFragment;
-    "unsubscribeSingle(tuple)": FunctionFragment;
+    "subscribe((uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "subscribeSingle((uint256,uint256,bool,uint256,uint256,uint256))": FunctionFragment;
+    "unsubscribe((uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "unsubscribeSingle((uint256,uint256,bool,uint256,uint256))": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -155,6 +155,31 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnSubscribe"): EventFragment;
 }
+
+export type AcceptOwnerShipEvent = TypedEvent<
+  [string, string] & { owner: string; nextowner: string }
+>;
+
+export type MintYangNFTEvent = TypedEvent<
+  [string, BigNumber] & { recipient: string; tokenId: BigNumber }
+>;
+
+export type SubscribeEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    chiId: BigNumber;
+    share: BigNumber;
+  }
+>;
+
+export type UnSubscribeEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    chiId: BigNumber;
+    amount0: BigNumber;
+    amount1: BigNumber;
+  }
+>;
 
 export class IYangNFTVault extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -495,10 +520,23 @@ export class IYangNFTVault extends BaseContract {
   };
 
   filters: {
+    "AcceptOwnerShip(address,address)"(
+      owner?: null,
+      nextowner?: null
+    ): TypedEventFilter<[string, string], { owner: string; nextowner: string }>;
+
     AcceptOwnerShip(
       owner?: null,
       nextowner?: null
     ): TypedEventFilter<[string, string], { owner: string; nextowner: string }>;
+
+    "MintYangNFT(address,uint256)"(
+      recipient?: null,
+      tokenId?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { recipient: string; tokenId: BigNumber }
+    >;
 
     MintYangNFT(
       recipient?: null,
@@ -508,6 +546,15 @@ export class IYangNFTVault extends BaseContract {
       { recipient: string; tokenId: BigNumber }
     >;
 
+    "Subscribe(uint256,uint256,uint256)"(
+      yangId?: null,
+      chiId?: null,
+      share?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      { yangId: BigNumber; chiId: BigNumber; share: BigNumber }
+    >;
+
     Subscribe(
       yangId?: null,
       chiId?: null,
@@ -515,6 +562,21 @@ export class IYangNFTVault extends BaseContract {
     ): TypedEventFilter<
       [BigNumber, BigNumber, BigNumber],
       { yangId: BigNumber; chiId: BigNumber; share: BigNumber }
+    >;
+
+    "UnSubscribe(uint256,uint256,uint256,uint256)"(
+      yangId?: null,
+      chiId?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        yangId: BigNumber;
+        chiId: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
     >;
 
     UnSubscribe(

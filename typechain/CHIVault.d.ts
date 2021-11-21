@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface CHIVaultInterface extends ethers.utils.Interface {
   functions: {
@@ -47,7 +47,7 @@ interface CHIVaultInterface extends ethers.utils.Interface {
     "removeLiquidityFromPosition(uint256,uint128)": FunctionFragment;
     "removeRange(int24,int24)": FunctionFragment;
     "router()": FunctionFragment;
-    "swapPercentage(tuple)": FunctionFragment;
+    "swapPercentage((address,address,uint32,uint16,uint256,uint160))": FunctionFragment;
     "sweep(address,address)": FunctionFragment;
     "tickSpacing()": FunctionFragment;
     "token0()": FunctionFragment;
@@ -319,6 +319,42 @@ interface CHIVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
+
+export type CollectFeeEvent = TypedEvent<
+  [BigNumber, BigNumber] & {
+    feesFromPool0: BigNumber;
+    feesFromPool1: BigNumber;
+  }
+>;
+
+export type DepositEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    shares: BigNumber;
+    amount0: BigNumber;
+    amount1: BigNumber;
+  }
+>;
+
+export type SwapEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber, BigNumber] & {
+    from: string;
+    to: string;
+    amountIn: BigNumber;
+    amountOut: BigNumber;
+    amountOutMin: BigNumber;
+  }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [BigNumber, string, BigNumber, BigNumber, BigNumber] & {
+    yangId: BigNumber;
+    to: string;
+    shares: BigNumber;
+    amount0: BigNumber;
+    amount1: BigNumber;
+  }
+>;
 
 export class CHIVault extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -895,12 +931,35 @@ export class CHIVault extends BaseContract {
   };
 
   filters: {
+    "CollectFee(uint256,uint256)"(
+      feesFromPool0?: null,
+      feesFromPool1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { feesFromPool0: BigNumber; feesFromPool1: BigNumber }
+    >;
+
     CollectFee(
       feesFromPool0?: null,
       feesFromPool1?: null
     ): TypedEventFilter<
       [BigNumber, BigNumber],
       { feesFromPool0: BigNumber; feesFromPool1: BigNumber }
+    >;
+
+    "Deposit(uint256,uint256,uint256,uint256)"(
+      yangId?: BigNumberish | null,
+      shares?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        yangId: BigNumber;
+        shares: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
     >;
 
     Deposit(
@@ -918,6 +977,23 @@ export class CHIVault extends BaseContract {
       }
     >;
 
+    "Swap(address,address,uint256,uint256,uint256)"(
+      from?: null,
+      to?: null,
+      amountIn?: null,
+      amountOut?: null,
+      amountOutMin?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber],
+      {
+        from: string;
+        to: string;
+        amountIn: BigNumber;
+        amountOut: BigNumber;
+        amountOutMin: BigNumber;
+      }
+    >;
+
     Swap(
       from?: null,
       to?: null,
@@ -932,6 +1008,23 @@ export class CHIVault extends BaseContract {
         amountIn: BigNumber;
         amountOut: BigNumber;
         amountOutMin: BigNumber;
+      }
+    >;
+
+    "Withdraw(uint256,address,uint256,uint256,uint256)"(
+      yangId?: BigNumberish | null,
+      to?: string | null,
+      shares?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber, BigNumber, BigNumber],
+      {
+        yangId: BigNumber;
+        to: string;
+        shares: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
       }
     >;
 

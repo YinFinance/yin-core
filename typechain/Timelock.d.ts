@@ -18,7 +18,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface TimelockInterface extends ethers.utils.Interface {
   functions: {
@@ -144,6 +144,47 @@ interface TimelockInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "NewPendingAdmin"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QueueTransaction"): EventFragment;
 }
+
+export type CancelTransactionEvent = TypedEvent<
+  [string, string, BigNumber, string, string, BigNumber] & {
+    txHash: string;
+    target: string;
+    value: BigNumber;
+    signature: string;
+    data: string;
+    eta: BigNumber;
+  }
+>;
+
+export type ExecuteTransactionEvent = TypedEvent<
+  [string, string, BigNumber, string, string, BigNumber] & {
+    txHash: string;
+    target: string;
+    value: BigNumber;
+    signature: string;
+    data: string;
+    eta: BigNumber;
+  }
+>;
+
+export type NewAdminEvent = TypedEvent<[string] & { newAdmin: string }>;
+
+export type NewDelayEvent = TypedEvent<[BigNumber] & { newDelay: BigNumber }>;
+
+export type NewPendingAdminEvent = TypedEvent<
+  [string] & { newPendingAdmin: string }
+>;
+
+export type QueueTransactionEvent = TypedEvent<
+  [string, string, BigNumber, string, string, BigNumber] & {
+    txHash: string;
+    target: string;
+    value: BigNumber;
+    signature: string;
+    data: string;
+    eta: BigNumber;
+  }
+>;
 
 export class Timelock extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -362,7 +403,45 @@ export class Timelock extends BaseContract {
   };
 
   filters: {
+    "CancelTransaction(bytes32,address,uint256,string,bytes,uint256)"(
+      txHash?: BytesLike | null,
+      target?: string | null,
+      value?: null,
+      signature?: null,
+      data?: null,
+      eta?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, string, string, BigNumber],
+      {
+        txHash: string;
+        target: string;
+        value: BigNumber;
+        signature: string;
+        data: string;
+        eta: BigNumber;
+      }
+    >;
+
     CancelTransaction(
+      txHash?: BytesLike | null,
+      target?: string | null,
+      value?: null,
+      signature?: null,
+      data?: null,
+      eta?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, string, string, BigNumber],
+      {
+        txHash: string;
+        target: string;
+        value: BigNumber;
+        signature: string;
+        data: string;
+        eta: BigNumber;
+      }
+    >;
+
+    "ExecuteTransaction(bytes32,address,uint256,string,bytes,uint256)"(
       txHash?: BytesLike | null,
       target?: string | null,
       value?: null,
@@ -400,17 +479,48 @@ export class Timelock extends BaseContract {
       }
     >;
 
+    "NewAdmin(address)"(
+      newAdmin?: string | null
+    ): TypedEventFilter<[string], { newAdmin: string }>;
+
     NewAdmin(
       newAdmin?: string | null
     ): TypedEventFilter<[string], { newAdmin: string }>;
+
+    "NewDelay(uint256)"(
+      newDelay?: BigNumberish | null
+    ): TypedEventFilter<[BigNumber], { newDelay: BigNumber }>;
 
     NewDelay(
       newDelay?: BigNumberish | null
     ): TypedEventFilter<[BigNumber], { newDelay: BigNumber }>;
 
+    "NewPendingAdmin(address)"(
+      newPendingAdmin?: string | null
+    ): TypedEventFilter<[string], { newPendingAdmin: string }>;
+
     NewPendingAdmin(
       newPendingAdmin?: string | null
     ): TypedEventFilter<[string], { newPendingAdmin: string }>;
+
+    "QueueTransaction(bytes32,address,uint256,string,bytes,uint256)"(
+      txHash?: BytesLike | null,
+      target?: string | null,
+      value?: null,
+      signature?: null,
+      data?: null,
+      eta?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, string, string, BigNumber],
+      {
+        txHash: string;
+        target: string;
+        value: BigNumber;
+        signature: string;
+        data: string;
+        eta: BigNumber;
+      }
+    >;
 
     QueueTransaction(
       txHash?: BytesLike | null,

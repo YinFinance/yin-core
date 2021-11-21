@@ -204,6 +204,11 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 oldMaxUSDLimit,
         uint256 newMaxUSDLimit
     );
+    event UpdateSwapSwitch(
+        address account,
+        bool oldStatus,
+        bool newStatus
+    );
 
     // Events
 
@@ -227,30 +232,4 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 amountOut
     );
 
-    // Liquidity operations
-    event RemoveLiquidityFromPositionEvent(
-        address account,
-        uint256 tokenId,
-        uint256 rangeIndex,
-        uint128 liquidity
-    );
-    event RemoveAllLiquidityFromPositionEvent(
-        address account,
-        uint256 tokenId,
-        uint256 rangeIndex
-    );
-    event AddAllLiquidityToPositionEvent(
-        address account,
-        uint256 tokenId,
-        uint256[] ranges,
-        uint256[] amount0Totals,
-        uint256[] amount1Totals
-    );
-    event AddLiquidityToPositionEvent(
-        address account,
-        uint256 tokenId,
-        uint256 rangeIndex,
-        uint256 amount0,
-        uint256 amount1
-    );
 }

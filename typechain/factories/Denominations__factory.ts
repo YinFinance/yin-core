@@ -35,6 +35,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "BRL",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "BTC",
     outputs: [
       {
@@ -126,6 +139,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "INR",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "JPY",
     outputs: [
       {
@@ -152,7 +178,85 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "NGN",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "NZD",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "PHP",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "RUB",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "SGD",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "USD",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ZAR",
     outputs: [
       {
         internalType: "address",
@@ -166,11 +270,17 @@ const _abi = [
 ];
 
 const _bytecode =
-  "0x6101a4610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600436106100ae5760003560e01c806301b8b339146100b35780630c012834146100d757806319342a64146100df5780631bf6c21b146100e75780632792949d146100ef578063294a2bf2146100f7578063465bd0a3146100ff57806356ef4514146101075780638322fff21461010f578063a4a2359514610117578063f37fcc421461011f578063fd760c4914610127575b600080fd5b6100bb61012f565b604080516001600160a01b039092168252519081900360200190f35b6100bb610135565b6100bb61013a565b6100bb61013f565b6100bb610145565b6100bb61015d565b6100bb610163565b6100bb610169565b6100bb61016f565b6100bb610187565b6100bb61018c565b6100bb610192565b61033a81565b602081565b607c81565b61034881565b73bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb81565b6103d281565b61018881565b61019a81565b73eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee81565b609c81565b6102f481565b60248156fea164736f6c6343000706000a";
+  "0x61027c610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600436106101165760003560e01c806356ef4514116100a757806356ef4514146101875780636b09583c1461018f5780638322fff214610197578063976d5e771461019f5780639db2a472146101a7578063a4a23595146101af578063ca9d1a72146101b7578063e774928e146101bf578063f37fcc42146101c7578063fd760c49146101cf57610116565b806301b8b3391461011b57806303d698f21461013f5780630c0128341461014757806319342a641461014f5780631bf6c21b146101575780632792949d1461015f578063294a2bf2146101675780632e79477f1461016f578063465bd0a31461017757806353f7c3671461017f575b600080fd5b6101236101d7565b604080516001600160a01b039092168252519081900360200190f35b6101236101dd565b6101236101e3565b6101236101e8565b6101236101ed565b6101236101f3565b61012361020b565b610123610211565b610123610217565b61012361021d565b610123610223565b610123610229565b61012361022f565b610123610247565b61012361024d565b610123610253565b610123610258565b61012361025e565b610123610264565b61012361026a565b61033a81565b61023681565b602081565b607c81565b61034881565b73bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb81565b6103d281565b6102be81565b61018881565b61026081565b61019a81565b6103da81565b73eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee81565b61028381565b6102c681565b609c81565b61022a81565b61016481565b6102f481565b60248156fea164736f6c6343000706000a";
 
 export class Denominations__factory extends ContractFactory {
-  constructor(signer?: Signer) {
-    super(_abi, _bytecode, signer);
+  constructor(
+    ...args: [signer: Signer] | ConstructorParameters<typeof ContractFactory>
+  ) {
+    if (args.length === 1) {
+      super(_abi, _bytecode, args[0]);
+    } else {
+      super(...args);
+    }
   }
 
   deploy(
