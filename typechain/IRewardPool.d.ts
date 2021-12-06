@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IRewardPoolInterface extends ethers.utils.Interface {
   functions: {
@@ -97,32 +97,6 @@ interface IRewardPoolInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RewardUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsDurationUpdated"): EventFragment;
 }
-
-export type RewardAddedEvent = TypedEvent<[BigNumber] & { reward: BigNumber }>;
-
-export type RewardLastUpdateTimeEvent = TypedEvent<
-  [BigNumber, BigNumber] & { tokenId: BigNumber; timestamp: BigNumber }
->;
-
-export type RewardPaidEvent = TypedEvent<
-  [string, BigNumber] & { user: string; reward: BigNumber }
->;
-
-export type RewardSetCHIManagerEvent = TypedEvent<
-  [string, string] & { oldAddr: string; newAddr: string }
->;
-
-export type RewardUpdateRateEvent = TypedEvent<
-  [BigNumber, BigNumber] & { oldRate: BigNumber; newRate: BigNumber }
->;
-
-export type RewardUpdatedEvent = TypedEvent<
-  [BigNumber, BigNumber] & { yangId: BigNumber; chiId: BigNumber }
->;
-
-export type RewardsDurationUpdatedEvent = TypedEvent<
-  [BigNumber] & { newDuration: BigNumber }
->;
 
 export class IRewardPool extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -295,21 +269,9 @@ export class IRewardPool extends BaseContract {
   };
 
   filters: {
-    "RewardAdded(uint256)"(
-      reward?: null
-    ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
-
     RewardAdded(
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
-
-    "RewardLastUpdateTime(uint256,uint256)"(
-      tokenId?: null,
-      timestamp?: null
-    ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { tokenId: BigNumber; timestamp: BigNumber }
-    >;
 
     RewardLastUpdateTime(
       tokenId?: null,
@@ -317,14 +279,6 @@ export class IRewardPool extends BaseContract {
     ): TypedEventFilter<
       [BigNumber, BigNumber],
       { tokenId: BigNumber; timestamp: BigNumber }
-    >;
-
-    "RewardPaid(address,uint256)"(
-      user?: string | null,
-      reward?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { user: string; reward: BigNumber }
     >;
 
     RewardPaid(
@@ -335,23 +289,10 @@ export class IRewardPool extends BaseContract {
       { user: string; reward: BigNumber }
     >;
 
-    "RewardSetCHIManager(address,address)"(
-      oldAddr?: null,
-      newAddr?: null
-    ): TypedEventFilter<[string, string], { oldAddr: string; newAddr: string }>;
-
     RewardSetCHIManager(
       oldAddr?: null,
       newAddr?: null
     ): TypedEventFilter<[string, string], { oldAddr: string; newAddr: string }>;
-
-    "RewardUpdateRate(uint256,uint256)"(
-      oldRate?: null,
-      newRate?: null
-    ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { oldRate: BigNumber; newRate: BigNumber }
-    >;
 
     RewardUpdateRate(
       oldRate?: null,
@@ -361,14 +302,6 @@ export class IRewardPool extends BaseContract {
       { oldRate: BigNumber; newRate: BigNumber }
     >;
 
-    "RewardUpdated(uint256,uint256)"(
-      yangId?: null,
-      chiId?: null
-    ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { yangId: BigNumber; chiId: BigNumber }
-    >;
-
     RewardUpdated(
       yangId?: null,
       chiId?: null
@@ -376,10 +309,6 @@ export class IRewardPool extends BaseContract {
       [BigNumber, BigNumber],
       { yangId: BigNumber; chiId: BigNumber }
     >;
-
-    "RewardsDurationUpdated(uint256)"(
-      newDuration?: null
-    ): TypedEventFilter<[BigNumber], { newDuration: BigNumber }>;
 
     RewardsDurationUpdated(
       newDuration?: null

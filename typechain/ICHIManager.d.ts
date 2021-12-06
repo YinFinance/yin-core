@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ICHIManagerInterface extends ethers.utils.Interface {
   functions: {
@@ -30,13 +30,13 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     "collectProtocol(uint256)": FunctionFragment;
     "config(uint256)": FunctionFragment;
     "emergencyBurn(uint256,int24,int24)": FunctionFragment;
-    "mint((address,address,address,uint24),bytes32[])": FunctionFragment;
+    "mint(tuple,bytes32[])": FunctionFragment;
     "pausedCHI(uint256)": FunctionFragment;
     "removeRangesAllLiquidityFromPosition(uint256,uint256[])": FunctionFragment;
     "removeRangesLiquidityFromPosition(uint256,uint256[],uint128[])": FunctionFragment;
     "subscribe(uint256,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "subscribeSingle(uint256,uint256,bool,uint256,uint256,uint256)": FunctionFragment;
-    "swap(uint256,(address,address,uint32,uint16,uint256,uint160))": FunctionFragment;
+    "swap(uint256,tuple)": FunctionFragment;
     "sweep(uint256,address,address)": FunctionFragment;
     "unpausedCHI(uint256)": FunctionFragment;
     "unsubscribe(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
@@ -247,95 +247,6 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UpdateSwapSwitch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateVaultFee"): EventFragment;
 }
-
-export type ChangeLiquidityEvent = TypedEvent<
-  [BigNumber, string] & { tokenId: BigNumber; vault: string }
->;
-
-export type CreateEvent = TypedEvent<
-  [BigNumber, string, string, BigNumber] & {
-    tokenId: BigNumber;
-    pool: string;
-    vault: string;
-    vaultFee: BigNumber;
-  }
->;
-
-export type EmergencyBurnEvent = TypedEvent<
-  [string, BigNumber, number, number] & {
-    account: string;
-    tokenId: BigNumber;
-    tickLower: number;
-    tickUpper: number;
-  }
->;
-
-export type SwapEvent = TypedEvent<
-  [BigNumber, string, string, BigNumber, BigNumber] & {
-    tokenId: BigNumber;
-    tokenIn: string;
-    tokenOut: string;
-    percentage: BigNumber;
-    amountOut: BigNumber;
-  }
->;
-
-export type SweepEvent = TypedEvent<
-  [string, string, string, BigNumber] & {
-    account: string;
-    recipient: string;
-    token: string;
-    tokenId: BigNumber;
-  }
->;
-
-export type UpdateGovernanceEvent = TypedEvent<
-  [string, string, string] & {
-    account: string;
-    oldGovernance: string;
-    newGovernance: string;
-  }
->;
-
-export type UpdateMaxUSDLimitEvent = TypedEvent<
-  [string, BigNumber, BigNumber] & {
-    account: string;
-    oldMaxUSDLimit: BigNumber;
-    newMaxUSDLimit: BigNumber;
-  }
->;
-
-export type UpdateMerkleRootEvent = TypedEvent<
-  [string, string, string] & {
-    account: string;
-    oldMerkleRoot: string;
-    newMerkleRoot: string;
-  }
->;
-
-export type UpdateProviderFeeEvent = TypedEvent<
-  [string, BigNumber, BigNumber] & {
-    account: string;
-    oldProviderFee: BigNumber;
-    newProviderFee: BigNumber;
-  }
->;
-
-export type UpdateSwapSwitchEvent = TypedEvent<
-  [string, boolean, boolean] & {
-    account: string;
-    oldStatus: boolean;
-    newStatus: boolean;
-  }
->;
-
-export type UpdateVaultFeeEvent = TypedEvent<
-  [string, BigNumber, BigNumber] & {
-    account: string;
-    oldVaultFee: BigNumber;
-    newVaultFee: BigNumber;
-  }
->;
 
 export class ICHIManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -957,30 +868,12 @@ export class ICHIManager extends BaseContract {
   };
 
   filters: {
-    "ChangeLiquidity(uint256,address)"(
-      tokenId?: null,
-      vault?: null
-    ): TypedEventFilter<
-      [BigNumber, string],
-      { tokenId: BigNumber; vault: string }
-    >;
-
     ChangeLiquidity(
       tokenId?: null,
       vault?: null
     ): TypedEventFilter<
       [BigNumber, string],
       { tokenId: BigNumber; vault: string }
-    >;
-
-    "Create(uint256,address,address,uint256)"(
-      tokenId?: null,
-      pool?: null,
-      vault?: null,
-      vaultFee?: null
-    ): TypedEventFilter<
-      [BigNumber, string, string, BigNumber],
-      { tokenId: BigNumber; pool: string; vault: string; vaultFee: BigNumber }
     >;
 
     Create(
@@ -991,21 +884,6 @@ export class ICHIManager extends BaseContract {
     ): TypedEventFilter<
       [BigNumber, string, string, BigNumber],
       { tokenId: BigNumber; pool: string; vault: string; vaultFee: BigNumber }
-    >;
-
-    "EmergencyBurn(address,uint256,int24,int24)"(
-      account?: null,
-      tokenId?: null,
-      tickLower?: null,
-      tickUpper?: null
-    ): TypedEventFilter<
-      [string, BigNumber, number, number],
-      {
-        account: string;
-        tokenId: BigNumber;
-        tickLower: number;
-        tickUpper: number;
-      }
     >;
 
     EmergencyBurn(
@@ -1020,23 +898,6 @@ export class ICHIManager extends BaseContract {
         tokenId: BigNumber;
         tickLower: number;
         tickUpper: number;
-      }
-    >;
-
-    "Swap(uint256,address,address,uint256,uint256)"(
-      tokenId?: null,
-      tokenIn?: null,
-      tokenOut?: null,
-      percentage?: null,
-      amountOut?: null
-    ): TypedEventFilter<
-      [BigNumber, string, string, BigNumber, BigNumber],
-      {
-        tokenId: BigNumber;
-        tokenIn: string;
-        tokenOut: string;
-        percentage: BigNumber;
-        amountOut: BigNumber;
       }
     >;
 
@@ -1057,16 +918,6 @@ export class ICHIManager extends BaseContract {
       }
     >;
 
-    "Sweep(address,address,address,uint256)"(
-      account?: null,
-      recipient?: null,
-      token?: null,
-      tokenId?: null
-    ): TypedEventFilter<
-      [string, string, string, BigNumber],
-      { account: string; recipient: string; token: string; tokenId: BigNumber }
-    >;
-
     Sweep(
       account?: null,
       recipient?: null,
@@ -1075,15 +926,6 @@ export class ICHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, string, string, BigNumber],
       { account: string; recipient: string; token: string; tokenId: BigNumber }
-    >;
-
-    "UpdateGovernance(address,address,address)"(
-      account?: null,
-      oldGovernance?: null,
-      newGovernance?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldGovernance: string; newGovernance: string }
     >;
 
     UpdateGovernance(
@@ -1095,15 +937,6 @@ export class ICHIManager extends BaseContract {
       { account: string; oldGovernance: string; newGovernance: string }
     >;
 
-    "UpdateMaxUSDLimit(address,uint256,uint256)"(
-      account?: null,
-      oldMaxUSDLimit?: null,
-      newMaxUSDLimit?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; oldMaxUSDLimit: BigNumber; newMaxUSDLimit: BigNumber }
-    >;
-
     UpdateMaxUSDLimit(
       account?: null,
       oldMaxUSDLimit?: null,
@@ -1111,15 +944,6 @@ export class ICHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
       { account: string; oldMaxUSDLimit: BigNumber; newMaxUSDLimit: BigNumber }
-    >;
-
-    "UpdateMerkleRoot(address,bytes32,bytes32)"(
-      account?: null,
-      oldMerkleRoot?: null,
-      newMerkleRoot?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { account: string; oldMerkleRoot: string; newMerkleRoot: string }
     >;
 
     UpdateMerkleRoot(
@@ -1131,15 +955,6 @@ export class ICHIManager extends BaseContract {
       { account: string; oldMerkleRoot: string; newMerkleRoot: string }
     >;
 
-    "UpdateProviderFee(address,uint256,uint256)"(
-      account?: null,
-      oldProviderFee?: null,
-      newProviderFee?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
-    >;
-
     UpdateProviderFee(
       account?: null,
       oldProviderFee?: null,
@@ -1149,15 +964,6 @@ export class ICHIManager extends BaseContract {
       { account: string; oldProviderFee: BigNumber; newProviderFee: BigNumber }
     >;
 
-    "UpdateSwapSwitch(address,bool,bool)"(
-      account?: null,
-      oldStatus?: null,
-      newStatus?: null
-    ): TypedEventFilter<
-      [string, boolean, boolean],
-      { account: string; oldStatus: boolean; newStatus: boolean }
-    >;
-
     UpdateSwapSwitch(
       account?: null,
       oldStatus?: null,
@@ -1165,15 +971,6 @@ export class ICHIManager extends BaseContract {
     ): TypedEventFilter<
       [string, boolean, boolean],
       { account: string; oldStatus: boolean; newStatus: boolean }
-    >;
-
-    "UpdateVaultFee(address,uint256,uint256)"(
-      account?: null,
-      oldVaultFee?: null,
-      newVaultFee?: null
-    ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; oldVaultFee: BigNumber; newVaultFee: BigNumber }
     >;
 
     UpdateVaultFee(

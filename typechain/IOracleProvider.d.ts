@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IOracleProviderInterface extends ethers.utils.Interface {
   functions: {
@@ -58,15 +58,6 @@ interface IOracleProviderInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AddOracle"): EventFragment;
 }
-
-export type AddOracleEvent = TypedEvent<
-  [string, string, string, string] & {
-    account: string;
-    base: string;
-    quote: string;
-    registry: string;
-  }
->;
 
 export class IOracleProvider extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -206,16 +197,6 @@ export class IOracleProvider extends BaseContract {
   };
 
   filters: {
-    "AddOracle(address,address,address,address)"(
-      account?: null,
-      base?: null,
-      quote?: null,
-      registry?: null
-    ): TypedEventFilter<
-      [string, string, string, string],
-      { account: string; base: string; quote: string; registry: string }
-    >;
-
     AddOracle(
       account?: null,
       base?: null,
