@@ -15,11 +15,19 @@ interface IRewardPool {
     function reload(address account) external;
 
     /// Event
-    event RewardStarted(uint256 startTime, uint256 periodFinish, uint256 rewardRate);
+    event RewardStarted(
+        uint256 startTime,
+        uint256 periodFinish,
+        uint256 rewardRate
+    );
     event RewardAdded(uint256 reward);
     event RewardUpdated(address account, uint256 shares, uint256 totalShares);
     event RewardPaid(address account, uint256 reward);
     event RewardRateUpdated(uint256 oldRate, uint256 newRate);
-    event RewardEmergencyExit(address owner, address governance, uint256 amount);
+    event RewardEmergencyExit(
+        address owner,
+        address governance,
+        uint256 amount
+    );
     event RewardReloadAccount(address account);
 }

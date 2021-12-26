@@ -14,7 +14,6 @@ import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/reward/IRewardPool.sol";
 import "../interfaces/yang/IYangNFTVault.sol";
 
-
 contract YINStakeWrapper is ReentrancyGuard {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -78,9 +77,6 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     mapping(address => uint256) public rewards;
     mapping(address => uint256) public userRewardPerSharePaid;
 
-    uint256 public constant MAX_REWARD_RATE = 70000000000000000;
-    uint256 public constant MIN_REWARD_RATE = 7000000000000000;
-
     constructor(
         address _rewardsToken,
         address _yangNFT,
@@ -114,7 +110,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
                 lastTimeRewardApplicable()
                     .sub(lastUpdateTime)
                     .mul(rewardRate)
-                    .mul(1e18)
+                    .mul(2e18)
                     .div(totalShares())
             );
     }
@@ -122,13 +118,14 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     function earned(address account) public view override returns (uint256) {
         uint256 reward = share(account)
             .mul(rewardPerShare().sub(userRewardPerSharePaid[account]))
-            .div(1e18);
-
+            .div(5e18)
+            .add(rewards[account]);
         if (totalSupply() > 0) {
+            uint256 _totalSupply = totalSupply();
             return
-                reward.mul(balanceOf(account)).div(totalSupply()).add(
-                    rewards[account]
-                );
+                reward
+                    .add(reward.mul(balanceOf(account)).div(_totalSupply))
+                    .add(rewards[account]);
         } else {
             return reward.add(rewards[account]);
         }
@@ -191,7 +188,10 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
 
     /// Restricted
 
-    function addRewards(address _rewardsToken, uint256 amount) public nonReentrant {
+    function addRewards(address _rewardsToken, uint256 amount)
+        public
+        nonReentrant
+    {
         require(amount > 0, "AM0");
         IERC20(_rewardsToken).safeTransferFrom(
             msg.sender,
@@ -204,13 +204,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         }
     }
 
-    function _checkRewardRate(uint256 _rate) internal pure {
-        require(_rate >= MIN_REWARD_RATE && _rate <= MAX_REWARD_RATE, "RATE");
-    }
-
-
     function modifyRewardRate(uint256 _rewardRate) external onlyOwner {
-        _checkRewardRate(_rewardRate);
         emit RewardRateUpdated(rewardRate, _rewardRate);
         rewardRate = _rewardRate;
     }
@@ -228,11 +222,11 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         emit RewardUpdated(account, accountShare, totalCHIShares);
     }
 
-    function startReward(uint256 _startTime, uint256 _rewardRate, uint256 amount)
-        external
-        notifyUpdateReward(address(0))
-        onlyOwner
-    {
+    function startReward(
+        uint256 _startTime,
+        uint256 _rewardRate,
+        uint256 amount
+    ) external notifyUpdateReward(address(0)) onlyOwner {
         require(startTime == 0 && periodFinish == 0, "Dup");
 
         if (_startTime == 0) {
@@ -252,8 +246,8 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         }
     }
 
-    function emergencyExit() external onlyOwner {
-        uint256 amount = rewardsToken.balanceOf(address(this));
+    function emergencyExit(uint256 amount) external onlyOwner {
+        require(amount <= rewardsToken.balanceOf(address(this)));
         rewardsToken.safeTransfer(governance, amount);
 
         emit RewardEmergencyExit(msg.sender, governance, amount);

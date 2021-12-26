@@ -51,6 +51,7 @@ export type { Timelock } from "./Timelock";
 export type { ChainLinkFeedsRegistry } from "./ChainLinkFeedsRegistry";
 export type { LockLiquidity } from "./LockLiquidity";
 export type { YangNFTVault } from "./YangNFTVault";
+export type { YangNFTVaultV2 } from "./YangNFTVaultV2";
 
 export { Denominations__factory } from "./factories/Denominations__factory";
 export { AggregatorInterface__factory } from "./factories/AggregatorInterface__factory";
@@ -102,3 +103,4 @@ export { Timelock__factory } from "./factories/Timelock__factory";
 export { ChainLinkFeedsRegistry__factory } from "./factories/ChainLinkFeedsRegistry__factory";
 export { LockLiquidity__factory } from "./factories/LockLiquidity__factory";
 export { YangNFTVault__factory } from "./factories/YangNFTVault__factory";
+export { YangNFTVaultV2__factory } from "./factories/YangNFTVaultV2__factory";

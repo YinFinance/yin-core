@@ -213,9 +213,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.YangNFTVault__factory>;
     getContractFactory(
-      name: "YangNFTVault",
+      name: "YangNFTVaultV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.YangNFTVault__factory>;
+    ): Promise<Contracts.YangNFTVaultV2__factory>;
 
     // default types
     getContractFactory(

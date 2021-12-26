@@ -21,15 +21,13 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface RewardPoolInterface extends ethers.utils.Interface {
   functions: {
-    "MAX_REWARD_RATE()": FunctionFragment;
-    "MIN_REWARD_RATE()": FunctionFragment;
     "accruedReward()": FunctionFragment;
     "addRewards(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "chiId()": FunctionFragment;
     "chiManager()": FunctionFragment;
     "earned(address)": FunctionFragment;
-    "emergencyExit()": FunctionFragment;
+    "emergencyExit(uint256)": FunctionFragment;
     "getReward()": FunctionFragment;
     "getRewardForDuration()": FunctionFragment;
     "governance()": FunctionFragment;
@@ -61,14 +59,6 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(
-    functionFragment: "MAX_REWARD_RATE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "MIN_REWARD_RATE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "accruedReward",
     values?: undefined
   ): string;
@@ -85,7 +75,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "earned", values: [string]): string;
   encodeFunctionData(
     functionFragment: "emergencyExit",
-    values?: undefined
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "getReward", values?: undefined): string;
   encodeFunctionData(
@@ -173,14 +163,6 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "yangNFT", values?: undefined): string;
   encodeFunctionData(functionFragment: "yinToken", values?: undefined): string;
 
-  decodeFunctionResult(
-    functionFragment: "MAX_REWARD_RATE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "MIN_REWARD_RATE",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "accruedReward",
     data: BytesLike
@@ -340,10 +322,6 @@ export class RewardPool extends BaseContract {
   interface: RewardPoolInterface;
 
   functions: {
-    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     accruedReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     addRewards(
@@ -361,6 +339,7 @@ export class RewardPool extends BaseContract {
     earned(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     emergencyExit(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -448,10 +427,6 @@ export class RewardPool extends BaseContract {
     yinToken(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
-  MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
   accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
   addRewards(
@@ -469,6 +444,7 @@ export class RewardPool extends BaseContract {
   earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   emergencyExit(
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -556,10 +532,6 @@ export class RewardPool extends BaseContract {
   yinToken(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
-    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
     accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
     addRewards(
@@ -576,7 +548,10 @@ export class RewardPool extends BaseContract {
 
     earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    emergencyExit(overrides?: CallOverrides): Promise<void>;
+    emergencyExit(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getReward(overrides?: CallOverrides): Promise<void>;
 
@@ -727,10 +702,6 @@ export class RewardPool extends BaseContract {
   };
 
   estimateGas: {
-    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
-    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
-
     accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
     addRewards(
@@ -748,6 +719,7 @@ export class RewardPool extends BaseContract {
     earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyExit(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -836,10 +808,6 @@ export class RewardPool extends BaseContract {
   };
 
   populateTransaction: {
-    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     accruedReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     addRewards(
@@ -863,6 +831,7 @@ export class RewardPool extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     emergencyExit(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

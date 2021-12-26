@@ -8,9 +8,7 @@ import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "../interfaces/reward/IRewardPoolProxy.sol";
 import "../interfaces/reward/IRewardPool.sol";
 
-
 contract RewardPoolProxy is IRewardPoolProxy, Ownable {
-
     mapping(uint256 => address) private _pools;
 
     function addRewardPool(uint256 chiId, address pool) public onlyOwner {
@@ -33,7 +31,10 @@ contract RewardPoolProxy is IRewardPoolProxy, Ownable {
         addRewardPool(chiId, pool);
     }
 
-    function proxyReloadRewardPool(uint256 chiId, address account) external override {
+    function proxyReloadRewardPool(uint256 chiId, address account)
+        external
+        override
+    {
         address pool = _pools[chiId];
         if (_pools[chiId] != address(0)) {
             IRewardPool(pool).reload(account);

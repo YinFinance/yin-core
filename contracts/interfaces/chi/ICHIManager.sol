@@ -204,11 +204,7 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 oldMaxUSDLimit,
         uint256 newMaxUSDLimit
     );
-    event UpdateSwapSwitch(
-        address account,
-        bool oldStatus,
-        bool newStatus
-    );
+    event UpdateSwapSwitch(address account, bool oldStatus, bool newStatus);
 
     // Events
 
@@ -231,5 +227,4 @@ interface ICHIManager is ICHIDepositCallBack {
         uint256 percentage,
         uint256 amountOut
     );
-
 }
