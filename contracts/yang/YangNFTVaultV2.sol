@@ -24,7 +24,7 @@ import "../libraries/YANGPosition.sol";
 import "../libraries/PriceHelper.sol";
 import "./LockLiquidity.sol";
 
-contract YangNFTVault is
+contract YangNFTVaultV2 is
     IYangNFTVault,
     LockLiquidity,
     ReentrancyGuardUpgradeable,
@@ -156,6 +156,9 @@ contract YangNFTVault is
             block.timestamp
         );
         emit Subscribe(params.yangId, params.chiId, shares);
+	if (rewardProxy != address(0)) {
+	    IRewardPoolProxy(rewardProxy).proxyReloadRewardPool(params.chiId, msg.sender);
+	}
     }
 
     function subscribe(SubscribeParam memory params)
@@ -187,6 +190,9 @@ contract YangNFTVault is
         );
 
         emit Subscribe(params.yangId, params.chiId, shares);
+	if (rewardProxy != address(0)) {
+	    IRewardPoolProxy(rewardProxy).proxyReloadRewardPool(params.chiId, msg.sender);
+	}
     }
 
     function unsubscribe(UnSubscribeParam memory params)
@@ -214,6 +220,9 @@ contract YangNFTVault is
         _withdraw(pool.token0(), amount0, pool.token1(), amount1);
 
         emit UnSubscribe(params.yangId, params.chiId, amount0, amount1);
+	if (rewardProxy != address(0)) {
+	    IRewardPoolProxy(rewardProxy).proxyReloadRewardPool(params.chiId, msg.sender);
+	}
     }
 
     function unsubscribeSingle(UnSubscribeSingleParam memory params)
@@ -240,6 +249,9 @@ contract YangNFTVault is
         _withdraw(tokenOut, amount, address(0), 0);
 
         emit UnSubscribe(params.yangId, params.chiId, amount, 0);
+	if (rewardProxy != address(0)) {
+	    IRewardPoolProxy(rewardProxy).proxyReloadRewardPool(params.chiId, msg.sender);
+	}
     }
 
     // views function
