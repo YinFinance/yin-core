@@ -2,106 +2,136 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/reward/IRewardPool.sol";
+import "../interfaces/yang/IYangNFTVault.sol";
 
-contract RewardPool is
-    IRewardPool,
-    OwnableUpgradeable,
-    ReentrancyGuardUpgradeable
-{
+
+contract YINStakeWrapper is ReentrancyGuard {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    IERC20 public yinToken;
+
+    uint256 private _totalSupply;
+    mapping(address => uint256) private _balances;
+
+    event Deposit(address account, uint256 amount);
+    event Withdraw(address account, uint256 amount);
+
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
+    function balanceOf(address account) public view returns (uint256) {
+        return _balances[account];
+    }
+
+    function stake(uint256 amount) public virtual nonReentrant {
+        require(amount > 0, "AM0");
+        _totalSupply = _totalSupply.add(amount);
+        _balances[msg.sender] = _balances[msg.sender].add(amount);
+        yinToken.safeTransferFrom(msg.sender, address(this), amount);
+        emit Deposit(msg.sender, amount);
+    }
+
+    function withdraw(uint256 amount) public virtual nonReentrant {
+        require(totalSupply() >= amount && amount > 0, "AMT");
+        _totalSupply = _totalSupply.sub(amount);
+        _balances[msg.sender] = _balances[msg.sender].sub(amount);
+        yinToken.safeTransfer(msg.sender, amount);
+        emit Withdraw(msg.sender, amount);
+    }
+}
+
+contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
     IERC20 public rewardsToken;
     ICHIManager public chiManager;
-    address public yangNFT;
+    IYangNFTVault public yangNFT;
 
     uint256 public periodFinish;
     uint256 public rewardRate;
     uint256 public rewardsDuration; // seconds
     uint256 public totalReward;
-    mapping(uint256 => uint256) public lastUpdateTimes;
-    mapping(uint256 => uint256) public rewardPerShareStored;
-    mapping(uint256 => uint256) public startTimes;
+    uint256 public accruedReward;
+    uint256 public lastUpdateTime;
+    uint256 public rewardPerShareStored;
+    uint256 public startTime;
+    uint256 public chiId;
 
-    mapping(uint256 => uint256) private _totalShares;
-    mapping(uint256 => mapping(uint256 => uint256)) private _shares;
+    address public governance;
 
-    mapping(uint256 => mapping(uint256 => uint256)) public rewards;
-    mapping(uint256 => mapping(uint256 => uint256))
-        public userRewardPerSharePaid;
+    uint256 private _totalShares;
+    mapping(address => uint256) private _shares;
 
-    // initialize
-    function initialize(
+    mapping(address => uint256) public rewards;
+    mapping(address => uint256) public userRewardPerSharePaid;
+
+    uint256 public constant MAX_REWARD_RATE = 70000000000000000;
+    uint256 public constant MIN_REWARD_RATE = 7000000000000000;
+
+    constructor(
         address _rewardsToken,
-        address _chiManager,
         address _yangNFT,
-        uint256 _rewardsDuration
-    ) public initializer {
+        address _chiManager,
+        uint256 _rewardsDuration,
+        uint256 _chiId
+    ) {
+        yinToken = IERC20(_rewardsToken);
         rewardsToken = IERC20(_rewardsToken);
         chiManager = ICHIManager(_chiManager);
+        yangNFT = IYangNFTVault(_yangNFT);
         rewardsDuration = _rewardsDuration;
-        yangNFT = _yangNFT;
-        __Ownable_init();
-        __ReentrancyGuard_init();
+        chiId = _chiId;
     }
 
     /// View
-    function shares(uint256 yangId, uint256 chiId)
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return _shares[chiId][yangId];
+    function share(address account) public view override returns (uint256) {
+        return _shares[account];
     }
 
-    function totalShares(uint256 chiId) public view override returns (uint256) {
-        return _totalShares[chiId];
+    function totalShares() public view override returns (uint256) {
+        return _totalShares;
     }
 
-    function rewardPerShare(uint256 chiId) public view returns (uint256) {
-        uint256 _totalShares_ = _totalShares[chiId];
-        if (chiId == 0 || _totalShares_ == 0) {
-            return uint256(0);
+    function rewardPerShare() public view returns (uint256) {
+        if (totalShares() == 0) {
+            return rewardPerShareStored;
         }
         return
-            rewardPerShareStored[chiId].add(
+            rewardPerShareStored.add(
                 lastTimeRewardApplicable()
-                    .sub(lastUpdateTimes[chiId])
+                    .sub(lastUpdateTime)
                     .mul(rewardRate)
                     .mul(1e18)
-                    .div(_totalShares_)
+                    .div(totalShares())
             );
     }
 
-    function earned(uint256 yangId, uint256 chiId)
-        public
-        view
-        override
-        returns (uint256)
-    {
-        uint256 _share = _shares[chiId][yangId];
-        return
-            _share
-                .mul(
-                    rewardPerShare(chiId).sub(
-                        userRewardPerSharePaid[chiId][yangId]
-                    )
-                )
-                .div(1e18)
-                .add(rewards[chiId][yangId]);
+    function earned(address account) public view override returns (uint256) {
+        uint256 reward = share(account)
+            .mul(rewardPerShare().sub(userRewardPerSharePaid[account]))
+            .div(1e18);
+
+        if (totalSupply() > 0) {
+            return
+                reward.mul(balanceOf(account)).div(totalSupply()).add(
+                    rewards[account]
+                );
+        } else {
+            return reward.add(rewards[account]);
+        }
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {
@@ -112,128 +142,138 @@ contract RewardPool is
         return rewardRate.mul(rewardsDuration);
     }
 
-    function updateRewardFromCHI(
-        uint256 yangId,
-        uint256 chiId,
-        uint256 _shares_,
-        uint256 _totalShares_
-    ) public override onlyChiManager updateReward(yangId, chiId) {
-        _totalShares[chiId] = _totalShares_;
-        _shares[chiId][yangId] = _shares_;
+    /// Operation
 
-        emit RewardUpdated(yangId, chiId);
+    function stake(uint256 amount)
+        public
+        override
+        checkStart
+        notifyUpdateReward(msg.sender)
+    {
+        require(share(msg.sender) > 0, "shares");
+        super.stake(amount);
     }
 
-    function getReward(uint256 yangId, uint256 chiId)
+    function withdraw(uint256 amount)
+        public
+        override
+        checkStart
+        notifyUpdateReward(msg.sender)
+    {
+        super.withdraw(amount);
+    }
+
+    function getReward()
         public
         override
         nonReentrant
-        checkStart(chiId)
-        updateReward(yangId, chiId)
+        checkStart
+        notifyUpdateReward(msg.sender)
     {
-        require(
-            IERC721(yangNFT).ownerOf(yangId) == msg.sender,
-            "Non owner of Yang"
-        );
-        require(address(rewardsToken) != address(0), "not tge");
+        uint256 reward = earned(msg.sender);
+        require(totalReward >= accruedReward.add(reward), "MAX");
 
-        uint256 reward = rewards[chiId][yangId];
         if (reward > 0) {
+            rewards[msg.sender] = 0;
+            accruedReward = accruedReward.add(reward);
             rewardsToken.safeTransfer(msg.sender, reward);
-            rewards[chiId][yangId] = 0;
             emit RewardPaid(msg.sender, reward);
         }
     }
 
-    function transferToRewardPool(uint256 reward) external override {
-        require(address(rewardsToken) != address(0), "not tge");
-
-        uint256 accruedReward = rewardsToken.balanceOf(address(this));
-        if (accruedReward.add(reward) >= totalReward) {
-            totalReward = accruedReward.add(reward);
-        }
-        rewardsToken.safeTransferFrom(msg.sender, address(this), reward);
+    function reload(address account)
+        external
+        override
+        notifyUpdateReward(account)
+    {
+        emit RewardReloadAccount(account);
     }
 
     /// Restricted
 
-    function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
-        require(
-            block.timestamp > periodFinish,
-            "Previous rewards period must be complete before changing the duration for the new period"
+    function addRewards(address _rewardsToken, uint256 amount) public nonReentrant {
+        require(amount > 0, "AM0");
+        IERC20(_rewardsToken).safeTransferFrom(
+            msg.sender,
+            address(this),
+            amount
         );
-        rewardsDuration = _rewardsDuration;
-        emit RewardsDurationUpdated(rewardsDuration);
+        if (address(rewardsToken) == _rewardsToken) {
+            totalReward = totalReward.add(amount);
+            emit RewardAdded(amount);
+        }
     }
 
-    function setCHIManager(address _chiManager) external onlyOwner {
-        emit RewardSetCHIManager(address(chiManager), _chiManager);
-        chiManager = ICHIManager(_chiManager);
+    function _checkRewardRate(uint256 _rate) internal pure {
+        require(_rate >= MIN_REWARD_RATE && _rate <= MAX_REWARD_RATE, "RATE");
     }
 
-    // End rewards emission earlier
-    function updatePeriodFinish(uint256 timestamp) external onlyOwner {
-        periodFinish = timestamp;
-    }
 
-    function updateRewardRate(uint256 _rewardRate) external onlyOwner {
-        emit RewardUpdateRate(rewardRate, _rewardRate);
+    function modifyRewardRate(uint256 _rewardRate) external onlyOwner {
+        _checkRewardRate(_rewardRate);
+        emit RewardRateUpdated(rewardRate, _rewardRate);
         rewardRate = _rewardRate;
     }
 
-    function notifyRewardAmount(uint256 reward) external onlyOwner {
-        if (block.timestamp >= periodFinish) {
-            rewardRate = reward.div(rewardsDuration);
-        } else {
-            rewardRate = reward
-                .add(periodFinish.sub(block.timestamp).mul(rewardRate))
-                .div(rewardsDuration);
+    function _updateAccountShare(address account) internal {
+        uint256 accountShare = 0;
+        uint256 yangId = yangNFT.getTokenId(account);
+        if (account != address(0) && yangId != 0) {
+            accountShare = chiManager.yang(yangId, chiId);
+            _shares[account] = accountShare;
         }
+        (, , , , , , , uint256 totalCHIShares) = chiManager.chi(chiId);
+        _totalShares = totalCHIShares;
 
-        periodFinish = block.timestamp.add(rewardsDuration);
-        totalReward = reward;
-
-        emit RewardAdded(reward);
+        emit RewardUpdated(account, accountShare, totalCHIShares);
     }
 
-    function notifyLastUpdateTimes(uint256 tokenId) external override {
-        require(
-            msg.sender == owner() || msg.sender == address(chiManager),
-            "not approved"
-        );
-        startTimes[tokenId] = block.timestamp;
-        lastUpdateTimes[tokenId] = block.timestamp;
+    function startReward(uint256 _startTime, uint256 _rewardRate, uint256 amount)
+        external
+        notifyUpdateReward(address(0))
+        onlyOwner
+    {
+        require(startTime == 0 && periodFinish == 0, "Dup");
 
-        emit RewardLastUpdateTime(tokenId, lastUpdateTimes[tokenId]);
+        if (_startTime == 0) {
+            startTime = block.timestamp;
+            periodFinish = block.timestamp.add(rewardsDuration);
+        } else {
+            startTime = _startTime;
+            periodFinish = startTime.add(rewardsDuration);
+        }
+
+        rewardRate = _rewardRate; // 5000 * 1e18 / 86400
+
+        emit RewardStarted(startTime, periodFinish, rewardRate);
+
+        if (amount > 0 && rewardsToken.balanceOf(msg.sender) >= amount) {
+            addRewards(address(rewardsToken), amount);
+        }
+    }
+
+    function emergencyExit() external onlyOwner {
+        uint256 amount = rewardsToken.balanceOf(address(this));
+        rewardsToken.safeTransfer(governance, amount);
+
+        emit RewardEmergencyExit(msg.sender, governance, amount);
     }
 
     /* ========== MODIFIERS ========== */
 
-    modifier updateReward(uint256 yangId, uint256 chiId) {
-        if (chiId != 0) {
-            rewardPerShareStored[chiId] = rewardPerShare(chiId);
-            lastUpdateTimes[chiId] = lastTimeRewardApplicable();
+    modifier notifyUpdateReward(address account) {
+        rewardPerShareStored = rewardPerShare();
+        lastUpdateTime = lastTimeRewardApplicable();
+        if (account != address(0)) {
+            rewards[account] = earned(account);
+            userRewardPerSharePaid[account] = rewardPerShareStored;
         }
-        if (yangId != 0 && chiId != 0) {
-            rewards[chiId][yangId] = earned(yangId, chiId);
-            userRewardPerSharePaid[chiId][yangId] = rewardPerShareStored[chiId];
-        }
+        _updateAccountShare(account);
         _;
     }
 
-    modifier checkStart(uint256 tokenId) {
-        require(
-            startTimes[tokenId] != 0 && (block.timestamp > startTimes[tokenId]),
-            "not start"
-        );
-        _;
-    }
-
-    modifier onlyChiManager() {
-        require(
-            msg.sender == address(chiManager) || msg.sender == owner(),
-            "only manager"
-        );
+    modifier checkStart() {
+        require(startTime != 0 && (block.timestamp > startTime), "not start");
         _;
     }
 }

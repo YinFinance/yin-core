@@ -676,6 +676,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "rewardProxy",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -753,6 +766,19 @@
       }
     ],
     "name": "setCHIManager",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_rewardProxy",
+        "type": "address"
+      }
+    ],
+    "name": "setRewardProxy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

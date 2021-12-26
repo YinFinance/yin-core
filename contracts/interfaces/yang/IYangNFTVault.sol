@@ -49,6 +49,8 @@ interface IYangNFTVault is IYANGDepositCallBack {
         uint256 amount0,
         uint256 amount1
     );
+    event ModifyCHIManager(address o, address n);
+    event ModifyRewardProxy(address o, address n);
 
     function setCHIManager(address) external;
 

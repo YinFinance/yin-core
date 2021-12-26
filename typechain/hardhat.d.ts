@@ -77,10 +77,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721__factory>;
     getContractFactory(
-      name: "IERC721Enumerable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Enumerable__factory>;
-    getContractFactory(
       name: "IUniswapV3MintCallback",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUniswapV3MintCallback__factory>;
@@ -157,6 +153,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IRewardPool__factory>;
     getContractFactory(
+      name: "IRewardPoolProxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IRewardPoolProxy__factory>;
+    getContractFactory(
       name: "IChainLinkFeedsRegistry",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IChainLinkFeedsRegistry__factory>;
@@ -181,6 +181,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardPool__factory>;
     getContractFactory(
+      name: "YINStakeWrapper",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.YINStakeWrapper__factory>;
+    getContractFactory(
+      name: "RewardPoolProxy",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RewardPoolProxy__factory>;
+    getContractFactory(
       name: "Yin",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Yin__factory>;
@@ -200,6 +208,10 @@ declare module "hardhat/types/runtime" {
       name: "LockLiquidity",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.LockLiquidity__factory>;
+    getContractFactory(
+      name: "YangNFTVault",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.YangNFTVault__factory>;
     getContractFactory(
       name: "YangNFTVault",
       signerOrOptions?: ethers.Signer | FactoryOptions

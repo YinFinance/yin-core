@@ -21,81 +21,48 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IRewardPoolInterface extends ethers.utils.Interface {
   functions: {
-    "earned(uint256,uint256)": FunctionFragment;
-    "getReward(uint256,uint256)": FunctionFragment;
-    "notifyLastUpdateTimes(uint256)": FunctionFragment;
-    "shares(uint256,uint256)": FunctionFragment;
-    "totalShares(uint256)": FunctionFragment;
-    "transferToRewardPool(uint256)": FunctionFragment;
-    "updateRewardFromCHI(uint256,uint256,uint256,uint256)": FunctionFragment;
+    "earned(address)": FunctionFragment;
+    "getReward()": FunctionFragment;
+    "reload(address)": FunctionFragment;
+    "share(address)": FunctionFragment;
+    "totalShares()": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "earned",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getReward",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "notifyLastUpdateTimes",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "shares",
-    values: [BigNumberish, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "earned", values: [string]): string;
+  encodeFunctionData(functionFragment: "getReward", values?: undefined): string;
+  encodeFunctionData(functionFragment: "reload", values: [string]): string;
+  encodeFunctionData(functionFragment: "share", values: [string]): string;
   encodeFunctionData(
     functionFragment: "totalShares",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferToRewardPool",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateRewardFromCHI",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+    values?: undefined
   ): string;
 
   decodeFunctionResult(functionFragment: "earned", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getReward", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "notifyLastUpdateTimes",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "reload", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "share", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalShares",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferToRewardPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateRewardFromCHI",
     data: BytesLike
   ): Result;
 
   events: {
     "RewardAdded(uint256)": EventFragment;
-    "RewardLastUpdateTime(uint256,uint256)": EventFragment;
+    "RewardEmergencyExit(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256)": EventFragment;
-    "RewardSetCHIManager(address,address)": EventFragment;
-    "RewardUpdateRate(uint256,uint256)": EventFragment;
-    "RewardUpdated(uint256,uint256)": EventFragment;
-    "RewardsDurationUpdated(uint256)": EventFragment;
+    "RewardRateUpdated(uint256,uint256)": EventFragment;
+    "RewardReloadAccount(address)": EventFragment;
+    "RewardStarted(uint256,uint256,uint256)": EventFragment;
+    "RewardUpdated(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardLastUpdateTime"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardEmergencyExit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardSetCHIManager"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardUpdateRate"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardRateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardReloadAccount"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardsDurationUpdated"): EventFragment;
 }
 
 export class IRewardPool extends BaseContract {
@@ -142,130 +109,47 @@ export class IRewardPool extends BaseContract {
   interface: IRewardPoolInterface;
 
   functions: {
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    earned(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
+    reload(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    share(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    totalShares(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
-  earned(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   getReward(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  notifyLastUpdateTimes(
-    tokenId: BigNumberish,
+  reload(
+    account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  shares(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  totalShares(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  transferToRewardPool(
-    reward: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updateRewardFromCHI(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    _shares_: BigNumberish,
-    _totalShares_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  totalShares(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    getReward(overrides?: CallOverrides): Promise<void>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    reload(account: string, overrides?: CallOverrides): Promise<void>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -273,28 +157,24 @@ export class IRewardPool extends BaseContract {
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
 
-    RewardLastUpdateTime(
-      tokenId?: null,
-      timestamp?: null
+    RewardEmergencyExit(
+      owner?: null,
+      governance?: null,
+      amount?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { tokenId: BigNumber; timestamp: BigNumber }
+      [string, string, BigNumber],
+      { owner: string; governance: string; amount: BigNumber }
     >;
 
     RewardPaid(
-      user?: string | null,
+      account?: null,
       reward?: null
     ): TypedEventFilter<
       [string, BigNumber],
-      { user: string; reward: BigNumber }
+      { account: string; reward: BigNumber }
     >;
 
-    RewardSetCHIManager(
-      oldAddr?: null,
-      newAddr?: null
-    ): TypedEventFilter<[string, string], { oldAddr: string; newAddr: string }>;
-
-    RewardUpdateRate(
+    RewardRateUpdated(
       oldRate?: null,
       newRate?: null
     ): TypedEventFilter<
@@ -302,102 +182,66 @@ export class IRewardPool extends BaseContract {
       { oldRate: BigNumber; newRate: BigNumber }
     >;
 
-    RewardUpdated(
-      yangId?: null,
-      chiId?: null
+    RewardReloadAccount(
+      account?: null
+    ): TypedEventFilter<[string], { account: string }>;
+
+    RewardStarted(
+      startTime?: null,
+      periodFinish?: null,
+      rewardRate?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { yangId: BigNumber; chiId: BigNumber }
+      [BigNumber, BigNumber, BigNumber],
+      { startTime: BigNumber; periodFinish: BigNumber; rewardRate: BigNumber }
     >;
 
-    RewardsDurationUpdated(
-      newDuration?: null
-    ): TypedEventFilter<[BigNumber], { newDuration: BigNumber }>;
+    RewardUpdated(
+      account?: null,
+      shares?: null,
+      totalShares?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; shares: BigNumber; totalShares: BigNumber }
+    >;
   };
 
   estimateGas: {
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
+    reload(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
+    reload(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
+    share(
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    totalShares(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

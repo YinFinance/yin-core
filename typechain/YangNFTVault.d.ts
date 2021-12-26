@@ -313,6 +313,8 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "LockSeconds(uint256)": EventFragment;
     "LockState(uint256,bool,bool)": EventFragment;
     "MintYangNFT(address,uint256)": EventFragment;
+    "ModifyCHIManager(address,address)": EventFragment;
+    "ModifyRewardProxy(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Subscribe(uint256,uint256,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
@@ -326,6 +328,8 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "LockSeconds"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LockState"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintYangNFT"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModifyCHIManager"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModifyRewardProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
@@ -1093,6 +1097,16 @@ export class YangNFTVault extends BaseContract {
       [string, BigNumber],
       { recipient: string; tokenId: BigNumber }
     >;
+
+    ModifyCHIManager(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
+
+    ModifyRewardProxy(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
 
     OwnershipTransferred(
       previousOwner?: string | null,

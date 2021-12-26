@@ -21,73 +21,91 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface RewardPoolInterface extends ethers.utils.Interface {
   functions: {
+    "MAX_REWARD_RATE()": FunctionFragment;
+    "MIN_REWARD_RATE()": FunctionFragment;
+    "accruedReward()": FunctionFragment;
+    "addRewards(address,uint256)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
+    "chiId()": FunctionFragment;
     "chiManager()": FunctionFragment;
-    "earned(uint256,uint256)": FunctionFragment;
-    "getReward(uint256,uint256)": FunctionFragment;
+    "earned(address)": FunctionFragment;
+    "emergencyExit()": FunctionFragment;
+    "getReward()": FunctionFragment;
     "getRewardForDuration()": FunctionFragment;
-    "initialize(address,address,address,uint256)": FunctionFragment;
+    "governance()": FunctionFragment;
     "lastTimeRewardApplicable()": FunctionFragment;
-    "lastUpdateTimes(uint256)": FunctionFragment;
-    "notifyLastUpdateTimes(uint256)": FunctionFragment;
-    "notifyRewardAmount(uint256)": FunctionFragment;
+    "lastUpdateTime()": FunctionFragment;
+    "modifyRewardRate(uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "periodFinish()": FunctionFragment;
+    "reload(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "rewardPerShare(uint256)": FunctionFragment;
-    "rewardPerShareStored(uint256)": FunctionFragment;
+    "rewardPerShare()": FunctionFragment;
+    "rewardPerShareStored()": FunctionFragment;
     "rewardRate()": FunctionFragment;
-    "rewards(uint256,uint256)": FunctionFragment;
+    "rewards(address)": FunctionFragment;
     "rewardsDuration()": FunctionFragment;
     "rewardsToken()": FunctionFragment;
-    "setCHIManager(address)": FunctionFragment;
-    "setRewardsDuration(uint256)": FunctionFragment;
-    "shares(uint256,uint256)": FunctionFragment;
-    "startTimes(uint256)": FunctionFragment;
+    "share(address)": FunctionFragment;
+    "stake(uint256)": FunctionFragment;
+    "startReward(uint256,uint256,uint256)": FunctionFragment;
+    "startTime()": FunctionFragment;
     "totalReward()": FunctionFragment;
-    "totalShares(uint256)": FunctionFragment;
+    "totalShares()": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "transferToRewardPool(uint256)": FunctionFragment;
-    "updatePeriodFinish(uint256)": FunctionFragment;
-    "updateRewardFromCHI(uint256,uint256,uint256,uint256)": FunctionFragment;
-    "updateRewardRate(uint256)": FunctionFragment;
-    "userRewardPerSharePaid(uint256,uint256)": FunctionFragment;
+    "userRewardPerSharePaid(address)": FunctionFragment;
+    "withdraw(uint256)": FunctionFragment;
     "yangNFT()": FunctionFragment;
+    "yinToken()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "MAX_REWARD_RATE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MIN_REWARD_RATE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "accruedReward",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "addRewards",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "chiId", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "chiManager",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "earned", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "earned",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "emergencyExit",
+    values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "getReward",
-    values: [BigNumberish, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "getReward", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getRewardForDuration",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "initialize",
-    values: [string, string, string, BigNumberish]
+    functionFragment: "governance",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "lastTimeRewardApplicable",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "lastUpdateTimes",
-    values: [BigNumberish]
+    functionFragment: "lastUpdateTime",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "notifyLastUpdateTimes",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "notifyRewardAmount",
+    functionFragment: "modifyRewardRate",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -95,26 +113,24 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "periodFinish",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "reload", values: [string]): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "rewardPerShare",
-    values: [BigNumberish]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "rewardPerShareStored",
-    values: [BigNumberish]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "rewardRate",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "rewards",
-    values: [BigNumberish, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "rewards", values: [string]): string;
   encodeFunctionData(
     functionFragment: "rewardsDuration",
     values?: undefined
@@ -123,78 +139,77 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "rewardsToken",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "share", values: [string]): string;
+  encodeFunctionData(functionFragment: "stake", values: [BigNumberish]): string;
   encodeFunctionData(
-    functionFragment: "setCHIManager",
-    values: [string]
+    functionFragment: "startReward",
+    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setRewardsDuration",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "shares",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "startTimes",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "startTime", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalReward",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "totalShares",
-    values: [BigNumberish]
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "transferToRewardPool",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updatePeriodFinish",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateRewardFromCHI",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateRewardRate",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "userRewardPerSharePaid",
-    values: [BigNumberish, BigNumberish]
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdraw",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "yangNFT", values?: undefined): string;
+  encodeFunctionData(functionFragment: "yinToken", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "MAX_REWARD_RATE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MIN_REWARD_RATE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "accruedReward",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "addRewards", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "chiId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiManager", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "earned", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "emergencyExit",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getReward", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRewardForDuration",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "governance", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "lastTimeRewardApplicable",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lastUpdateTimes",
+    functionFragment: "lastUpdateTime",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "notifyLastUpdateTimes",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "notifyRewardAmount",
+    functionFragment: "modifyRewardRate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -202,6 +217,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "periodFinish",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "reload", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
@@ -224,16 +240,13 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "rewardsToken",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "share", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setCHIManager",
+    functionFragment: "startReward",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRewardsDuration",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "startTimes", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "startTime", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalReward",
     data: BytesLike
@@ -243,50 +256,44 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferToRewardPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updatePeriodFinish",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateRewardFromCHI",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateRewardRate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "userRewardPerSharePaid",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "yinToken", data: BytesLike): Result;
 
   events: {
+    "Deposit(address,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "RewardAdded(uint256)": EventFragment;
-    "RewardLastUpdateTime(uint256,uint256)": EventFragment;
+    "RewardEmergencyExit(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256)": EventFragment;
-    "RewardSetCHIManager(address,address)": EventFragment;
-    "RewardUpdateRate(uint256,uint256)": EventFragment;
-    "RewardUpdated(uint256,uint256)": EventFragment;
-    "RewardsDurationUpdated(uint256)": EventFragment;
+    "RewardRateUpdated(uint256,uint256)": EventFragment;
+    "RewardReloadAccount(address)": EventFragment;
+    "RewardStarted(uint256,uint256,uint256)": EventFragment;
+    "RewardUpdated(address,uint256,uint256)": EventFragment;
+    "Withdraw(address,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardLastUpdateTime"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardEmergencyExit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardSetCHIManager"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardUpdateRate"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardRateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardReloadAccount"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RewardsDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
 export class RewardPool extends BaseContract {
@@ -333,44 +340,44 @@ export class RewardPool extends BaseContract {
   interface: RewardPoolInterface;
 
   functions: {
+    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    accruedReward(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    addRewards(
+      _rewardsToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    chiId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     chiManager(overrides?: CallOverrides): Promise<[string]>;
 
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    earned(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    emergencyExit(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     getRewardForDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    initialize(
-      _rewardsToken: string,
-      _chiManager: string,
-      _yangNFT: string,
-      _rewardsDuration: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    governance(overrides?: CallOverrides): Promise<[string]>;
 
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    lastUpdateTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    lastUpdateTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    notifyRewardAmount(
-      reward: BigNumberish,
+    modifyRewardRate(
+      _rewardRate: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -378,135 +385,107 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    reload(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    rewardPerShare(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    rewardPerShare(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    rewardPerShareStored(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    rewardPerShareStored(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     rewardRate(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    rewards(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    rewards(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     rewardsToken(overrides?: CallOverrides): Promise<[string]>;
 
-    setCHIManager(
-      _chiManager: string,
+    share(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    stake(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setRewardsDuration(
-      _rewardsDuration: BigNumberish,
+    startReward(
+      _startTime: BigNumberish,
+      _rewardRate: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    startTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    startTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     totalReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    totalShares(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updatePeriodFinish(
-      timestamp: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    updateRewardRate(
-      _rewardRate: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     userRewardPerSharePaid(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    withdraw(
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     yangNFT(overrides?: CallOverrides): Promise<[string]>;
+
+    yinToken(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
+
+  MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
+
+  accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
+
+  addRewards(
+    _rewardsToken: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
   chiManager(overrides?: CallOverrides): Promise<string>;
 
-  earned(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  emergencyExit(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getReward(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   getRewardForDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
-  initialize(
-    _rewardsToken: string,
-    _chiManager: string,
-    _yangNFT: string,
-    _rewardsDuration: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  governance(overrides?: CallOverrides): Promise<string>;
 
   lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
-  lastUpdateTimes(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-  notifyLastUpdateTimes(
-    tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  notifyRewardAmount(
-    reward: BigNumberish,
+  modifyRewardRate(
+    _rewardRate: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -514,132 +493,103 @@ export class RewardPool extends BaseContract {
 
   periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
+  reload(
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   renounceOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  rewardPerShare(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  rewardPerShare(overrides?: CallOverrides): Promise<BigNumber>;
 
-  rewardPerShareStored(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  rewardPerShareStored(overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-  rewards(
-    arg0: BigNumberish,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardsToken(overrides?: CallOverrides): Promise<string>;
 
-  setCHIManager(
-    _chiManager: string,
+  share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  stake(
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setRewardsDuration(
-    _rewardsDuration: BigNumberish,
+  startReward(
+    _startTime: BigNumberish,
+    _rewardRate: BigNumberish,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  shares(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  startTimes(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  startTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   totalReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-  totalShares(
-    chiId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  transferToRewardPool(
-    reward: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updatePeriodFinish(
-    timestamp: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updateRewardFromCHI(
-    yangId: BigNumberish,
-    chiId: BigNumberish,
-    _shares_: BigNumberish,
-    _totalShares_: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  updateRewardRate(
-    _rewardRate: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   userRewardPerSharePaid(
-    arg0: BigNumberish,
-    arg1: BigNumberish,
+    arg0: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  withdraw(
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   yangNFT(overrides?: CallOverrides): Promise<string>;
 
+  yinToken(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
-    chiManager(overrides?: CallOverrides): Promise<string>;
+    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
+    accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
+
+    addRewards(
+      _rewardsToken: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    chiId(overrides?: CallOverrides): Promise<BigNumber>;
+
+    chiManager(overrides?: CallOverrides): Promise<string>;
+
+    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    emergencyExit(overrides?: CallOverrides): Promise<void>;
+
+    getReward(overrides?: CallOverrides): Promise<void>;
 
     getRewardForDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
-    initialize(
-      _rewardsToken: string,
-      _chiManager: string,
-      _yangNFT: string,
-      _rewardsDuration: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    governance(overrides?: CallOverrides): Promise<string>;
 
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lastUpdateTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    notifyRewardAmount(
-      reward: BigNumberish,
+    modifyRewardRate(
+      _rewardRate: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -647,96 +597,67 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
+    reload(account: string, overrides?: CallOverrides): Promise<void>;
+
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    rewardPerShare(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewardPerShare(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewardPerShareStored(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewardPerShareStored(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewards(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsToken(overrides?: CallOverrides): Promise<string>;
 
-    setCHIManager(
-      _chiManager: string,
+    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    stake(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    startReward(
+      _startTime: BigNumberish,
+      _rewardRate: BigNumberish,
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setRewardsDuration(
-      _rewardsDuration: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    startTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    startTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updatePeriodFinish(
-      timestamp: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    updateRewardRate(
-      _rewardRate: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     userRewardPerSharePaid(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    withdraw(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
     yangNFT(overrides?: CallOverrides): Promise<string>;
+
+    yinToken(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
+    Deposit(
+      account?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; amount: BigNumber }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -749,28 +670,24 @@ export class RewardPool extends BaseContract {
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
 
-    RewardLastUpdateTime(
-      tokenId?: null,
-      timestamp?: null
+    RewardEmergencyExit(
+      owner?: null,
+      governance?: null,
+      amount?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { tokenId: BigNumber; timestamp: BigNumber }
+      [string, string, BigNumber],
+      { owner: string; governance: string; amount: BigNumber }
     >;
 
     RewardPaid(
-      user?: string | null,
+      account?: null,
       reward?: null
     ): TypedEventFilter<
       [string, BigNumber],
-      { user: string; reward: BigNumber }
+      { account: string; reward: BigNumber }
     >;
 
-    RewardSetCHIManager(
-      oldAddr?: null,
-      newAddr?: null
-    ): TypedEventFilter<[string, string], { oldAddr: string; newAddr: string }>;
-
-    RewardUpdateRate(
+    RewardRateUpdated(
       oldRate?: null,
       newRate?: null
     ): TypedEventFilter<
@@ -778,58 +695,76 @@ export class RewardPool extends BaseContract {
       { oldRate: BigNumber; newRate: BigNumber }
     >;
 
-    RewardUpdated(
-      yangId?: null,
-      chiId?: null
+    RewardReloadAccount(
+      account?: null
+    ): TypedEventFilter<[string], { account: string }>;
+
+    RewardStarted(
+      startTime?: null,
+      periodFinish?: null,
+      rewardRate?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber],
-      { yangId: BigNumber; chiId: BigNumber }
+      [BigNumber, BigNumber, BigNumber],
+      { startTime: BigNumber; periodFinish: BigNumber; rewardRate: BigNumber }
     >;
 
-    RewardsDurationUpdated(
-      newDuration?: null
-    ): TypedEventFilter<[BigNumber], { newDuration: BigNumber }>;
+    RewardUpdated(
+      account?: null,
+      shares?: null,
+      totalShares?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; shares: BigNumber; totalShares: BigNumber }
+    >;
+
+    Withdraw(
+      account?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; amount: BigNumber }
+    >;
   };
 
   estimateGas: {
+    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
+
+    addRewards(
+      _rewardsToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    chiId(overrides?: CallOverrides): Promise<BigNumber>;
+
     chiManager(overrides?: CallOverrides): Promise<BigNumber>;
 
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
+    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    emergencyExit(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getRewardForDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
-    initialize(
-      _rewardsToken: string,
-      _chiManager: string,
-      _yangNFT: string,
-      _rewardsDuration: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    governance(overrides?: CallOverrides): Promise<BigNumber>;
 
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lastUpdateTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    notifyRewardAmount(
-      reward: BigNumberish,
+    modifyRewardRate(
+      _rewardRate: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -837,109 +772,101 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
+    reload(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    rewardPerShare(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewardPerShare(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewardPerShareStored(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewardPerShareStored(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewards(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsToken(overrides?: CallOverrides): Promise<BigNumber>;
 
-    setCHIManager(
-      _chiManager: string,
+    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    stake(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setRewardsDuration(
-      _rewardsDuration: BigNumberish,
+    startReward(
+      _startTime: BigNumberish,
+      _rewardRate: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    startTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    startTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updatePeriodFinish(
-      timestamp: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    updateRewardRate(
-      _rewardRate: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     userRewardPerSharePaid(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    withdraw(
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     yangNFT(overrides?: CallOverrides): Promise<BigNumber>;
+
+    yinToken(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    chiManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    MAX_REWARD_RATE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    earned(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
+    MIN_REWARD_RATE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    accruedReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    addRewards(
+      _rewardsToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    balanceOf(
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    chiId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    chiManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    earned(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    emergencyExit(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getReward(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -947,30 +874,16 @@ export class RewardPool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    initialize(
-      _rewardsToken: string,
-      _chiManager: string,
-      _yangNFT: string,
-      _rewardsDuration: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    governance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     lastTimeRewardApplicable(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    lastUpdateTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    lastUpdateTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    notifyLastUpdateTimes(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    notifyRewardAmount(
-      reward: BigNumberish,
+    modifyRewardRate(
+      _rewardRate: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -978,25 +891,25 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    reload(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    rewardPerShare(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    rewardPerShare(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     rewardPerShareStored(
-      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     rewardRate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     rewards(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1004,68 +917,48 @@ export class RewardPool extends BaseContract {
 
     rewardsToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    setCHIManager(
-      _chiManager: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setRewardsDuration(
-      _rewardsDuration: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    shares(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
+    share(
+      account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    startTimes(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
+    stake(
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    startReward(
+      _startTime: BigNumberish,
+      _rewardRate: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    startTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    totalShares(
-      chiId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    totalShares(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    transferToRewardPool(
-      reward: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updatePeriodFinish(
-      timestamp: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updateRewardFromCHI(
-      yangId: BigNumberish,
-      chiId: BigNumberish,
-      _shares_: BigNumberish,
-      _totalShares_: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    updateRewardRate(
-      _rewardRate: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     userRewardPerSharePaid(
-      arg0: BigNumberish,
-      arg1: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    withdraw(
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     yangNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    yinToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

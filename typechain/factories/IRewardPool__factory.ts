@@ -25,27 +25,33 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "governance",
+        type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "timestamp",
+        name: "amount",
         type: "uint256",
       },
     ],
-    name: "RewardLastUpdateTime",
+    name: "RewardEmergencyExit",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "user",
+        name: "account",
         type: "address",
       },
       {
@@ -56,25 +62,6 @@ const _abi = [
       },
     ],
     name: "RewardPaid",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "oldAddr",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newAddr",
-        type: "address",
-      },
-    ],
-    name: "RewardSetCHIManager",
     type: "event",
   },
   {
@@ -93,7 +80,20 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "RewardUpdateRate",
+    name: "RewardRateUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "RewardReloadAccount",
     type: "event",
   },
   {
@@ -102,13 +102,44 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "yangId",
+        name: "startTime",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "chiId",
+        name: "periodFinish",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "rewardRate",
+        type: "uint256",
+      },
+    ],
+    name: "RewardStarted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "shares",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalShares",
         type: "uint256",
       },
     ],
@@ -116,29 +147,11 @@ const _abi = [
     type: "event",
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "newDuration",
-        type: "uint256",
-      },
-    ],
-    name: "RewardsDurationUpdated",
-    type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "yangId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
+        internalType: "address",
+        name: "account",
+        type: "address",
       },
     ],
     name: "earned",
@@ -153,18 +166,7 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "yangId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "getReward",
     outputs: [],
     stateMutability: "nonpayable",
@@ -173,12 +175,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
+        internalType: "address",
+        name: "account",
+        type: "address",
       },
     ],
-    name: "notifyLastUpdateTimes",
+    name: "reload",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -186,17 +188,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "yangId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
+        internalType: "address",
+        name: "account",
+        type: "address",
       },
     ],
-    name: "shares",
+    name: "share",
     outputs: [
       {
         internalType: "uint256",
@@ -208,13 +205,7 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "totalShares",
     outputs: [
       {
@@ -224,47 +215,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "reward",
-        type: "uint256",
-      },
-    ],
-    name: "transferToRewardPool",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "yangId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "chiId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_shares_",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_totalShares_",
-        type: "uint256",
-      },
-    ],
-    name: "updateRewardFromCHI",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
 ];

@@ -50,6 +50,44 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "o",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "n",
+        type: "address",
+      },
+    ],
+    name: "ModifyCHIManager",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "o",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "n",
+        type: "address",
+      },
+    ],
+    name: "ModifyRewardProxy",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint256",
         name: "yangId",
         type: "uint256",
