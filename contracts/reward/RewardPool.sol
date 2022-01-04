@@ -23,8 +23,8 @@ contract YINStakeWrapper is ReentrancyGuard {
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
 
-    event Deposit(address account, uint256 amount);
-    event Withdraw(address account, uint256 amount);
+    event Stake(address account, uint256 amount);
+    event UnStake(address account, uint256 amount);
 
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
@@ -34,20 +34,20 @@ contract YINStakeWrapper is ReentrancyGuard {
         return _balances[account];
     }
 
-    function stake(uint256 amount) public virtual nonReentrant {
+    function _stake(uint256 amount) internal {
         require(amount > 0, "AM0");
         _totalSupply = _totalSupply.add(amount);
         _balances[msg.sender] = _balances[msg.sender].add(amount);
         yinToken.safeTransferFrom(msg.sender, address(this), amount);
-        emit Deposit(msg.sender, amount);
+        emit Stake(msg.sender, amount);
     }
 
-    function withdraw(uint256 amount) public virtual nonReentrant {
+    function _unstake(uint256 amount) internal {
         require(totalSupply() >= amount && amount > 0, "AMT");
         _totalSupply = _totalSupply.sub(amount);
         _balances[msg.sender] = _balances[msg.sender].sub(amount);
         yinToken.safeTransfer(msg.sender, amount);
-        emit Withdraw(msg.sender, amount);
+        emit UnStake(msg.sender, amount);
     }
 }
 
@@ -118,8 +118,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     function earned(address account) public view override returns (uint256) {
         uint256 reward = share(account)
             .mul(rewardPerShare().sub(userRewardPerSharePaid[account]))
-            .div(5e18)
-            .add(rewards[account]);
+            .div(5e18);
         if (totalSupply() > 0) {
             uint256 _totalSupply = totalSupply();
             return
@@ -142,32 +141,32 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     /// Operation
 
     function stake(uint256 amount)
-        public
-        override
+        external
         checkStart
+        nonReentrant
         notifyUpdateReward(msg.sender)
     {
         require(share(msg.sender) > 0, "shares");
-        super.stake(amount);
+        _stake(amount);
     }
 
     function withdraw(uint256 amount)
-        public
-        override
+        external
         checkStart
+        nonReentrant
         notifyUpdateReward(msg.sender)
     {
-        super.withdraw(amount);
+        _unstake(amount);
     }
 
     function getReward()
-        public
+        external
         override
         nonReentrant
         checkStart
         notifyUpdateReward(msg.sender)
     {
-        uint256 reward = earned(msg.sender);
+        uint256 reward = rewards[msg.sender];
         require(totalReward >= accruedReward.add(reward), "MAX");
 
         if (reward > 0) {
@@ -231,6 +230,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         require(startTime == 0 && periodFinish == 0, "Dup");
 
         if (_startTime == 0) {
+            lastUpdateTime = block.timestamp;
             startTime = block.timestamp;
             periodFinish = block.timestamp.add(rewardsDuration);
         } else {

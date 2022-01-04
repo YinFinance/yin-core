@@ -254,7 +254,6 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "yinToken", data: BytesLike): Result;
 
   events: {
-    "Deposit(address,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "RewardAdded(uint256)": EventFragment;
     "RewardEmergencyExit(address,address,uint256)": EventFragment;
@@ -263,10 +262,10 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "RewardReloadAccount(address)": EventFragment;
     "RewardStarted(uint256,uint256,uint256)": EventFragment;
     "RewardUpdated(address,uint256,uint256)": EventFragment;
-    "Withdraw(address,uint256)": EventFragment;
+    "Stake(address,uint256)": EventFragment;
+    "UnStake(address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardEmergencyExit"): EventFragment;
@@ -275,7 +274,8 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RewardReloadAccount"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Stake"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnStake"): EventFragment;
 }
 
 export class RewardPool extends BaseContract {
@@ -625,14 +625,6 @@ export class RewardPool extends BaseContract {
   };
 
   filters: {
-    Deposit(
-      account?: null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { account: string; amount: BigNumber }
-    >;
-
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -692,7 +684,15 @@ export class RewardPool extends BaseContract {
       { account: string; shares: BigNumber; totalShares: BigNumber }
     >;
 
-    Withdraw(
+    Stake(
+      account?: null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; amount: BigNumber }
+    >;
+
+    UnStake(
       account?: null,
       amount?: null
     ): TypedEventFilter<

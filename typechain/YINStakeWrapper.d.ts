@@ -11,7 +11,6 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
-  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -22,40 +21,31 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface YINStakeWrapperInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address)": FunctionFragment;
-    "stake(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
-    "withdraw(uint256)": FunctionFragment;
     "yinToken()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(functionFragment: "stake", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdraw",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "yinToken", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "yinToken", data: BytesLike): Result;
 
   events: {
-    "Deposit(address,uint256)": EventFragment;
-    "Withdraw(address,uint256)": EventFragment;
+    "Stake(address,uint256)": EventFragment;
+    "UnStake(address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Stake"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnStake"): EventFragment;
 }
 
 export class YINStakeWrapper extends BaseContract {
@@ -104,51 +94,27 @@ export class YINStakeWrapper extends BaseContract {
   functions: {
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    stake(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    withdraw(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     yinToken(overrides?: CallOverrides): Promise<[string]>;
   };
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  stake(
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  withdraw(
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   yinToken(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    stake(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    withdraw(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     yinToken(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    Deposit(
+    Stake(
       account?: null,
       amount?: null
     ): TypedEventFilter<
@@ -156,7 +122,7 @@ export class YINStakeWrapper extends BaseContract {
       { account: string; amount: BigNumber }
     >;
 
-    Withdraw(
+    UnStake(
       account?: null,
       amount?: null
     ): TypedEventFilter<
@@ -168,17 +134,7 @@ export class YINStakeWrapper extends BaseContract {
   estimateGas: {
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    stake(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    withdraw(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
 
     yinToken(overrides?: CallOverrides): Promise<BigNumber>;
   };
@@ -189,17 +145,7 @@ export class YINStakeWrapper extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    stake(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    withdraw(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     yinToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
