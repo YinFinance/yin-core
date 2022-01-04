@@ -190,6 +190,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
 
     function addRewards(address _rewardsToken, uint256 amount)
         public
+        onlyOwner
         nonReentrant
     {
         require(amount > 0, "AM0");
@@ -237,7 +238,7 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
             periodFinish = startTime.add(rewardsDuration);
         }
 
-        rewardRate = _rewardRate; // 5000 * 1e18 / 86400
+        rewardRate = _rewardRate;
 
         emit RewardStarted(startTime, periodFinish, rewardRate);
 
