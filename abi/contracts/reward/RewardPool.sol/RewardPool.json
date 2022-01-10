@@ -17,6 +17,16 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_governance",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_provider",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_rewardsDuration",
         "type": "uint256"
@@ -168,9 +178,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -242,27 +252,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_rewardsToken",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "yangId",
         "type": "uint256"
-      }
-    ],
-    "name": "addRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
       }
     ],
     "name": "balanceOf",
@@ -305,9 +297,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
       }
     ],
     "name": "earned",
@@ -433,6 +425,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "provider",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -494,9 +499,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "name": "rewards",
@@ -539,9 +544,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "yangId",
+        "type": "uint256"
       }
     ],
     "name": "share",
@@ -659,9 +664,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "name": "userRewardPerSharePaid",

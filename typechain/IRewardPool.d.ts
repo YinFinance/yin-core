@@ -21,17 +21,20 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IRewardPoolInterface extends ethers.utils.Interface {
   functions: {
-    "earned(address)": FunctionFragment;
+    "earned(uint256)": FunctionFragment;
     "getReward()": FunctionFragment;
     "reload(address)": FunctionFragment;
-    "share(address)": FunctionFragment;
+    "share(uint256)": FunctionFragment;
     "totalShares()": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "earned", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "earned",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "getReward", values?: undefined): string;
   encodeFunctionData(functionFragment: "reload", values: [string]): string;
-  encodeFunctionData(functionFragment: "share", values: [string]): string;
+  encodeFunctionData(functionFragment: "share", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "totalShares",
     values?: undefined
@@ -53,7 +56,7 @@ interface IRewardPoolInterface extends ethers.utils.Interface {
     "RewardRateUpdated(uint256,uint256)": EventFragment;
     "RewardReloadAccount(address)": EventFragment;
     "RewardStarted(uint256,uint256,uint256)": EventFragment;
-    "RewardUpdated(address,uint256,uint256)": EventFragment;
+    "RewardUpdated(uint256,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
@@ -109,7 +112,10 @@ export class IRewardPool extends BaseContract {
   interface: IRewardPoolInterface;
 
   functions: {
-    earned(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    earned(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     getReward(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -120,12 +126,15 @@ export class IRewardPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    share(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    share(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     totalShares(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
-  earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   getReward(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -136,18 +145,18 @@ export class IRewardPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   totalShares(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
-    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     getReward(overrides?: CallOverrides): Promise<void>;
 
     reload(account: string, overrides?: CallOverrides): Promise<void>;
 
-    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     totalShares(overrides?: CallOverrides): Promise<BigNumber>;
   };
@@ -196,17 +205,17 @@ export class IRewardPool extends BaseContract {
     >;
 
     RewardUpdated(
-      account?: null,
+      yangId?: null,
       shares?: null,
       totalShares?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; shares: BigNumber; totalShares: BigNumber }
+      [BigNumber, BigNumber, BigNumber],
+      { yangId: BigNumber; shares: BigNumber; totalShares: BigNumber }
     >;
   };
 
   estimateGas: {
-    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     getReward(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -217,14 +226,14 @@ export class IRewardPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     totalShares(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     earned(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -238,7 +247,7 @@ export class IRewardPool extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     share(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

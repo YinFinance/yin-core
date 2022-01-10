@@ -22,11 +22,10 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface RewardPoolInterface extends ethers.utils.Interface {
   functions: {
     "accruedReward()": FunctionFragment;
-    "addRewards(address,uint256)": FunctionFragment;
-    "balanceOf(address)": FunctionFragment;
+    "balanceOf(uint256)": FunctionFragment;
     "chiId()": FunctionFragment;
     "chiManager()": FunctionFragment;
-    "earned(address)": FunctionFragment;
+    "earned(uint256)": FunctionFragment;
     "emergencyExit(uint256)": FunctionFragment;
     "getReward()": FunctionFragment;
     "getRewardForDuration()": FunctionFragment;
@@ -36,15 +35,16 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "modifyRewardRate(uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "periodFinish()": FunctionFragment;
+    "provider()": FunctionFragment;
     "reload(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "rewardPerShare()": FunctionFragment;
     "rewardPerShareStored()": FunctionFragment;
     "rewardRate()": FunctionFragment;
-    "rewards(address)": FunctionFragment;
+    "rewards(uint256)": FunctionFragment;
     "rewardsDuration()": FunctionFragment;
     "rewardsToken()": FunctionFragment;
-    "share(address)": FunctionFragment;
+    "share(uint256)": FunctionFragment;
     "stake(uint256)": FunctionFragment;
     "startReward(uint256,uint256,uint256)": FunctionFragment;
     "startTime()": FunctionFragment;
@@ -52,7 +52,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "totalShares()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "userRewardPerSharePaid(address)": FunctionFragment;
+    "userRewardPerSharePaid(uint256)": FunctionFragment;
     "withdraw(uint256)": FunctionFragment;
     "yangNFT()": FunctionFragment;
     "yinToken()": FunctionFragment;
@@ -63,16 +63,18 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "addRewards",
-    values: [string, BigNumberish]
+    functionFragment: "balanceOf",
+    values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "chiId", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "chiManager",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "earned", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "earned",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "emergencyExit",
     values: [BigNumberish]
@@ -103,6 +105,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "periodFinish",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "provider", values?: undefined): string;
   encodeFunctionData(functionFragment: "reload", values: [string]): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -120,7 +123,10 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "rewardRate",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "rewards", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "rewards",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "rewardsDuration",
     values?: undefined
@@ -129,7 +135,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "rewardsToken",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "share", values: [string]): string;
+  encodeFunctionData(functionFragment: "share", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "stake", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "startReward",
@@ -154,7 +160,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "userRewardPerSharePaid",
-    values: [string]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "withdraw",
@@ -167,7 +173,6 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "accruedReward",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "addRewards", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiManager", data: BytesLike): Result;
@@ -199,6 +204,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     functionFragment: "periodFinish",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "provider", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "reload", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
@@ -261,7 +267,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "RewardRateUpdated(uint256,uint256)": EventFragment;
     "RewardReloadAccount(address)": EventFragment;
     "RewardStarted(uint256,uint256,uint256)": EventFragment;
-    "RewardUpdated(address,uint256,uint256)": EventFragment;
+    "RewardUpdated(uint256,uint256,uint256)": EventFragment;
     "Stake(address,uint256)": EventFragment;
     "UnStake(address,uint256)": EventFragment;
   };
@@ -324,19 +330,19 @@ export class RewardPool extends BaseContract {
   functions: {
     accruedReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    addRewards(
-      _rewardsToken: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    balanceOf(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     chiId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     chiManager(overrides?: CallOverrides): Promise<[string]>;
 
-    earned(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    earned(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     emergencyExit(
       amount: BigNumberish,
@@ -364,6 +370,8 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    provider(overrides?: CallOverrides): Promise<[string]>;
+
     reload(
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -379,13 +387,19 @@ export class RewardPool extends BaseContract {
 
     rewardRate(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    rewards(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    rewards(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     rewardsToken(overrides?: CallOverrides): Promise<[string]>;
 
-    share(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    share(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     stake(
       amount: BigNumberish,
@@ -413,7 +427,7 @@ export class RewardPool extends BaseContract {
     ): Promise<ContractTransaction>;
 
     userRewardPerSharePaid(
-      arg0: string,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -429,19 +443,16 @@ export class RewardPool extends BaseContract {
 
   accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-  addRewards(
-    _rewardsToken: string,
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(
+    yangId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
   chiManager(overrides?: CallOverrides): Promise<string>;
 
-  earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   emergencyExit(
     amount: BigNumberish,
@@ -484,13 +495,13 @@ export class RewardPool extends BaseContract {
 
   rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-  rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+  rewards(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardsToken(overrides?: CallOverrides): Promise<string>;
 
-  share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   stake(
     amount: BigNumberish,
@@ -518,7 +529,7 @@ export class RewardPool extends BaseContract {
   ): Promise<ContractTransaction>;
 
   userRewardPerSharePaid(
-    arg0: string,
+    arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -534,19 +545,16 @@ export class RewardPool extends BaseContract {
   callStatic: {
     accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addRewards(
-      _rewardsToken: string,
-      amount: BigNumberish,
+    balanceOf(
+      yangId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
-
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    ): Promise<BigNumber>;
 
     chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
     chiManager(overrides?: CallOverrides): Promise<string>;
 
-    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyExit(
       amount: BigNumberish,
@@ -572,6 +580,8 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
+    provider(overrides?: CallOverrides): Promise<string>;
+
     reload(account: string, overrides?: CallOverrides): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
@@ -582,13 +592,13 @@ export class RewardPool extends BaseContract {
 
     rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    rewards(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsToken(overrides?: CallOverrides): Promise<string>;
 
-    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     stake(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
@@ -613,7 +623,7 @@ export class RewardPool extends BaseContract {
     ): Promise<void>;
 
     userRewardPerSharePaid(
-      arg0: string,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -676,12 +686,12 @@ export class RewardPool extends BaseContract {
     >;
 
     RewardUpdated(
-      account?: null,
+      yangId?: null,
       shares?: null,
       totalShares?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { account: string; shares: BigNumber; totalShares: BigNumber }
+      [BigNumber, BigNumber, BigNumber],
+      { yangId: BigNumber; shares: BigNumber; totalShares: BigNumber }
     >;
 
     Stake(
@@ -704,19 +714,16 @@ export class RewardPool extends BaseContract {
   estimateGas: {
     accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addRewards(
-      _rewardsToken: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    balanceOf(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
     chiManager(overrides?: CallOverrides): Promise<BigNumber>;
 
-    earned(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    earned(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyExit(
       amount: BigNumberish,
@@ -744,6 +751,8 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<BigNumber>;
 
+    provider(overrides?: CallOverrides): Promise<BigNumber>;
+
     reload(
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -759,13 +768,13 @@ export class RewardPool extends BaseContract {
 
     rewardRate(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewards(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    rewards(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardsToken(overrides?: CallOverrides): Promise<BigNumber>;
 
-    share(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    share(yangId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     stake(
       amount: BigNumberish,
@@ -793,7 +802,7 @@ export class RewardPool extends BaseContract {
     ): Promise<BigNumber>;
 
     userRewardPerSharePaid(
-      arg0: string,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -810,14 +819,8 @@ export class RewardPool extends BaseContract {
   populateTransaction: {
     accruedReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    addRewards(
-      _rewardsToken: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     balanceOf(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -826,7 +829,7 @@ export class RewardPool extends BaseContract {
     chiManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     earned(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -860,6 +863,8 @@ export class RewardPool extends BaseContract {
 
     periodFinish(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    provider(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     reload(
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -878,7 +883,7 @@ export class RewardPool extends BaseContract {
     rewardRate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     rewards(
-      arg0: string,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -887,7 +892,7 @@ export class RewardPool extends BaseContract {
     rewardsToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     share(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -917,7 +922,7 @@ export class RewardPool extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     userRewardPerSharePaid(
-      arg0: string,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

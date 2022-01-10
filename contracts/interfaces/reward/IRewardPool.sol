@@ -3,14 +3,14 @@ pragma solidity 0.7.6;
 
 interface IRewardPool {
     // View
-    function share(address account) external view returns (uint256);
+    function share(uint256 yangId) external view returns (uint256);
 
     function totalShares() external view returns (uint256);
 
     // Mutation
     function getReward() external;
 
-    function earned(address account) external view returns (uint256);
+    function earned(uint256 yangId) external view returns (uint256);
 
     function reload(address account) external;
 
@@ -21,7 +21,7 @@ interface IRewardPool {
         uint256 rewardRate
     );
     event RewardAdded(uint256 reward);
-    event RewardUpdated(address account, uint256 shares, uint256 totalShares);
+    event RewardUpdated(uint256 yangId, uint256 shares, uint256 totalShares);
     event RewardPaid(address account, uint256 reward);
     event RewardRateUpdated(uint256 oldRate, uint256 newRate);
     event RewardEmergencyExit(

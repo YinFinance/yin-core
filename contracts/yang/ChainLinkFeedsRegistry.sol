@@ -5,7 +5,7 @@ pragma abicoder v2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-import "@chainlink/contracts/src/v0.7/interfaces/AggregatorInterface.sol";
+import "@chainlink/contracts/src/v0.7/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.7/Denominations.sol";
 
 import "../interfaces/yang/IChainLinkFeedsRegistry.sol";
@@ -64,6 +64,12 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     // VIEW
     // All USD registry decimals is 8, all ETH registry decimals is 18
 
+    function _getLastRoundPrice(address index) internal view returns (uint256) {
+        (, int256 price, ,uint256 updatedAt,) = AggregatorV3Interface(index).latestRoundData();
+        require(updatedAt >= block.timestamp - 5 minutes, "EXPIRED");
+        return uint256(price);
+    }
+
     // Return 1e8
     function getUSDPrice(address asset)
         external
@@ -73,19 +79,13 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     {
         uint256 price = 0;
         if (assets2USD[asset].index != address(0)) {
-            price = uint256(
-                AggregatorInterface(assets2USD[asset].index).latestAnswer()
-            );
+            price = _getLastRoundPrice(assets2USD[asset].index);
         } else if (
             assets2ETH[asset].index != address(0) &&
             assets2USD[WETH].index != address(0)
         ) {
-            uint256 tokenETHPrice = uint256(
-                AggregatorInterface(assets2ETH[asset].index).latestAnswer()
-            );
-            uint256 ethUSDPrice = uint256(
-                AggregatorInterface(assets2USD[WETH].index).latestAnswer()
-            );
+            uint256 tokenETHPrice = _getLastRoundPrice(assets2ETH[asset].index);
+            uint256 ethUSDPrice = _getLastRoundPrice(assets2USD[WETH].index);
             price = tokenETHPrice.mul(ethUSDPrice).div(
                 BinaryExp.pow(10, assets2ETH[asset].decimals)
             );
@@ -102,9 +102,7 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     {
         uint256 price = 0;
         if (assets2ETH[asset].index != address(0)) {
-            price = uint256(
-                AggregatorInterface(assets2ETH[asset].index).latestAnswer()
-            );
+            price = _getLastRoundPrice(assets2ETH[asset].index);
         }
         return price;
     }

@@ -20,12 +20,15 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface YINStakeWrapperInterface extends ethers.utils.Interface {
   functions: {
-    "balanceOf(address)": FunctionFragment;
+    "balanceOf(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "yinToken()": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "balanceOf",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
@@ -92,21 +95,30 @@ export class YINStakeWrapper extends BaseContract {
   interface: YINStakeWrapperInterface;
 
   functions: {
-    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    balanceOf(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     yinToken(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(
+    yangId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   yinToken(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    balanceOf(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -132,7 +144,10 @@ export class YINStakeWrapper extends BaseContract {
   };
 
   estimateGas: {
-    balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    balanceOf(
+      yangId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -141,7 +156,7 @@ export class YINStakeWrapper extends BaseContract {
 
   populateTransaction: {
     balanceOf(
-      account: string,
+      yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -126,9 +126,9 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
-        name: "account",
-        type: "address",
+        internalType: "uint256",
+        name: "yangId",
+        type: "uint256",
       },
       {
         indexed: false,
@@ -149,9 +149,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
+        internalType: "uint256",
+        name: "yangId",
+        type: "uint256",
       },
     ],
     name: "earned",
@@ -188,9 +188,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
+        internalType: "uint256",
+        name: "yangId",
+        type: "uint256",
       },
     ],
     name: "share",

@@ -21,7 +21,7 @@ contract YINStakeWrapper is ReentrancyGuard {
     IERC20 public yinToken;
 
     uint256 private _totalSupply;
-    mapping(address => uint256) private _balances;
+    mapping(uint256 => uint256) private _balances;
 
     event Stake(address account, uint256 amount);
     event UnStake(address account, uint256 amount);
@@ -30,22 +30,22 @@ contract YINStakeWrapper is ReentrancyGuard {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view returns (uint256) {
-        return _balances[account];
+    function balanceOf(uint256 yangId) public view returns (uint256) {
+        return _balances[yangId];
     }
 
-    function _stake(uint256 amount) internal {
+    function _stake(uint256 yangId, uint256 amount) internal {
         require(amount > 0, "AM0");
         _totalSupply = _totalSupply.add(amount);
-        _balances[msg.sender] = _balances[msg.sender].add(amount);
+        _balances[yangId] = _balances[yangId].add(amount);
         yinToken.safeTransferFrom(msg.sender, address(this), amount);
         emit Stake(msg.sender, amount);
     }
 
-    function _unstake(uint256 amount) internal {
+    function _unstake(uint256 yangId, uint256 amount) internal {
         require(totalSupply() >= amount && amount > 0, "AMT");
         _totalSupply = _totalSupply.sub(amount);
-        _balances[msg.sender] = _balances[msg.sender].sub(amount);
+        _balances[yangId] = _balances[yangId].sub(amount);
         yinToken.safeTransfer(msg.sender, amount);
         emit UnStake(msg.sender, amount);
     }
@@ -70,17 +70,20 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     uint256 public chiId;
 
     address public governance;
+    address public provider;
 
     uint256 private _totalShares;
-    mapping(address => uint256) private _shares;
+    mapping(uint256 => uint256) private _shares;
 
-    mapping(address => uint256) public rewards;
-    mapping(address => uint256) public userRewardPerSharePaid;
+    mapping(uint256 => uint256) public rewards;
+    mapping(uint256 => uint256) public userRewardPerSharePaid;
 
     constructor(
         address _rewardsToken,
         address _yangNFT,
         address _chiManager,
+        address _governance,
+        address _provider,
         uint256 _rewardsDuration,
         uint256 _chiId
     ) {
@@ -89,12 +92,14 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         chiManager = ICHIManager(_chiManager);
         yangNFT = IYangNFTVault(_yangNFT);
         rewardsDuration = _rewardsDuration;
+        governance = _governance;
+        provider = _provider;
         chiId = _chiId;
     }
 
     /// View
-    function share(address account) public view override returns (uint256) {
-        return _shares[account];
+    function share(uint256 yangId) public view override returns (uint256) {
+        return _shares[yangId];
     }
 
     function totalShares() public view override returns (uint256) {
@@ -115,18 +120,18 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
             );
     }
 
-    function earned(address account) public view override returns (uint256) {
-        uint256 reward = share(account)
-            .mul(rewardPerShare().sub(userRewardPerSharePaid[account]))
+    function earned(uint256 yangId) public view override returns (uint256) {
+        uint256 reward = share(yangId)
+            .mul(rewardPerShare().sub(userRewardPerSharePaid[yangId]))
             .div(5e18);
         if (totalSupply() > 0) {
             uint256 _totalSupply = totalSupply();
             return
                 reward
-                    .add(reward.mul(balanceOf(account)).div(_totalSupply))
-                    .add(rewards[account]);
+                    .add(reward.mul(balanceOf(yangId)).div(_totalSupply))
+                    .add(rewards[yangId]);
         } else {
-            return reward.add(rewards[account]);
+            return reward.add(rewards[yangId]);
         }
     }
 
@@ -146,8 +151,9 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         nonReentrant
         notifyUpdateReward(msg.sender)
     {
-        require(share(msg.sender) > 0, "shares");
-        _stake(amount);
+        uint256 yangId = yangNFT.getTokenId(msg.sender);
+        require(share(yangId) > 0, "shares");
+        _stake(yangId, amount);
     }
 
     function withdraw(uint256 amount)
@@ -156,7 +162,8 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         nonReentrant
         notifyUpdateReward(msg.sender)
     {
-        _unstake(amount);
+        uint256 yangId = yangNFT.getTokenId(msg.sender);
+        _unstake(yangId, amount);
     }
 
     function getReward()
@@ -166,13 +173,14 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         checkStart
         notifyUpdateReward(msg.sender)
     {
-        uint256 reward = rewards[msg.sender];
+        uint256 yangId = yangNFT.getTokenId(msg.sender);
+        uint256 reward = rewards[yangId];
         require(totalReward >= accruedReward.add(reward), "MAX");
 
         if (reward > 0) {
-            rewards[msg.sender] = 0;
+            rewards[yangId] = 0;
             accruedReward = accruedReward.add(reward);
-            rewardsToken.safeTransfer(msg.sender, reward);
+            rewardsToken.safeTransferFrom(provider, msg.sender, reward);
             emit RewardPaid(msg.sender, reward);
         }
     }
@@ -187,39 +195,21 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
 
     /// Restricted
 
-    function addRewards(address _rewardsToken, uint256 amount)
-        public
-        onlyOwner
-        nonReentrant
-    {
-        require(amount > 0, "AM0");
-        IERC20(_rewardsToken).safeTransferFrom(
-            msg.sender,
-            address(this),
-            amount
-        );
-        if (address(rewardsToken) == _rewardsToken) {
-            totalReward = totalReward.add(amount);
-            emit RewardAdded(amount);
-        }
-    }
-
     function modifyRewardRate(uint256 _rewardRate) external onlyOwner {
         emit RewardRateUpdated(rewardRate, _rewardRate);
         rewardRate = _rewardRate;
     }
 
-    function _updateAccountShare(address account) internal {
+    function _updateAccountShare(uint256 yangId) internal {
         uint256 accountShare = 0;
-        uint256 yangId = yangNFT.getTokenId(account);
-        if (account != address(0) && yangId != 0) {
+        if (yangId != 0) {
             accountShare = chiManager.yang(yangId, chiId);
-            _shares[account] = accountShare;
+            _shares[yangId] = accountShare;
         }
         (, , , , , , , uint256 totalCHIShares) = chiManager.chi(chiId);
         _totalShares = totalCHIShares;
 
-        emit RewardUpdated(account, accountShare, totalCHIShares);
+        emit RewardUpdated(yangId, accountShare, totalCHIShares);
     }
 
     function startReward(
@@ -235,16 +225,14 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
             periodFinish = block.timestamp.add(rewardsDuration);
         } else {
             startTime = _startTime;
+            lastUpdateTime = _startTime;
             periodFinish = startTime.add(rewardsDuration);
         }
 
-        rewardRate = _rewardRate;
+        rewardRate = _rewardRate; // 5000 * 1e18 / 86400
+        totalReward = amount;
 
         emit RewardStarted(startTime, periodFinish, rewardRate);
-
-        if (amount > 0 && rewardsToken.balanceOf(msg.sender) >= amount) {
-            addRewards(address(rewardsToken), amount);
-        }
     }
 
     function emergencyExit(uint256 amount) external onlyOwner {
@@ -259,11 +247,12 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     modifier notifyUpdateReward(address account) {
         rewardPerShareStored = rewardPerShare();
         lastUpdateTime = lastTimeRewardApplicable();
-        if (account != address(0)) {
-            rewards[account] = earned(account);
-            userRewardPerSharePaid[account] = rewardPerShareStored;
+        uint256 yangId = yangNFT.getTokenId(account);
+        if (account != address(0) && yangId != 0) {
+            rewards[yangId] = earned(yangId);
+            userRewardPerSharePaid[yangId] = rewardPerShareStored;
         }
-        _updateAccountShare(account);
+        _updateAccountShare(yangId);
         _;
     }
 
