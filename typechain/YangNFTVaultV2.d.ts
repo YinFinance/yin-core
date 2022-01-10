@@ -44,6 +44,7 @@ interface YangNFTVaultV2Interface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setCHIManager(address)": FunctionFragment;
+    "setOracleRegistry(address)": FunctionFragment;
     "setRewardProxy(address)": FunctionFragment;
     "subscribe(tuple)": FunctionFragment;
     "subscribeSingle(tuple)": FunctionFragment;
@@ -127,6 +128,10 @@ interface YangNFTVaultV2Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setCHIManager",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setOracleRegistry",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -272,6 +277,10 @@ interface YangNFTVaultV2Interface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setOracleRegistry",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setRewardProxy",
     data: BytesLike
   ): Result;
@@ -332,6 +341,7 @@ interface YangNFTVaultV2Interface extends ethers.utils.Interface {
     "LockState(uint256,bool,bool)": EventFragment;
     "MintYangNFT(address,uint256)": EventFragment;
     "ModifyCHIManager(address,address)": EventFragment;
+    "ModifyOracleRegistry(address,address)": EventFragment;
     "ModifyRewardProxy(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Subscribe(uint256,uint256,uint256)": EventFragment;
@@ -347,6 +357,7 @@ interface YangNFTVaultV2Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "LockState"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintYangNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyCHIManager"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModifyOracleRegistry"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyRewardProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
@@ -527,6 +538,11 @@ export class YangNFTVaultV2 extends BaseContract {
 
     setCHIManager(
       _chiManager: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setOracleRegistry(
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -756,6 +772,11 @@ export class YangNFTVaultV2 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setOracleRegistry(
+    _registry: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setRewardProxy(
     _rewardProxy: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -974,6 +995,11 @@ export class YangNFTVaultV2 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setOracleRegistry(
+      _registry: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setRewardProxy(
       _rewardProxy: string,
       overrides?: CallOverrides
@@ -1142,6 +1168,11 @@ export class YangNFTVaultV2 extends BaseContract {
       n?: null
     ): TypedEventFilter<[string, string], { o: string; n: string }>;
 
+    ModifyOracleRegistry(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
+
     ModifyRewardProxy(
       o?: null,
       n?: null
@@ -1305,6 +1336,11 @@ export class YangNFTVaultV2 extends BaseContract {
 
     setCHIManager(
       _chiManager: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setOracleRegistry(
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1527,6 +1563,11 @@ export class YangNFTVaultV2 extends BaseContract {
 
     setCHIManager(
       _chiManager: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setOracleRegistry(
+      _registry: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -79,6 +79,11 @@ contract YangNFTVaultV2 is
         rewardProxy = _rewardProxy;
     }
 
+    function setOracleRegistry(address _registry) external onlyOwner {
+        emit ModifyOracleRegistry(registry, _registry);
+        registry = _registry;
+    }
+
     function updateLockSeconds(uint256 lockInSeconds) external onlyOwner {
         _updateLockSeconds(lockInSeconds);
     }

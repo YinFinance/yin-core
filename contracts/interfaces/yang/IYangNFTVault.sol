@@ -51,6 +51,7 @@ interface IYangNFTVault is IYANGDepositCallBack {
     );
     event ModifyCHIManager(address o, address n);
     event ModifyRewardProxy(address o, address n);
+    event ModifyOracleRegistry(address o, address n);
 
     function setCHIManager(address) external;
 

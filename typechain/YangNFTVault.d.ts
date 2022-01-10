@@ -314,6 +314,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
     "LockState(uint256,bool,bool)": EventFragment;
     "MintYangNFT(address,uint256)": EventFragment;
     "ModifyCHIManager(address,address)": EventFragment;
+    "ModifyOracleRegistry(address,address)": EventFragment;
     "ModifyRewardProxy(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Subscribe(uint256,uint256,uint256)": EventFragment;
@@ -329,6 +330,7 @@ interface YangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "LockState"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintYangNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyCHIManager"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModifyOracleRegistry"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyRewardProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
@@ -1099,6 +1101,11 @@ export class YangNFTVault extends BaseContract {
     >;
 
     ModifyCHIManager(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
+
+    ModifyOracleRegistry(
       o?: null,
       n?: null
     ): TypedEventFilter<[string, string], { o: string; n: string }>;

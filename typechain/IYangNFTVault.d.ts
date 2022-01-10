@@ -147,6 +147,7 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
     "AcceptOwnerShip(address,address)": EventFragment;
     "MintYangNFT(address,uint256)": EventFragment;
     "ModifyCHIManager(address,address)": EventFragment;
+    "ModifyOracleRegistry(address,address)": EventFragment;
     "ModifyRewardProxy(address,address)": EventFragment;
     "Subscribe(uint256,uint256,uint256)": EventFragment;
     "UnSubscribe(uint256,uint256,uint256,uint256)": EventFragment;
@@ -155,6 +156,7 @@ interface IYangNFTVaultInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "AcceptOwnerShip"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MintYangNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyCHIManager"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModifyOracleRegistry"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ModifyRewardProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Subscribe"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnSubscribe"): EventFragment;
@@ -513,6 +515,11 @@ export class IYangNFTVault extends BaseContract {
     >;
 
     ModifyCHIManager(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
+
+    ModifyOracleRegistry(
       o?: null,
       n?: null
     ): TypedEventFilter<[string, string], { o: string; n: string }>;

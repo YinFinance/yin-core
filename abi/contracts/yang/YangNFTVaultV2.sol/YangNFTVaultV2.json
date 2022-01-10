@@ -185,6 +185,25 @@
         "type": "address"
       }
     ],
+    "name": "ModifyOracleRegistry",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "o",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "n",
+        "type": "address"
+      }
+    ],
     "name": "ModifyRewardProxy",
     "type": "event"
   },
@@ -766,6 +785,19 @@
       }
     ],
     "name": "setCHIManager",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_registry",
+        "type": "address"
+      }
+    ],
+    "name": "setOracleRegistry",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

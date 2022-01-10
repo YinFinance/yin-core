@@ -80,6 +80,25 @@ const _abi = [
         type: "address",
       },
     ],
+    name: "ModifyOracleRegistry",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "o",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "n",
+        type: "address",
+      },
+    ],
     name: "ModifyRewardProxy",
     type: "event",
   },
