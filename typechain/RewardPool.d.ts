@@ -23,6 +23,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   functions: {
     "accruedReward()": FunctionFragment;
     "balanceOf(uint256)": FunctionFragment;
+    "boostToken()": FunctionFragment;
     "chiId()": FunctionFragment;
     "chiManager()": FunctionFragment;
     "earned(uint256)": FunctionFragment;
@@ -32,6 +33,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "governance()": FunctionFragment;
     "lastTimeRewardApplicable()": FunctionFragment;
     "lastUpdateTime()": FunctionFragment;
+    "modifyBoostToken(address)": FunctionFragment;
     "modifyRewardRate(uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "periodFinish()": FunctionFragment;
@@ -55,7 +57,6 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     "userRewardPerSharePaid(uint256)": FunctionFragment;
     "withdraw(uint256)": FunctionFragment;
     "yangNFT()": FunctionFragment;
-    "yinToken()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -65,6 +66,10 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceOf",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "boostToken",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "chiId", values?: undefined): string;
   encodeFunctionData(
@@ -95,6 +100,10 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "lastUpdateTime",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "modifyBoostToken",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "modifyRewardRate",
@@ -167,13 +176,13 @@ interface RewardPoolInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "yangNFT", values?: undefined): string;
-  encodeFunctionData(functionFragment: "yinToken", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "accruedReward",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "boostToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiId", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiManager", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "earned", data: BytesLike): Result;
@@ -193,6 +202,10 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "lastUpdateTime",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "modifyBoostToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -257,11 +270,11 @@ interface RewardPoolInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "yinToken", data: BytesLike): Result;
 
   events: {
     "OwnershipTransferred(address,address)": EventFragment;
     "RewardAdded(uint256)": EventFragment;
+    "RewardBoostTokenUpdate(address,address)": EventFragment;
     "RewardEmergencyExit(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256)": EventFragment;
     "RewardRateUpdated(uint256,uint256)": EventFragment;
@@ -274,6 +287,7 @@ interface RewardPoolInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardBoostTokenUpdate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardEmergencyExit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardRateUpdated"): EventFragment;
@@ -335,6 +349,8 @@ export class RewardPool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    boostToken(overrides?: CallOverrides): Promise<[string]>;
+
     chiId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     chiManager(overrides?: CallOverrides): Promise<[string]>;
@@ -360,6 +376,11 @@ export class RewardPool extends BaseContract {
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     lastUpdateTime(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    modifyBoostToken(
+      _boostToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     modifyRewardRate(
       _rewardRate: BigNumberish,
@@ -437,8 +458,6 @@ export class RewardPool extends BaseContract {
     ): Promise<ContractTransaction>;
 
     yangNFT(overrides?: CallOverrides): Promise<[string]>;
-
-    yinToken(overrides?: CallOverrides): Promise<[string]>;
   };
 
   accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
@@ -447,6 +466,8 @@ export class RewardPool extends BaseContract {
     yangId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  boostToken(overrides?: CallOverrides): Promise<string>;
 
   chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -470,6 +491,11 @@ export class RewardPool extends BaseContract {
   lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
   lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
+
+  modifyBoostToken(
+    _boostToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   modifyRewardRate(
     _rewardRate: BigNumberish,
@@ -540,8 +566,6 @@ export class RewardPool extends BaseContract {
 
   yangNFT(overrides?: CallOverrides): Promise<string>;
 
-  yinToken(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     accruedReward(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -549,6 +573,8 @@ export class RewardPool extends BaseContract {
       yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    boostToken(overrides?: CallOverrides): Promise<string>;
 
     chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -570,6 +596,11 @@ export class RewardPool extends BaseContract {
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
     lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
+
+    modifyBoostToken(
+      _boostToken: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     modifyRewardRate(
       _rewardRate: BigNumberish,
@@ -630,8 +661,6 @@ export class RewardPool extends BaseContract {
     withdraw(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     yangNFT(overrides?: CallOverrides): Promise<string>;
-
-    yinToken(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -646,6 +675,11 @@ export class RewardPool extends BaseContract {
     RewardAdded(
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
+
+    RewardBoostTokenUpdate(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
 
     RewardEmergencyExit(
       owner?: null,
@@ -719,6 +753,8 @@ export class RewardPool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    boostToken(overrides?: CallOverrides): Promise<BigNumber>;
+
     chiId(overrides?: CallOverrides): Promise<BigNumber>;
 
     chiManager(overrides?: CallOverrides): Promise<BigNumber>;
@@ -741,6 +777,11 @@ export class RewardPool extends BaseContract {
     lastTimeRewardApplicable(overrides?: CallOverrides): Promise<BigNumber>;
 
     lastUpdateTime(overrides?: CallOverrides): Promise<BigNumber>;
+
+    modifyBoostToken(
+      _boostToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     modifyRewardRate(
       _rewardRate: BigNumberish,
@@ -812,8 +853,6 @@ export class RewardPool extends BaseContract {
     ): Promise<BigNumber>;
 
     yangNFT(overrides?: CallOverrides): Promise<BigNumber>;
-
-    yinToken(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -823,6 +862,8 @@ export class RewardPool extends BaseContract {
       yangId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    boostToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     chiId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -853,6 +894,11 @@ export class RewardPool extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     lastUpdateTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    modifyBoostToken(
+      _boostToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     modifyRewardRate(
       _rewardRate: BigNumberish,
@@ -932,7 +978,5 @@ export class RewardPool extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     yangNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    yinToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

@@ -24,6 +24,7 @@ interface IRewardPool {
     event RewardUpdated(uint256 yangId, uint256 shares, uint256 totalShares);
     event RewardPaid(address account, uint256 reward);
     event RewardRateUpdated(uint256 oldRate, uint256 newRate);
+    event RewardBoostTokenUpdate(address o, address n);
     event RewardEmergencyExit(
         address owner,
         address governance,

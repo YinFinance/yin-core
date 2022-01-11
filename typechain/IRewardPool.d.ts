@@ -51,6 +51,7 @@ interface IRewardPoolInterface extends ethers.utils.Interface {
 
   events: {
     "RewardAdded(uint256)": EventFragment;
+    "RewardBoostTokenUpdate(address,address)": EventFragment;
     "RewardEmergencyExit(address,address,uint256)": EventFragment;
     "RewardPaid(address,uint256)": EventFragment;
     "RewardRateUpdated(uint256,uint256)": EventFragment;
@@ -60,6 +61,7 @@ interface IRewardPoolInterface extends ethers.utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "RewardAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardBoostTokenUpdate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardEmergencyExit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardPaid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardRateUpdated"): EventFragment;
@@ -165,6 +167,11 @@ export class IRewardPool extends BaseContract {
     RewardAdded(
       reward?: null
     ): TypedEventFilter<[BigNumber], { reward: BigNumber }>;
+
+    RewardBoostTokenUpdate(
+      o?: null,
+      n?: null
+    ): TypedEventFilter<[string, string], { o: string; n: string }>;
 
     RewardEmergencyExit(
       owner?: null,

@@ -26,6 +26,25 @@ const _abi = [
       {
         indexed: false,
         internalType: "address",
+        name: "o",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "n",
+        type: "address",
+      },
+    ],
+    name: "RewardBoostTokenUpdate",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
         name: "owner",
         type: "address",
       },

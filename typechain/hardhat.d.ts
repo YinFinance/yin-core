@@ -177,6 +177,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IYangNFTVault__factory>;
     getContractFactory(
+      name: "BoostMixIn",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BoostMixIn__factory>;
+    getContractFactory(
       name: "RewardPool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardPool__factory>;
