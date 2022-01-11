@@ -14,11 +14,11 @@ import "../interfaces/chi/ICHIManager.sol";
 import "../interfaces/reward/IRewardPool.sol";
 import "../interfaces/yang/IYangNFTVault.sol";
 
-contract YINStakeWrapper is ReentrancyGuard {
+contract BoostMixIn is ReentrancyGuard {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public yinToken;
+    IERC20 public boostToken;
 
     uint256 private _totalSupply;
     mapping(uint256 => uint256) private _balances;
@@ -38,7 +38,7 @@ contract YINStakeWrapper is ReentrancyGuard {
         require(amount > 0, "AM0");
         _totalSupply = _totalSupply.add(amount);
         _balances[yangId] = _balances[yangId].add(amount);
-        yinToken.safeTransferFrom(msg.sender, address(this), amount);
+        boostToken.safeTransferFrom(msg.sender, address(this), amount);
         emit Stake(msg.sender, amount);
     }
 
@@ -46,12 +46,12 @@ contract YINStakeWrapper is ReentrancyGuard {
         require(totalSupply() >= amount && amount > 0, "AMT");
         _totalSupply = _totalSupply.sub(amount);
         _balances[yangId] = _balances[yangId].sub(amount);
-        yinToken.safeTransfer(msg.sender, amount);
+        boostToken.safeTransfer(msg.sender, amount);
         emit UnStake(msg.sender, amount);
     }
 }
 
-contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
+contract RewardPool is IRewardPool, BoostMixIn, Ownable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -87,7 +87,6 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
         uint256 _rewardsDuration,
         uint256 _chiId
     ) {
-        yinToken = IERC20(_rewardsToken);
         rewardsToken = IERC20(_rewardsToken);
         chiManager = ICHIManager(_chiManager);
         yangNFT = IYangNFTVault(_yangNFT);
@@ -198,6 +197,11 @@ contract RewardPool is IRewardPool, YINStakeWrapper, Ownable {
     function modifyRewardRate(uint256 _rewardRate) external onlyOwner {
         emit RewardRateUpdated(rewardRate, _rewardRate);
         rewardRate = _rewardRate;
+    }
+
+    function modifyBoostToken(address _boostToken) external onlyOwner {
+        emit RewardBoostTokenUpdate(address(boostToken), _boostToken);
+        boostToken = IERC20(_boostToken);
     }
 
     function _updateAccountShare(uint256 yangId) internal {

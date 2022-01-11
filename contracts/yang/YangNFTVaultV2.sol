@@ -70,6 +70,7 @@ contract YangNFTVaultV2 is
     }
 
     function setCHIManager(address _chiManager) external override onlyOwner {
+        require(_chiManager != address(0), "zero chimanager");
         emit ModifyCHIManager(chiManager, _chiManager);
         chiManager = _chiManager;
     }
@@ -80,6 +81,7 @@ contract YangNFTVaultV2 is
     }
 
     function setOracleRegistry(address _registry) external onlyOwner {
+        require(_registry != address(0), "zero oracle");
         emit ModifyOracleRegistry(registry, _registry);
         registry = _registry;
     }

@@ -90,6 +90,7 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
                 BinaryExp.pow(10, assets2ETH[asset].decimals)
             );
         }
+        require(price > 0, "price <= 0");
         return price;
     }
 
@@ -104,6 +105,7 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
         if (assets2ETH[asset].index != address(0)) {
             price = _getLastRoundPrice(assets2ETH[asset].index);
         }
+        require(price > 0, "price <= 0");
         return price;
     }
 
