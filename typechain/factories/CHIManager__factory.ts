@@ -11,6 +11,98 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "vault",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "ranges",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "amount0Totals",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "amount1Totals",
+        type: "uint256[]",
+      },
+    ],
+    name: "AddAllLiquidityToPosition",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "vault",
+        type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "int24",
+            name: "tickLower",
+            type: "int24",
+          },
+          {
+            internalType: "int24",
+            name: "tickUpper",
+            type: "int24",
+          },
+        ],
+        indexed: false,
+        internalType: "struct ICHIManager.RangeParams[]",
+        name: "addRanges",
+        type: "tuple[]",
+      },
+      {
+        components: [
+          {
+            internalType: "int24",
+            name: "tickLower",
+            type: "int24",
+          },
+          {
+            internalType: "int24",
+            name: "tickUpper",
+            type: "int24",
+          },
+        ],
+        indexed: false,
+        internalType: "struct ICHIManager.RangeParams[]",
+        name: "removeRanges",
+        type: "tuple[]",
+      },
+    ],
+    name: "AddAndRemoveRanges",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "owner",
@@ -55,6 +147,19 @@ const _abi = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "ArchiveCHI",
     type: "event",
   },
   {
@@ -150,6 +255,81 @@ const _abi = [
       {
         indexed: false,
         internalType: "address",
+        name: "vault",
+        type: "address",
+      },
+    ],
+    name: "PauseCHI",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "vault",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "ranges",
+        type: "uint256[]",
+      },
+    ],
+    name: "RemoveRangesAllLiquidityFromPosition",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "vault",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "ranges",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint128[]",
+        name: "liquidities",
+        type: "uint128[]",
+      },
+    ],
+    name: "RemoveRangesLiquidityFromPosition",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
         name: "tokenIn",
         type: "address",
       },
@@ -229,6 +409,19 @@ const _abi = [
       },
     ],
     name: "Transfer",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "UnPauseCHI",
     type: "event",
   },
   {

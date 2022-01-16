@@ -426,14 +426,21 @@ interface CHIManagerInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
 
   events: {
+    "AddAllLiquidityToPosition(uint256,address,uint256[],uint256[],uint256[])": EventFragment;
+    "AddAndRemoveRanges(uint256,address,tuple[],tuple[])": EventFragment;
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "ArchiveCHI(uint256)": EventFragment;
     "ChangeLiquidity(uint256,address)": EventFragment;
     "Create(uint256,address,address,uint256)": EventFragment;
     "EmergencyBurn(address,uint256,int24,int24)": EventFragment;
+    "PauseCHI(uint256,address)": EventFragment;
+    "RemoveRangesAllLiquidityFromPosition(uint256,address,uint256[])": EventFragment;
+    "RemoveRangesLiquidityFromPosition(uint256,address,uint256[],uint128[])": EventFragment;
     "Swap(uint256,address,address,uint256,uint256)": EventFragment;
     "Sweep(address,address,address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "UnPauseCHI(uint256)": EventFragment;
     "UpdateGovernance(address,address,address)": EventFragment;
     "UpdateMaxUSDLimit(address,uint256,uint256)": EventFragment;
     "UpdateMerkleRoot(address,bytes32,bytes32)": EventFragment;
@@ -442,14 +449,25 @@ interface CHIManagerInterface extends ethers.utils.Interface {
     "UpdateVaultFee(address,uint256,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AddAllLiquidityToPosition"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AddAndRemoveRanges"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ArchiveCHI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ChangeLiquidity"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Create"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EmergencyBurn"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PauseCHI"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "RemoveRangesAllLiquidityFromPosition"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "RemoveRangesLiquidityFromPosition"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sweep"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnPauseCHI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateGovernance"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMaxUSDLimit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMerkleRoot"): EventFragment;
@@ -1483,6 +1501,49 @@ export class CHIManager extends BaseContract {
   };
 
   filters: {
+    AddAllLiquidityToPosition(
+      tokenId?: null,
+      vault?: null,
+      ranges?: null,
+      amount0Totals?: null,
+      amount1Totals?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber[], BigNumber[], BigNumber[]],
+      {
+        tokenId: BigNumber;
+        vault: string;
+        ranges: BigNumber[];
+        amount0Totals: BigNumber[];
+        amount1Totals: BigNumber[];
+      }
+    >;
+
+    AddAndRemoveRanges(
+      tokenId?: null,
+      vault?: null,
+      addRanges?: null,
+      removeRanges?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        string,
+        ([number, number] & { tickLower: number; tickUpper: number })[],
+        ([number, number] & { tickLower: number; tickUpper: number })[]
+      ],
+      {
+        tokenId: BigNumber;
+        vault: string;
+        addRanges: ([number, number] & {
+          tickLower: number;
+          tickUpper: number;
+        })[];
+        removeRanges: ([number, number] & {
+          tickLower: number;
+          tickUpper: number;
+        })[];
+      }
+    >;
+
     Approval(
       owner?: string | null,
       approved?: string | null,
@@ -1500,6 +1561,10 @@ export class CHIManager extends BaseContract {
       [string, string, boolean],
       { owner: string; operator: string; approved: boolean }
     >;
+
+    ArchiveCHI(
+      tokenId?: null
+    ): TypedEventFilter<[BigNumber], { tokenId: BigNumber }>;
 
     ChangeLiquidity(
       tokenId?: null,
@@ -1531,6 +1596,38 @@ export class CHIManager extends BaseContract {
         tokenId: BigNumber;
         tickLower: number;
         tickUpper: number;
+      }
+    >;
+
+    PauseCHI(
+      tokenId?: null,
+      vault?: null
+    ): TypedEventFilter<
+      [BigNumber, string],
+      { tokenId: BigNumber; vault: string }
+    >;
+
+    RemoveRangesAllLiquidityFromPosition(
+      tokenId?: null,
+      vault?: null,
+      ranges?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber[]],
+      { tokenId: BigNumber; vault: string; ranges: BigNumber[] }
+    >;
+
+    RemoveRangesLiquidityFromPosition(
+      tokenId?: null,
+      vault?: null,
+      ranges?: null,
+      liquidities?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber[], BigNumber[]],
+      {
+        tokenId: BigNumber;
+        vault: string;
+        ranges: BigNumber[];
+        liquidities: BigNumber[];
       }
     >;
 
@@ -1569,6 +1666,10 @@ export class CHIManager extends BaseContract {
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
     >;
+
+    UnPauseCHI(
+      tokenId?: null
+    ): TypedEventFilter<[BigNumber], { tokenId: BigNumber }>;
 
     UpdateGovernance(
       account?: null,

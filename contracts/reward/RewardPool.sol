@@ -34,20 +34,20 @@ contract BoostMixIn is ReentrancyGuard {
         return _balances[yangId];
     }
 
-    function _stake(uint256 yangId, uint256 amount) internal {
+    function _stake(address account, uint256 yangId, uint256 amount) internal {
         require(amount > 0, "AM0");
         _totalSupply = _totalSupply.add(amount);
         _balances[yangId] = _balances[yangId].add(amount);
-        boostToken.safeTransferFrom(msg.sender, address(this), amount);
-        emit Stake(msg.sender, amount);
+        boostToken.safeTransferFrom(account, address(this), amount);
+        emit Stake(account, amount);
     }
 
-    function _unstake(uint256 yangId, uint256 amount) internal {
+    function _unstake(address account, uint256 yangId, uint256 amount) internal {
         require(totalSupply() >= amount && amount > 0, "AMT");
         _totalSupply = _totalSupply.sub(amount);
         _balances[yangId] = _balances[yangId].sub(amount);
-        boostToken.safeTransfer(msg.sender, amount);
-        emit UnStake(msg.sender, amount);
+        boostToken.safeTransfer(account, amount);
+        emit UnStake(account, amount);
     }
 }
 
@@ -80,6 +80,7 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
 
     constructor(
         address _rewardsToken,
+        address _boostToken,
         address _yangNFT,
         address _chiManager,
         address _governance,
@@ -88,6 +89,7 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
         uint256 _chiId
     ) {
         rewardsToken = IERC20(_rewardsToken);
+        boostToken = IERC20(_boostToken);
         chiManager = ICHIManager(_chiManager);
         yangNFT = IYangNFTVault(_yangNFT);
         rewardsDuration = _rewardsDuration;
@@ -126,9 +128,9 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
         if (totalSupply() > 0) {
             uint256 _totalSupply = totalSupply();
             return
-                reward
-                    .add(reward.mul(balanceOf(yangId)).div(_totalSupply))
-                    .add(rewards[yangId]);
+                reward.add(reward.mul(balanceOf(yangId)).div(_totalSupply)).add(
+                    rewards[yangId]
+                );
         } else {
             return reward.add(rewards[yangId]);
         }
@@ -152,7 +154,7 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
     {
         uint256 yangId = yangNFT.getTokenId(msg.sender);
         require(share(yangId) > 0, "shares");
-        _stake(yangId, amount);
+        _stake(msg.sender, yangId, amount);
     }
 
     function withdraw(uint256 amount)
@@ -162,7 +164,7 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
         notifyUpdateReward(msg.sender)
     {
         uint256 yangId = yangNFT.getTokenId(msg.sender);
-        _unstake(yangId, amount);
+        _unstake(msg.sender, yangId, amount);
     }
 
     function getReward()
@@ -173,8 +175,7 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
         notifyUpdateReward(msg.sender)
     {
         uint256 yangId = yangNFT.getTokenId(msg.sender);
-        uint256 reward = rewards[yangId];
-        require(totalReward >= accruedReward.add(reward), "MAX");
+        uint256 reward = Math.min(rewards[yangId], totalReward.sub(accruedReward));
 
         if (reward > 0) {
             rewards[yangId] = 0;

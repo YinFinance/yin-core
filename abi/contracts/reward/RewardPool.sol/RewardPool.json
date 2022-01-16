@@ -8,6 +8,11 @@
       },
       {
         "internalType": "address",
+        "name": "_boostToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_yangNFT",
         "type": "address"
       },

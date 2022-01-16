@@ -9,24 +9,17 @@ contract Yin is ERC20, Ownable {
     using SafeMath for uint256;
 
     uint256 public maximumTotalSupply;
-    uint256 public trackedTotalySupply;
 
     // maximumTotalSupply = 100000000000000000000000000
     constructor(uint256 _maximumTotalSupply) ERC20("YIN Finance", "YIN") {
         maximumTotalSupply = _maximumTotalSupply;
-        trackedTotalySupply = 0;
     }
 
     function mint(address account, uint256 amount) external onlyOwner {
         require(
-            trackedTotalySupply.add(amount) <= maximumTotalSupply,
+            totalSupply() <= maximumTotalSupply,
             "maximum minted"
         );
-        trackedTotalySupply = trackedTotalySupply.add(amount);
         _mint(account, amount);
-    }
-
-    function burn(address account, uint256 amount) external onlyOwner {
-        _burn(account, amount);
     }
 }

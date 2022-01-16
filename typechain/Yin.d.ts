@@ -24,7 +24,6 @@ interface YinInterface extends ethers.utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "burn(address,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
@@ -35,7 +34,6 @@ interface YinInterface extends ethers.utils.Interface {
     "renounceOwnership()": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
-    "trackedTotalySupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -50,10 +48,6 @@ interface YinInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "burn",
-    values: [string, BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
@@ -83,10 +77,6 @@ interface YinInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "trackedTotalySupply",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "transfer",
     values: [string, BigNumberish]
   ): string;
@@ -102,7 +92,6 @@ interface YinInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
@@ -126,10 +115,6 @@ interface YinInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "trackedTotalySupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
@@ -211,12 +196,6 @@ export class Yin extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    burn(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     decreaseAllowance(
@@ -251,8 +230,6 @@ export class Yin extends BaseContract {
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    trackedTotalySupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     transfer(
       recipient: string,
       amount: BigNumberish,
@@ -285,12 +262,6 @@ export class Yin extends BaseContract {
   ): Promise<ContractTransaction>;
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  burn(
-    account: string,
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -326,8 +297,6 @@ export class Yin extends BaseContract {
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-  trackedTotalySupply(overrides?: CallOverrides): Promise<BigNumber>;
-
   transfer(
     recipient: string,
     amount: BigNumberish,
@@ -361,12 +330,6 @@ export class Yin extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    burn(
-      account: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     decimals(overrides?: CallOverrides): Promise<number>;
 
     decreaseAllowance(
@@ -398,8 +361,6 @@ export class Yin extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    trackedTotalySupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       recipient: string,
@@ -463,12 +424,6 @@ export class Yin extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    burn(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     decreaseAllowance(
@@ -502,8 +457,6 @@ export class Yin extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    trackedTotalySupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       recipient: string,
@@ -542,12 +495,6 @@ export class Yin extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    burn(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decreaseAllowance(
@@ -583,10 +530,6 @@ export class Yin extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    trackedTotalySupply(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     transfer(
       recipient: string,

@@ -125,6 +125,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CHIManager__factory>;
     getContractFactory(
+      name: "CHIManagerV2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CHIManagerV2__factory>;
+    getContractFactory(
       name: "CHIVault",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CHIVault__factory>;
@@ -184,10 +188,6 @@ declare module "hardhat/types/runtime" {
       name: "RewardPool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardPool__factory>;
-    getContractFactory(
-      name: "YINStakeWrapper",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.YINStakeWrapper__factory>;
     getContractFactory(
       name: "RewardPoolProxy",
       signerOrOptions?: ethers.Signer | FactoryOptions

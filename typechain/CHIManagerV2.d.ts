@@ -19,29 +19,60 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface ICHIManagerInterface extends ethers.utils.Interface {
+interface CHIManagerV2Interface extends ethers.utils.Interface {
   functions: {
     "CHIDepositCallback(address,uint256,address,uint256,address)": FunctionFragment;
     "addAllLiquidityToPosition(uint256,uint256[],uint256[],uint256[])": FunctionFragment;
     "addAndRemoveRanges(uint256,tuple[],tuple[])": FunctionFragment;
+    "approve(address,uint256)": FunctionFragment;
     "archivedCHI(uint256)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
+    "baseURI()": FunctionFragment;
     "chi(uint256)": FunctionFragment;
     "chiVault(uint256)": FunctionFragment;
     "collectProtocol(uint256)": FunctionFragment;
     "config(uint256)": FunctionFragment;
+    "deployer()": FunctionFragment;
     "emergencyBurn(uint256,int24,int24)": FunctionFragment;
+    "getApproved(uint256)": FunctionFragment;
+    "governance()": FunctionFragment;
+    "initialize(bytes32,address,address,address,address,address,address)": FunctionFragment;
+    "isApprovedForAll(address,address)": FunctionFragment;
+    "manager()": FunctionFragment;
+    "merkleRoot()": FunctionFragment;
     "mint(tuple,bytes32[])": FunctionFragment;
+    "name()": FunctionFragment;
+    "ownerOf(uint256)": FunctionFragment;
     "pausedCHI(uint256)": FunctionFragment;
+    "positions(bytes32)": FunctionFragment;
     "removeRangesAllLiquidityFromPosition(uint256,uint256[])": FunctionFragment;
     "removeRangesLiquidityFromPosition(uint256,uint256[],uint128[])": FunctionFragment;
+    "safeTransferFrom(address,address,uint256)": FunctionFragment;
+    "setApprovalForAll(address,bool)": FunctionFragment;
+    "setGovernance(address)": FunctionFragment;
+    "setMaxUSDLimit(uint256,uint256)": FunctionFragment;
+    "setMerkleRoot(bytes32)": FunctionFragment;
+    "setProviderFee(uint256)": FunctionFragment;
+    "setSwapSwitch(bool)": FunctionFragment;
+    "setVaultFee(uint256)": FunctionFragment;
     "subscribe(uint256,uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "subscribeSingle(uint256,uint256,bool,uint256,uint256,uint256)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
     "swap(uint256,tuple)": FunctionFragment;
     "sweep(uint256,address,address)": FunctionFragment;
+    "symbol()": FunctionFragment;
+    "tokenByIndex(uint256)": FunctionFragment;
+    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
+    "tokenURI(uint256)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
+    "transferFrom(address,address,uint256)": FunctionFragment;
+    "treasury()": FunctionFragment;
     "unpausedCHI(uint256)": FunctionFragment;
     "unsubscribe(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "unsubscribeSingle(uint256,uint256,bool,uint256,uint256)": FunctionFragment;
+    "v3Factory()": FunctionFragment;
     "yang(uint256,uint256)": FunctionFragment;
+    "yangNFT()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -61,9 +92,15 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "approve",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "archivedCHI",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(functionFragment: "chi", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "chiVault",
@@ -77,9 +114,31 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "config",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "emergencyBurn",
     values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getApproved",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "governance",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initialize",
+    values: [BytesLike, string, string, string, string, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isApprovedForAll",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(functionFragment: "manager", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "merkleRoot",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
@@ -88,9 +147,18 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
       BytesLike[]
     ]
   ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "ownerOf",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "pausedCHI",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "positions",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "removeRangesAllLiquidityFromPosition",
@@ -99,6 +167,38 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "removeRangesLiquidityFromPosition",
     values: [BigNumberish, BigNumberish[], BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "safeTransferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setApprovalForAll",
+    values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setGovernance",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxUSDLimit",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMerkleRoot",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setProviderFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSwapSwitch",
+    values: [boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setVaultFee",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "subscribe",
@@ -123,6 +223,10 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "swap",
     values: [
       BigNumberish,
@@ -140,6 +244,28 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "sweep",
     values: [BigNumberish, string, string]
   ): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "tokenByIndex",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenOfOwnerByIndex",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenURI",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "treasury", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "unpausedCHI",
     values: [BigNumberish]
@@ -158,10 +284,12 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "unsubscribeSingle",
     values: [BigNumberish, BigNumberish, boolean, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "v3Factory", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "yang",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "yangNFT", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "CHIDepositCallback",
@@ -175,10 +303,13 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "addAndRemoveRanges",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "archivedCHI",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chi", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chiVault", data: BytesLike): Result;
   decodeFunctionResult(
@@ -186,12 +317,28 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "config", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "emergencyBurn",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getApproved",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "governance", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "manager", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "merkleRoot", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pausedCHI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "positions", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeRangesAllLiquidityFromPosition",
     data: BytesLike
@@ -200,13 +347,68 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "removeRangesLiquidityFromPosition",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "safeTransferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setApprovalForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setGovernance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxUSDLimit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMerkleRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setProviderFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSwapSwitch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setVaultFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "subscribe", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "subscribeSingle",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "swap", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sweep", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenOfOwnerByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "treasury", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "unpausedCHI",
     data: BytesLike
@@ -219,11 +421,15 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     functionFragment: "unsubscribeSingle",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "v3Factory", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "yang", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "yangNFT", data: BytesLike): Result;
 
   events: {
     "AddAllLiquidityToPosition(uint256,address,uint256[],uint256[],uint256[])": EventFragment;
     "AddAndRemoveRanges(uint256,address,tuple[],tuple[])": EventFragment;
+    "Approval(address,address,uint256)": EventFragment;
+    "ApprovalForAll(address,address,bool)": EventFragment;
     "ArchiveCHI(uint256)": EventFragment;
     "ChangeLiquidity(uint256,address)": EventFragment;
     "Create(uint256,address,address,uint256)": EventFragment;
@@ -233,6 +439,7 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
     "RemoveRangesLiquidityFromPosition(uint256,address,uint256[],uint128[])": EventFragment;
     "Swap(uint256,address,address,uint256,uint256)": EventFragment;
     "Sweep(address,address,address,uint256)": EventFragment;
+    "Transfer(address,address,uint256)": EventFragment;
     "UnPauseCHI(uint256)": EventFragment;
     "UpdateGovernance(address,address,address)": EventFragment;
     "UpdateMaxUSDLimit(address,uint256,uint256)": EventFragment;
@@ -244,6 +451,8 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AddAllLiquidityToPosition"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AddAndRemoveRanges"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ArchiveCHI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ChangeLiquidity"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Create"): EventFragment;
@@ -257,6 +466,7 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Sweep"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnPauseCHI"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateGovernance"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateMaxUSDLimit"): EventFragment;
@@ -266,7 +476,7 @@ interface ICHIManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UpdateVaultFee"): EventFragment;
 }
 
-export class ICHIManager extends BaseContract {
+export class CHIManagerV2 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -307,7 +517,7 @@ export class ICHIManager extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ICHIManagerInterface;
+  interface: CHIManagerV2Interface;
 
   functions: {
     CHIDepositCallback(
@@ -334,10 +544,20 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    approve(
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    baseURI(overrides?: CallOverrides): Promise<[string]>;
 
     chi(
       tokenId: BigNumberish,
@@ -392,12 +612,42 @@ export class ICHIManager extends BaseContract {
       }
     >;
 
+    deployer(overrides?: CallOverrides): Promise<[string]>;
+
     emergencyBurn(
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    getApproved(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    governance(overrides?: CallOverrides): Promise<[string]>;
+
+    initialize(
+      _merkleRoot: BytesLike,
+      _v3Factory: string,
+      _yangNFT: string,
+      _deployer: string,
+      _manager: string,
+      _governance: string,
+      _treasury: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    isApprovedForAll(
+      owner: string,
+      operator: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    manager(overrides?: CallOverrides): Promise<[string]>;
+
+    merkleRoot(overrides?: CallOverrides): Promise<[string]>;
 
     mint(
       params: {
@@ -410,10 +660,22 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    name(overrides?: CallOverrides): Promise<[string]>;
+
+    ownerOf(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     pausedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    positions(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { shares: BigNumber }>;
 
     removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
@@ -425,6 +687,58 @@ export class ICHIManager extends BaseContract {
       tokenId: BigNumberish,
       ranges: BigNumberish[],
       liquidities: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "safeTransferFrom(address,address,uint256)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "safeTransferFrom(address,address,uint256,bytes)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setApprovalForAll(
+      operator: string,
+      approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setGovernance(
+      newGov: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMaxUSDLimit(
+      tokenId: BigNumberish,
+      _maxUSDLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMerkleRoot(
+      _merkleRoot: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setProviderFee(
+      _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setVaultFee(
+      _vaultFee_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -448,6 +762,11 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     swap(
       tokenId: BigNumberish,
       params: {
@@ -467,6 +786,35 @@ export class ICHIManager extends BaseContract {
       to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    treasury(overrides?: CallOverrides): Promise<[string]>;
 
     unpausedCHI(
       tokenId: BigNumberish,
@@ -491,11 +839,15 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    v3Factory(overrides?: CallOverrides): Promise<[string]>;
+
     yang(
       yangId: BigNumberish,
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { shares: BigNumber }>;
+
+    yangNFT(overrides?: CallOverrides): Promise<[string]>;
   };
 
   CHIDepositCallback(
@@ -522,10 +874,20 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  approve(
+    to: string,
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   archivedCHI(
     tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  baseURI(overrides?: CallOverrides): Promise<string>;
 
   chi(
     tokenId: BigNumberish,
@@ -580,12 +942,42 @@ export class ICHIManager extends BaseContract {
     }
   >;
 
+  deployer(overrides?: CallOverrides): Promise<string>;
+
   emergencyBurn(
     tokenId: BigNumberish,
     tickLower: BigNumberish,
     tickUpper: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  getApproved(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  governance(overrides?: CallOverrides): Promise<string>;
+
+  initialize(
+    _merkleRoot: BytesLike,
+    _v3Factory: string,
+    _yangNFT: string,
+    _deployer: string,
+    _manager: string,
+    _governance: string,
+    _treasury: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  isApprovedForAll(
+    owner: string,
+    operator: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  manager(overrides?: CallOverrides): Promise<string>;
+
+  merkleRoot(overrides?: CallOverrides): Promise<string>;
 
   mint(
     params: {
@@ -598,10 +990,16 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  name(overrides?: CallOverrides): Promise<string>;
+
+  ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   pausedCHI(
     tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  positions(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
   removeRangesAllLiquidityFromPosition(
     tokenId: BigNumberish,
@@ -613,6 +1011,58 @@ export class ICHIManager extends BaseContract {
     tokenId: BigNumberish,
     ranges: BigNumberish[],
     liquidities: BigNumberish[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "safeTransferFrom(address,address,uint256)"(
+    from: string,
+    to: string,
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "safeTransferFrom(address,address,uint256,bytes)"(
+    from: string,
+    to: string,
+    tokenId: BigNumberish,
+    _data: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setApprovalForAll(
+    operator: string,
+    approved: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setGovernance(
+    newGov: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMaxUSDLimit(
+    tokenId: BigNumberish,
+    _maxUSDLimit: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMerkleRoot(
+    _merkleRoot: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setProviderFee(
+    _providerFee_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setSwapSwitch(
+    _enableSwap_: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setVaultFee(
+    _vaultFee_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -636,6 +1086,11 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  supportsInterface(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   swap(
     tokenId: BigNumberish,
     params: {
@@ -655,6 +1110,32 @@ export class ICHIManager extends BaseContract {
     to: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  symbol(overrides?: CallOverrides): Promise<string>;
+
+  tokenByIndex(
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenOfOwnerByIndex(
+    owner: string,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+  transferFrom(
+    from: string,
+    to: string,
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  treasury(overrides?: CallOverrides): Promise<string>;
 
   unpausedCHI(
     tokenId: BigNumberish,
@@ -679,11 +1160,15 @@ export class ICHIManager extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  v3Factory(overrides?: CallOverrides): Promise<string>;
+
   yang(
     yangId: BigNumberish,
     chiId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  yangNFT(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     CHIDepositCallback(
@@ -710,10 +1195,20 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    approve(
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    baseURI(overrides?: CallOverrides): Promise<string>;
 
     chi(
       tokenId: BigNumberish,
@@ -768,12 +1263,42 @@ export class ICHIManager extends BaseContract {
       }
     >;
 
+    deployer(overrides?: CallOverrides): Promise<string>;
+
     emergencyBurn(
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    getApproved(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    governance(overrides?: CallOverrides): Promise<string>;
+
+    initialize(
+      _merkleRoot: BytesLike,
+      _v3Factory: string,
+      _yangNFT: string,
+      _deployer: string,
+      _manager: string,
+      _governance: string,
+      _treasury: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    isApprovedForAll(
+      owner: string,
+      operator: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    manager(overrides?: CallOverrides): Promise<string>;
+
+    merkleRoot(overrides?: CallOverrides): Promise<string>;
 
     mint(
       params: {
@@ -786,7 +1311,13 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, string] & { tokenId: BigNumber; vault: string }>;
 
+    name(overrides?: CallOverrides): Promise<string>;
+
+    ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
     pausedCHI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    positions(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
@@ -798,6 +1329,55 @@ export class ICHIManager extends BaseContract {
       tokenId: BigNumberish,
       ranges: BigNumberish[],
       liquidities: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "safeTransferFrom(address,address,uint256)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "safeTransferFrom(address,address,uint256,bytes)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      _data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setApprovalForAll(
+      operator: string,
+      approved: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setGovernance(newGov: string, overrides?: CallOverrides): Promise<void>;
+
+    setMaxUSDLimit(
+      tokenId: BigNumberish,
+      _maxUSDLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMerkleRoot(
+      _merkleRoot: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setProviderFee(
+      _providerFee_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setVaultFee(
+      _vaultFee_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -833,6 +1413,11 @@ export class ICHIManager extends BaseContract {
       }
     >;
 
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     swap(
       tokenId: BigNumberish,
       params: {
@@ -852,6 +1437,32 @@ export class ICHIManager extends BaseContract {
       to: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    symbol(overrides?: CallOverrides): Promise<string>;
+
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    treasury(overrides?: CallOverrides): Promise<string>;
 
     unpausedCHI(
       tokenId: BigNumberish,
@@ -878,11 +1489,15 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    v3Factory(overrides?: CallOverrides): Promise<string>;
+
     yang(
       yangId: BigNumberish,
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    yangNFT(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -927,6 +1542,24 @@ export class ICHIManager extends BaseContract {
           tickUpper: number;
         })[];
       }
+    >;
+
+    Approval(
+      owner?: string | null,
+      approved?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; approved: string; tokenId: BigNumber }
+    >;
+
+    ApprovalForAll(
+      owner?: string | null,
+      operator?: string | null,
+      approved?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { owner: string; operator: string; approved: boolean }
     >;
 
     ArchiveCHI(
@@ -1025,6 +1658,15 @@ export class ICHIManager extends BaseContract {
       { account: string; recipient: string; token: string; tokenId: BigNumber }
     >;
 
+    Transfer(
+      from?: string | null,
+      to?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; tokenId: BigNumber }
+    >;
+
     UnPauseCHI(
       tokenId?: null
     ): TypedEventFilter<[BigNumber], { tokenId: BigNumber }>;
@@ -1109,10 +1751,20 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    approve(
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    baseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
     chi(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1131,12 +1783,42 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    deployer(overrides?: CallOverrides): Promise<BigNumber>;
+
     emergencyBurn(
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    getApproved(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    governance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    initialize(
+      _merkleRoot: BytesLike,
+      _v3Factory: string,
+      _yangNFT: string,
+      _deployer: string,
+      _manager: string,
+      _governance: string,
+      _treasury: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    isApprovedForAll(
+      owner: string,
+      operator: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    manager(overrides?: CallOverrides): Promise<BigNumber>;
+
+    merkleRoot(overrides?: CallOverrides): Promise<BigNumber>;
 
     mint(
       params: {
@@ -1149,10 +1831,19 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    name(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ownerOf(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     pausedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    positions(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     removeRangesAllLiquidityFromPosition(
       tokenId: BigNumberish,
@@ -1164,6 +1855,58 @@ export class ICHIManager extends BaseContract {
       tokenId: BigNumberish,
       ranges: BigNumberish[],
       liquidities: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "safeTransferFrom(address,address,uint256)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "safeTransferFrom(address,address,uint256,bytes)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setApprovalForAll(
+      operator: string,
+      approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setGovernance(
+      newGov: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMaxUSDLimit(
+      tokenId: BigNumberish,
+      _maxUSDLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMerkleRoot(
+      _merkleRoot: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setProviderFee(
+      _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setVaultFee(
+      _vaultFee_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1187,6 +1930,11 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     swap(
       tokenId: BigNumberish,
       params: {
@@ -1206,6 +1954,35 @@ export class ICHIManager extends BaseContract {
       to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    treasury(overrides?: CallOverrides): Promise<BigNumber>;
 
     unpausedCHI(
       tokenId: BigNumberish,
@@ -1230,11 +2007,15 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    v3Factory(overrides?: CallOverrides): Promise<BigNumber>;
+
     yang(
       yangId: BigNumberish,
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    yangNFT(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1262,10 +2043,23 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    approve(
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     archivedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    balanceOf(
+      owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     chi(
       tokenId: BigNumberish,
@@ -1287,12 +2081,42 @@ export class ICHIManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     emergencyBurn(
       tokenId: BigNumberish,
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    getApproved(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    governance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    initialize(
+      _merkleRoot: BytesLike,
+      _v3Factory: string,
+      _yangNFT: string,
+      _deployer: string,
+      _manager: string,
+      _governance: string,
+      _treasury: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    isApprovedForAll(
+      owner: string,
+      operator: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    manager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    merkleRoot(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     mint(
       params: {
@@ -1305,9 +2129,21 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ownerOf(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     pausedCHI(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    positions(
+      arg0: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     removeRangesAllLiquidityFromPosition(
@@ -1320,6 +2156,58 @@ export class ICHIManager extends BaseContract {
       tokenId: BigNumberish,
       ranges: BigNumberish[],
       liquidities: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "safeTransferFrom(address,address,uint256)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "safeTransferFrom(address,address,uint256,bytes)"(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setApprovalForAll(
+      operator: string,
+      approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setGovernance(
+      newGov: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMaxUSDLimit(
+      tokenId: BigNumberish,
+      _maxUSDLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMerkleRoot(
+      _merkleRoot: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setProviderFee(
+      _providerFee_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSwapSwitch(
+      _enableSwap_: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setVaultFee(
+      _vaultFee_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1343,6 +2231,11 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     swap(
       tokenId: BigNumberish,
       params: {
@@ -1362,6 +2255,35 @@ export class ICHIManager extends BaseContract {
       to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    transferFrom(
+      from: string,
+      to: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    treasury(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     unpausedCHI(
       tokenId: BigNumberish,
@@ -1386,10 +2308,14 @@ export class ICHIManager extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    v3Factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     yang(
       yangId: BigNumberish,
       chiId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    yangNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
