@@ -73,7 +73,7 @@ module.exports = {
     mumbai: {
       url: `https://rpc-mumbai.maticvigil.com/v1/${process.env.MUMBAI_ID}`,
       accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY2] : [],
     },
     polygon: {
       url: `https://rpc-mainnet.maticvigil.com/v1/${process.env.MUMBAI_ID}`,
