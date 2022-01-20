@@ -36,7 +36,7 @@ contract RewardPoolProxy is IRewardPoolProxy, Ownable {
         override
     {
         address pool = _pools[chiId];
-        if (_pools[chiId] != address(0)) {
+        if (pool != address(0)) {
             IRewardPool(pool).reload(account);
             emit ProxyReloadRewardPool(chiId, pool, account);
         }
