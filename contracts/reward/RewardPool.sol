@@ -34,7 +34,11 @@ contract BoostMixIn is ReentrancyGuard {
         return _balances[yangId];
     }
 
-    function _stake(address account, uint256 yangId, uint256 amount) internal {
+    function _stake(
+        address account,
+        uint256 yangId,
+        uint256 amount
+    ) internal {
         require(amount > 0, "AM0");
         _totalSupply = _totalSupply.add(amount);
         _balances[yangId] = _balances[yangId].add(amount);
@@ -42,7 +46,11 @@ contract BoostMixIn is ReentrancyGuard {
         emit Stake(account, amount);
     }
 
-    function _unstake(address account, uint256 yangId, uint256 amount) internal {
+    function _unstake(
+        address account,
+        uint256 yangId,
+        uint256 amount
+    ) internal {
         require(totalSupply() >= amount && amount > 0, "AMT");
         _totalSupply = _totalSupply.sub(amount);
         _balances[yangId] = _balances[yangId].sub(amount);
@@ -175,7 +183,10 @@ contract RewardPool is IRewardPool, BoostMixIn, Ownable {
         notifyUpdateReward(msg.sender)
     {
         uint256 yangId = yangNFT.getTokenId(msg.sender);
-        uint256 reward = Math.min(rewards[yangId], totalReward.sub(accruedReward));
+        uint256 reward = Math.min(
+            rewards[yangId],
+            totalReward.sub(accruedReward)
+        );
 
         if (reward > 0) {
             rewards[yangId] = 0;

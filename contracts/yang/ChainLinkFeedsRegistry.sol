@@ -65,7 +65,8 @@ contract ChainLinkFeedsRegistry is IChainLinkFeedsRegistry {
     // All USD registry decimals is 8, all ETH registry decimals is 18
 
     function _getLastRoundPrice(address index) internal view returns (uint256) {
-        (, int256 price, ,uint256 updatedAt,) = AggregatorV3Interface(index).latestRoundData();
+        (, int256 price, , uint256 updatedAt, ) = AggregatorV3Interface(index)
+            .latestRoundData();
         require(updatedAt >= block.timestamp - 5 minutes, "EXPIRED");
         return uint256(price);
     }

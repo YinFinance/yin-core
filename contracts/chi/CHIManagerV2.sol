@@ -509,7 +509,13 @@ contract CHIManagerV2 is
             amount0Totals,
             amount1Totals
         );
-        emit AddAllLiquidityToPosition(tokenId, _tempVault, ranges, amount0Totals, amount1Totals);
+        emit AddAllLiquidityToPosition(
+            tokenId,
+            _tempVault,
+            ranges,
+            amount0Totals,
+            amount1Totals
+        );
     }
 
     function removeRangesLiquidityFromPosition(
@@ -529,7 +535,12 @@ contract CHIManagerV2 is
                 liquidities[i]
             );
         }
-        emit RemoveRangesLiquidityFromPosition(tokenId, _tempVault, ranges, liquidities);
+        emit RemoveRangesLiquidityFromPosition(
+            tokenId,
+            _tempVault,
+            ranges,
+            liquidities
+        );
     }
 
     function removeRangesAllLiquidityFromPosition(
@@ -653,4 +664,3 @@ contract CHIManagerV2 is
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
 }
-

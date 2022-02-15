@@ -179,10 +179,30 @@ interface ICHIManager is ICHIDepositCallBack {
 
     //discard later
     event ChangeLiquidity(uint256 tokenId, address vault);
-    event AddAndRemoveRanges(uint256 tokenId, address vault, RangeParams[] addRanges, RangeParams[] removeRanges);
-    event AddAllLiquidityToPosition(uint256 tokenId, address vault, uint256[] ranges, uint256[] amount0Totals, uint256[] amount1Totals);
-    event RemoveRangesLiquidityFromPosition(uint256 tokenId, address vault, uint256[] ranges, uint128[] liquidities);
-    event RemoveRangesAllLiquidityFromPosition(uint256 tokenId, address vault, uint256[] ranges);
+    event AddAndRemoveRanges(
+        uint256 tokenId,
+        address vault,
+        RangeParams[] addRanges,
+        RangeParams[] removeRanges
+    );
+    event AddAllLiquidityToPosition(
+        uint256 tokenId,
+        address vault,
+        uint256[] ranges,
+        uint256[] amount0Totals,
+        uint256[] amount1Totals
+    );
+    event RemoveRangesLiquidityFromPosition(
+        uint256 tokenId,
+        address vault,
+        uint256[] ranges,
+        uint128[] liquidities
+    );
+    event RemoveRangesAllLiquidityFromPosition(
+        uint256 tokenId,
+        address vault,
+        uint256[] ranges
+    );
     event PauseCHI(uint256 tokenId, address vault);
     event UnPauseCHI(uint256 tokenId);
     event ArchiveCHI(uint256 tokenId);

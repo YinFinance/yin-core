@@ -16,10 +16,7 @@ contract Yin is ERC20, Ownable {
     }
 
     function mint(address account, uint256 amount) external onlyOwner {
-        require(
-            totalSupply() <= maximumTotalSupply,
-            "maximum minted"
-        );
+        require(totalSupply() <= maximumTotalSupply, "maximum minted");
         _mint(account, amount);
     }
 }
