@@ -21,7 +21,7 @@ library PriceHelper {
         uint256 maxUSDLimit
     ) internal view returns (bool) {
         // maxUSDLimit 1e8 base
-        if (maxUSDLimit == 0) {
+        if (maxUSDLimit == 0 || registry == address(0)) {
             return false;
         } else {
             uint256 balance0 = IChainLinkFeedsRegistry(registry)
