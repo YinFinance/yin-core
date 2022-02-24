@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Denominations } from "./Denominations";
-export type { AggregatorInterface } from "./AggregatorInterface";
 export type { AggregatorV3Interface } from "./AggregatorV3Interface";
 export type { OwnableUpgradeable } from "./OwnableUpgradeable";
 export type { ERC165Upgradeable } from "./ERC165Upgradeable";
@@ -55,7 +54,6 @@ export type { YangNFTVault } from "./YangNFTVault";
 export type { YangNFTVaultV2 } from "./YangNFTVaultV2";
 
 export { Denominations__factory } from "./factories/Denominations__factory";
-export { AggregatorInterface__factory } from "./factories/AggregatorInterface__factory";
 export { AggregatorV3Interface__factory } from "./factories/AggregatorV3Interface__factory";
 export { OwnableUpgradeable__factory } from "./factories/OwnableUpgradeable__factory";
 export { ERC165Upgradeable__factory } from "./factories/ERC165Upgradeable__factory";
